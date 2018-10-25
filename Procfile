@@ -1,1 +1,1 @@
-web: gunicorn fobbage.wsgi:application --log-file -
+web: python my_django_app/manage.py collectstatic --noinput; gunicorn fobbage.wsgi:application --log-file -
