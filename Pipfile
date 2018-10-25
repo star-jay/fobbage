@@ -8,6 +8,7 @@ name = "pypi"
 [packages]
 django = "*"
 "heroku3" = "*"
+whitenoise = "*"
 
 [requires]
 python_version = "3.6"
