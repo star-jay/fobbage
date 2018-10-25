@@ -9,6 +9,7 @@ name = "pypi"
 django = "*"
 "heroku3" = "*"
 whitenoise = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.6"
