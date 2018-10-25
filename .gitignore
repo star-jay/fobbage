@@ -1,0 +1,12 @@
+# IDE's
+.vscode/
+
+# Project
+.env
+static_root
+media/
+.pytest_cache/
+
+# collected static files
+fobbage/staticfiles/
+staticfiles/
