@@ -15,7 +15,7 @@ The ultimate quiz
 >         """ string representation """ 	 
 >         return  "Quiz: {}".format(self.quiz)
 - create a new factory for your model in `tests/factories/<app>_factories.py`
->     class  QuizFactory():
+>     class  QuizFactory(factory.Factory):
 >         """ Factory that creates an example quiz """
 >         class  Meta:
 >               model = Quiz
@@ -27,6 +27,6 @@ The ultimate quiz
 >     @pytest.mark.django_db
 >     def  test_quiz_string_representation():
 >         """Make a clear string representation for the quiz"""
->         quiz = QuizFactory(factory.Factory)
+>         quiz = QuizFactory()
 >         assert quiz.__str__() ==  'Quiz: '  +  str(quiz.title)
 
