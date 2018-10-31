@@ -15,12 +15,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-import settings
+import fobbage.settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
-
-urlpatterns += patterns('',
- (r'^static/(?P.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
- )

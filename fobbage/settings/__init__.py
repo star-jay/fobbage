@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     'fobbage.herokuapp.com',
+    'localhost',
+    '127.0.0.1',
 ]
 
 

@@ -1,6 +1,9 @@
 # IDE's
 .vscode/
 
+# database files
+*db.*
+
 # Project
 .env
 static_root
