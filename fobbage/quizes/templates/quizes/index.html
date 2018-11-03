@@ -1,0 +1,11 @@
+
+<h1>Fobbage</h1>
+{% if active_quiz_list %}
+    <ul>
+    {% for quiz in active_quiz_list %}
+        <li><a href="/quiz/{{ quiz.id }}/">{{ quiz.title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No quizes are active.</p>
+{% endif %}
