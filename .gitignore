@@ -3,6 +3,7 @@
 
 # database files
 *db.*
+*.sqlite3
 
 # Project
 .env

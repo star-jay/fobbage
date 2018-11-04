@@ -16,6 +16,8 @@ django = "*"
 whitenoise = "*"
 gunicorn = "*"
 django-extensions = "*"
+django-environ = "*"
+"psycopg2" = "*"
 
 [requires]
 python_version = "3.6"
