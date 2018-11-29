@@ -35,5 +35,3 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write('Creating superuser from env-file')
         self.create_superuser_from_env()
-
-

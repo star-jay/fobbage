@@ -16,4 +16,6 @@ fobbage/staticfiles/
 staticfiles/
 
 # testfiles
+.coverage
+htmlcov/
 _*/

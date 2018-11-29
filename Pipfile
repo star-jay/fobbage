@@ -3,14 +3,6 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
-[dev-packages]
-pytest = "*"
-v = {version = "*", editable = true}
-factory-boy = "*"
-pytest-django = "*"
-ipython = "*"
-"flake8" = "*"
-
 [packages]
 django = "*"
 "heroku3" = "*"
@@ -19,6 +11,15 @@ gunicorn = "*"
 django-extensions = "*"
 django-environ = "*"
 "psycopg2" = "*"
+
+[dev-packages]
+pytest = "*"
+pytest-django = "*"
+pytest-coverage = "*"
+v = {version = "*", editable = true}
+factory-boy = "*"
+ipython = "*"
+"flake8" = "*"
 
 [requires]
 python_version = "3.6"
