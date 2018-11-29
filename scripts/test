@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status.
+set -e
+
+cd "$(dirname "$0")/.."
+
+# Flake everything
+pipenv run flake8
+
+if [ "$1" == "--mini" ]; then
+    # Run minimal pytest
+    shift
+    pipenv run pytest "$@"
+else
+    # Run pytest with coverage and any arguments given
+    pipenv run pytest --cov=. --cov-report=html --cov-report=term "$@"
+fi

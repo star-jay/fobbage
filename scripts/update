@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+scripts/bootstrap
+
+echo "==> Updating db…"
+# run all database migrations to ensure everything is up to date.
+pipenv run python ./manage.py migrate
