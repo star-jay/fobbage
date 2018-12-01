@@ -28,10 +28,10 @@ scripts/bootstrap
 if [ -f ./test.db ]; then
     rm ./test.db
 else
-    echo "==> Removing insilc-api DB"
-    dropdb insilc-api
-    echo "==> Re-create insilc-api DB"
-    createdb insilc-api
+    echo "==> Removing fobbage DB"
+    dropdb fobbage
+    echo "==> Re-create fobbage DB"
+    createdb fobbage
 fi
 
 echo "==> Migrating DB"
