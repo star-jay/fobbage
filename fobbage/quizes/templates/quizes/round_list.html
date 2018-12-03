@@ -1,0 +1,10 @@
+{% extends "quizes/base.html" %}
+
+{% block content %}
+    <h2>Rounds</h2>
+    <ul>
+        {% for round in object_list %}
+            <li>{{ round.title }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

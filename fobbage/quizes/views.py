@@ -1,5 +1,12 @@
 from django.shortcuts import render
-from fobbage.quizes.models import Quiz
+from django.views.generic import ListView
+
+from fobbage.quizes.models import Quiz, Round
+
+
+class RoundListView(ListView):
+    template_name = 'quizes/rounds.html'
+    model = Round
 
 
 def index(request):
