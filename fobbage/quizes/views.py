@@ -1,11 +1,16 @@
 from django.shortcuts import render
-from django.views.generic import ListView
+from django.views.generic import DetailView
 
 from fobbage.quizes.models import Quiz, Round
 
 
-class RoundListView(ListView):
-    template_name = 'quizes/rounds.html'
+class QuizDetail(DetailView):
+    template_name = 'quizes/quiz_detail.html'
+    model = Quiz
+
+
+class RoundDetail(DetailView):
+    template_name = 'quizes/round_detail.html'
     model = Round
 
 

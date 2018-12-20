@@ -16,11 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from fobbage.quizes.views import RoundListView, index
+from fobbage.quizes.views import (
+    QuizDetail, RoundDetail, index,
+)
 
 
 urlpatterns = [
     path('', index, name='index'),
-    path('quiz/<id>/', RoundListView.as_view(), name='quizes'),
+    path('quiz/<int:pk>/', QuizDetail.as_view()),
+    path('round/<int:pk>/', RoundDetail.as_view()),
     path('admin/', admin.site.urls),
 ]

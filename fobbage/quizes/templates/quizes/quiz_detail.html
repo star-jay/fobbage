@@ -1,0 +1,14 @@
+{% extends "quizes/base.html" %}
+
+{% block content %}
+    <h2>Rondes</h2>
+    <ul>
+        {% for round in quiz.rounds.all %}
+            <li>
+                <a href="/round/{{ round.id }}/">
+                    {{ round.title }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

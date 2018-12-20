@@ -1,0 +1,14 @@
+{% extends "quizes/base.html" %}
+
+{% block content %}
+    <h2>Questions</h2>
+    <ul>
+        {% for question in round.questions.all %}
+            <li>
+                <a href="/question/{{ question.id }}/">
+                    {{ question.text }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

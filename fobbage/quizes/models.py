@@ -31,7 +31,9 @@ class Round(models.Model):
     title = models.CharField(
         max_length=255,
     )
-    multiplier = models.FloatField()
+    multiplier = models.FloatField(
+        default=1,
+    )
 
     def __str__(self):
         """ string representation """
@@ -57,6 +59,14 @@ class Question(models.Model):
         return "Question: {}".format(self.text)
 
 
+class Answer(models.Model):
+    order = models.IntegerField()
+
+    def __str__(self):
+        """ string representation """
+        return "{}: {}".format(self.player.first_name, self.text)
+
+
 class Bluff(models.Model):
     text = models.CharField(
         max_length=255,
@@ -69,6 +79,12 @@ class Bluff(models.Model):
     player = models.ForeignKey(
         User,
         related_name='bluffs',
+        on_delete=models.CASCADE,
+    )
+    answer = models.ForeignKey(
+        Answer,
+        related_name='bluffs',
+        null=True,
         on_delete=models.CASCADE,
     )
 
