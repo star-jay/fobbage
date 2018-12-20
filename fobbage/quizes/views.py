@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import DetailView
 
-from fobbage.quizes.models import Quiz, Round
+from fobbage.quizes.models import Quiz, Round, Question
 
 
 class QuizDetail(DetailView):
@@ -12,6 +12,11 @@ class QuizDetail(DetailView):
 class RoundDetail(DetailView):
     template_name = 'quizes/round_detail.html'
     model = Round
+
+
+class QuestionDetail(DetailView):
+    template_name = 'quizes/question_detail.html'
+    model = Question
 
 
 def index(request):

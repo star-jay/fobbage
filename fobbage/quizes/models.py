@@ -1,7 +1,7 @@
 """
 The different models that together make out a quiz
 """
-
+import random
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -58,13 +58,40 @@ class Question(models.Model):
         """ string representation """
         return "Question: {}".format(self.text)
 
+    def list_answers(self):
+        """Create's a new list of possible answers"""
+        for answer in self.answers.all():
+            answer.delete()
+        Answer.objects.create(
+            question=self,
+            text=self.correct_answer
+        )
+        for bluff in self.bluffs.all():
+            answer = Answer.objects.create(
+                question=self,
+                text=bluff.text
+            )
+            bluff.answer = answer
+        answers = [answer for answer in self.answers.all()]
+        random.shuffle(answers)
+        for index in range(len(answers)):
+            answers[index].round = index + 1
+
 
 class Answer(models.Model):
-    order = models.IntegerField()
+    question = models.ForeignKey(
+        Question,
+        related_name='answers',
+        on_delete=models.CASCADE,
+    )
+    order = models.IntegerField(null=True)
+    text = models.CharField(
+        max_length=255,
+    )
 
     def __str__(self):
         """ string representation """
-        return "{}: {}".format(self.player.first_name, self.text)
+        return "{}: {}".format(self.order, self.text)
 
 
 class Bluff(models.Model):

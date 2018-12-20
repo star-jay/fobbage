@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path
 
 from fobbage.quizes.views import (
-    QuizDetail, RoundDetail, index,
+    QuizDetail, RoundDetail, QuestionDetail, index
 )
 
 
@@ -25,5 +25,6 @@ urlpatterns = [
     path('', index, name='index'),
     path('quiz/<int:pk>/', QuizDetail.as_view()),
     path('round/<int:pk>/', RoundDetail.as_view()),
+    path('question/<int:pk>/', QuestionDetail.as_view()),
     path('admin/', admin.site.urls),
 ]

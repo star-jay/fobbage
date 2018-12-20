@@ -1,0 +1,12 @@
+{% extends "quizes/base.html" %}
+
+{% block content %}
+    <h2>Answers</h2>
+    <ul>
+        {% for answer in question.answers.all %}
+            <li>
+                {{ answer.text }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

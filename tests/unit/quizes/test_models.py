@@ -4,6 +4,7 @@ from tests.factories.quiz_factories import (
     QuizFactory,
     RoundFactory,
     QuestionFactory,
+    AnswerFactory,
     BluffFactory,
 )
 
@@ -33,6 +34,17 @@ def test_question_string_representation():
 
 
 @pytest.mark.django_db
+def test_answer_string_representation():
+    """Make a clear string representation for the answer"""
+    answer = AnswerFactory(
+        order=1,
+        text='test',
+    )
+
+    assert answer.__str__() == '1: test'
+
+
+@pytest.mark.django_db
 def test_bluff_string_representation():
     """Make a clear string representation for the bluff"""
     bluff = BluffFactory(
@@ -41,3 +53,12 @@ def test_bluff_string_representation():
     )
 
     assert bluff.__str__() == 'otto: test'
+
+
+@pytest.mark.django_db
+def test_question_list_answers():
+    """Make a clear string representation for the bluff"""
+    bluff = BluffFactory()
+    bluff.question.list_answers()
+
+    assert len(bluff.question.answers.all()) == 2
