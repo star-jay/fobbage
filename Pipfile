@@ -12,6 +12,7 @@ django-extensions = "*"
 django-environ = "*"
 "psycopg2" = "*"
 django-allauth = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 pytest = "*"
@@ -23,4 +24,4 @@ ipython = "*"
 "flake8" = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"

@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_extensions',
+
+    'corsheaders',
     # auth
     # 'allauth',
     # 'allauth.account',
@@ -60,6 +62,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -177,3 +180,12 @@ SITE_ID = 1
 
 # contrib auth
 LOGIN_REDIRECT_URL = 'index'
+
+# CORS
+CORS_ORIGIN_WHITELIST = (
+    'hostname.example.com',
+    'localhost:8000',
+    'localhost:8080',
+    '127.0.0.1:8000',
+    '127.0.0.1:8080',
+)

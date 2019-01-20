@@ -10,8 +10,6 @@ User = get_user_model()
 # USER_SPECS = [
 #     {
 #         'email': 'oda@university.eu',
-#         'first_name': 'Oda',
-#         'last_name': 'Muller',
 #         'password': 'not so safe'
 #     }
 # ]

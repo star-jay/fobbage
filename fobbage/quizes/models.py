@@ -34,6 +34,9 @@ class Round(models.Model):
     multiplier = models.FloatField(
         default=1,
     )
+    is_active = models.BooleanField(
+        default=False,
+    )
 
     def __str__(self):
         """ string representation """
@@ -42,6 +45,16 @@ class Round(models.Model):
 
 
 class Question(models.Model):
+    INACTIVE = 0
+    BLUFF = 1
+    GUESS = 2
+    FINISHED = 3
+    STATUS_CHOICES = (
+        (INACTIVE, 'Inactive'),
+        (BLUFF, 'Bluff'),
+        (GUESS, 'Guess'),
+        (FINISHED, 'Finished'),
+    )
     text = models.CharField(
         max_length=255,
     )
@@ -52,6 +65,10 @@ class Question(models.Model):
         Round,
         related_name='questions',
         on_delete=models.CASCADE,
+    )
+    status = models.IntegerField(
+        choices=STATUS_CHOICES,
+        default=0
     )
 
     def __str__(self):
@@ -118,3 +135,58 @@ class Bluff(models.Model):
     def __str__(self):
         """ string representation """
         return "{}: {}".format(self.player.first_name, self.text)
+
+
+class Guess(models.Model):
+    answer = models.ForeignKey(
+        Answer,
+        related_name='guesses',
+        on_delete=models.CASCADE,
+    )
+
+    player = models.ForeignKey(
+        User,
+        related_name='guesses',
+        on_delete=models.CASCADE,
+    )
+
+
+def score_for_quiz(player, quiz):
+
+    score = 0
+    for round in quiz.rounds:
+        score += score_for_round(player, round)
+
+    return score
+
+
+def score_for_round(player, round):
+    score = 0
+    for question in round.questions:
+        score += score_for_question(player, question)
+
+
+def score_for_question(player, question):
+    score = 0
+    player_bluff = question.bluffs.filter(player=player)
+    # 0 plunten als jouw bluff = correct antwoord
+    if question.correct_answer == player_bluff:
+        return 0
+    # score voor juist antwoord
+    my_guess = Guess.objects.filter(
+        player=player)
+
+    if my_guess.answer.text == question.correct_answer:
+        score += question.round.multiplier * 1000
+
+    # score voor anders spelers kiezen jouw bluff
+    aantal_gepakt = len(Guess.objects.filter(answer=player_bluff.answer))
+
+    score += (aantal_gepakt * question.round.multiplier * 500) / len(
+        Bluff.objects.filter(answer=player_bluff.answer))
+
+    return score
+
+
+# def score_for_answer(play, answer):
+
