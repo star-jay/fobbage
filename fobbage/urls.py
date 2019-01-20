@@ -14,10 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include  # ,  url, include
+
+from django.contrib.auth import views as auth_views
 
 from fobbage.quizes.views import (
-    QuizDetail, RoundDetail, QuestionDetail, index
+    QuizDetail, RoundDetail, QuestionDetail, index, show_answers
 )
 
 
@@ -26,5 +28,12 @@ urlpatterns = [
     path('quiz/<int:pk>/', QuizDetail.as_view()),
     path('round/<int:pk>/', RoundDetail.as_view()),
     path('question/<int:pk>/', QuestionDetail.as_view()),
+
+    path(
+        'question/<int:question>/show_answers/', show_answers,
+        name='show_answers'),
     path('admin/', admin.site.urls),
+
+    path('accounts/', include('django.contrib.auth.urls')),
+    # url(r'^accounts/', include('allauth.urls')),
 ]

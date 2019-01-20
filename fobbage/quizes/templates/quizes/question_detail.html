@@ -2,11 +2,15 @@
 
 {% block content %}
     <h2>Answers</h2>
-    <ul>
+    <ol>
         {% for answer in question.answers.all %}
             <li>
                 {{ answer.text }}
             </li>
         {% endfor %}
-    </ul>
+    </ol>
+    <a href="/question/{{ question.id }}/show_answers/">
+        show answers
+    </a>
+    </form>
 {% endblock %}

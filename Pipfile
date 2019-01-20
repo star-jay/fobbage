@@ -11,6 +11,7 @@ gunicorn = "*"
 django-extensions = "*"
 django-environ = "*"
 "psycopg2" = "*"
+django-allauth = "*"
 
 [dev-packages]
 pytest = "*"

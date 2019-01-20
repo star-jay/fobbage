@@ -25,3 +25,11 @@ def index(request):
         'active_quiz_list': active_quiz_list
         }
     return render(request, 'quizes/index.html', context)
+
+
+def show_answers(request, question):
+    question = Question.objects.get(pk=question)
+    question.list_answers()
+    context = {'question': question}
+    return render(
+        request, 'quizes/question_detail.html', context)
