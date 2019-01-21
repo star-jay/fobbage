@@ -10,9 +10,9 @@ urlpatterns = [
         AuditedObtainJSONWebToken.as_view(),
         name='token'),
 
-    # url(r'^refreshtoken/$',
-    #     RefreshJSONWebToken.as_view(),
-    #     name='refreshtoken'),
+    url(r'^refreshtoken/$',
+        RefreshJSONWebToken.as_view(),
+        name='refreshtoken'),
 
     # url(r'^registration/$',
     #     views.UserRegistrationAPIView.as_view(),

@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import environ
-
+import datetime
 
 env = environ.Env()
 environ.Env.read_env()
@@ -184,3 +184,9 @@ LOGIN_REDIRECT_URL = 'index'
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = True
+
+# JWT
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),
+    'JWT_ALLOW_REFRESH': True,
+}
