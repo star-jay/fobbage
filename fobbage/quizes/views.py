@@ -1,7 +1,12 @@
 from django.shortcuts import render
 from django.views.generic import DetailView
-
+from rest_framework import viewsets
 from fobbage.quizes.models import Quiz, Round, Question
+from fobbage.quizes.api.serializers import QuizSerializer
+
+class QuizViewSet(viewsets.ModelViewSet):
+    queryset = Quiz.objects.all()
+    serializer_class = QuizSerializer
 
 
 class QuizDetail(DetailView):

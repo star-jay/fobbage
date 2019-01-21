@@ -18,9 +18,18 @@ from django.urls import path, include  # ,  url, include
 
 from django.contrib.auth import views as auth_views
 
+# from rest_framework.documentation import include_docs_urls
+from rest_framework.routers import DefaultRouter
+
+
 from fobbage.quizes.views import (
+    QuizViewSet,
     QuizDetail, RoundDetail, QuestionDetail, index, show_answers
 )
+
+
+router = DefaultRouter()
+router.register(r'quizes', QuizViewSet)
 
 
 urlpatterns = [
@@ -36,4 +45,8 @@ urlpatterns = [
 
     path('accounts/', include('django.contrib.auth.urls')),
     # url(r'^accounts/', include('allauth.urls')),
+
+    path('api/', include(router.urls)),
+    path('api/', include('fobbage.accounts.api.urls')),
+
 ]

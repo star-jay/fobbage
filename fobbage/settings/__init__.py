@@ -49,8 +49,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_extensions',
-
+    'rest_framework',
     'corsheaders',
+
     # auth
     # 'allauth',
     # 'allauth.account',
@@ -182,10 +183,4 @@ SITE_ID = 1
 LOGIN_REDIRECT_URL = 'index'
 
 # CORS
-CORS_ORIGIN_WHITELIST = (
-    'hostname.example.com',
-    'localhost:8000',
-    'localhost:8080',
-    '127.0.0.1:8000',
-    '127.0.0.1:8080',
-)
+CORS_ORIGIN_ALLOW_ALL = True

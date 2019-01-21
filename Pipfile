@@ -13,6 +13,8 @@ django-environ = "*"
 "psycopg2" = "*"
 django-allauth = "*"
 django-cors-headers = "*"
+djangorestframework-jwt = "*"
+djangorestframework = "*"
 
 [dev-packages]
 pytest = "*"
