@@ -1,14 +1,33 @@
 {% extends "quizes/base.html" %}
 
 {% block content %}
-    <h2>Questions</h2>
-    <ul>
-        {% for question in round.questions.all %}
-            <li>
-                <a href="/question/{{ question.id }}/">
-                    {{ question.text }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
+    {% if round.active_question %}
+        <h2>{{ round.active_question.text }}</h2>
+
+        {% if round.active_question.status == 1 %}
+        <a href="/question/{{ round.active_question.id }}/show_answers">
+            <button>Show Answers</button>
+        </a>
+        {% elif round.active_question.status == 2 %}
+        <ul>
+            {% for answer in rounds.active_question.answers %}
+                <li>
+                    <!-- <a href="/round/{{ round.id }}/"> -->
+                        {{ answer.text }}
+                    <!-- </a> -->
+                </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <a href="/round/{{ round.id }}/next_question">
+                <button>Next Question</button>
+            </a>
+        {% endif %}
+    {% else %}
+        <a href="/round/{{ round.id }}/first_question">
+            <button>First Question</button>
+        </a>
+    {% endif %}
+
+
 {% endblock %}

@@ -1,8 +1,11 @@
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from django.shortcuts import render
 from django.views.generic import DetailView
 from rest_framework import viewsets
 from fobbage.quizes.models import Quiz, Round, Question
 from fobbage.quizes.api.serializers import QuizSerializer
+
 
 class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
@@ -17,6 +20,18 @@ class QuizDetail(DetailView):
 class RoundDetail(DetailView):
     template_name = 'quizes/round_detail.html'
     model = Round
+
+
+def next_question(self, pk):
+    round = Round.objects.get(id=pk)
+    round.next_question()
+    return HttpResponseRedirect(reverse('round', args=(round.id,)))
+
+
+def first_question(self, pk):
+    round = Round.objects.get(id=pk)
+    round.first_question()
+    return HttpResponseRedirect(reverse('round', args=(round.id,)))
 
 
 class QuestionDetail(DetailView):

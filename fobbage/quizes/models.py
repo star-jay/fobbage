@@ -43,6 +43,29 @@ class Round(models.Model):
         if self.title:
             return "Round: {}".format(self.title)
 
+    def active_question(self):
+        return self.questions.get(
+            status__in=[Question.BLUFF, Question.GUESS])
+
+    def first_question(self):
+        first = self.questions.get(order=1)
+        first.status = Question.BLUFF
+        first.save()
+
+    def next_question(self):
+        active = self.active_question()
+        if active:
+            next = self.questions.get(
+                order=active.order+1)
+            active.status = Question.FINISHED
+            active.save()
+        else:
+            next = self.questions.order('order').first()
+
+        if next:
+            next.status = Question.BLUFF
+            next.save()
+
 
 class Question(models.Model):
     INACTIVE = 0
@@ -70,6 +93,7 @@ class Question(models.Model):
         choices=STATUS_CHOICES,
         default=0
     )
+    order = models.IntegerField()
 
     def __str__(self):
         """ string representation """
