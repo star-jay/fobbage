@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include  # ,  url, include
-
 from django.contrib.auth import views as auth_views
 
 # from rest_framework.documentation import include_docs_urls
@@ -24,8 +23,8 @@ from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
     QuizViewSet,
-    QuizDetail, RoundDetail, QuestionDetail, index, show_answers,
-    next_question, first_question
+    QuizDetail, round_view, index, show_answers,
+    next_question, prev_question, first_question, show_scores
 )
 
 
@@ -36,14 +35,24 @@ router.register(r'quizes', QuizViewSet)
 urlpatterns = [
     path('', index, name='index'),
     path('quiz/<int:pk>/', QuizDetail.as_view()),
-    path('round/<int:pk>/', RoundDetail.as_view(), name='round'),
-    path('round/<int:pk>/next_question', next_question),
-    path('round/<int:pk>/first_question', first_question),
-    path('question/<int:pk>/', QuestionDetail.as_view()),
+    path('round/<int:round>/', round_view, name='round'),
+    path('round/<int:pk>/next_question', next_question, name='next_question'),
+    path('round/<int:pk>/prev_question', prev_question, name='prev_question'),
 
     path(
-        'question/<int:question>/show_answers/', show_answers,
+        'round/<int:pk>/first_question',
+        first_question,
+        name='first_question'),
+    # path('question/<int:pk>/', QuestionDetail.as_view()),
+
+    path(
+        'question/<int:question>/show_answers/',
+        show_answers,
         name='show_answers'),
+    path(
+        'question/<int:question>/show_scores/',
+        show_scores,
+        name='show_scores'),
     path('admin/', admin.site.urls),
 
     path('accounts/', include('django.contrib.auth.urls')),

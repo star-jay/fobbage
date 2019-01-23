@@ -78,11 +78,14 @@ class Command(BaseCommand):
                 quiz=quiz,
                 title=r['title'],
             )
+            i = 0
             for q in r['questions']:
+                i += 1
                 Question.objects.create(
                     round=round,
                     text=q['text'],
                     correct_answer=q['correct_answer'],
+                    order=i,
                 )
 
     def handle(self, *args, **options):

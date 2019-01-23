@@ -1,0 +1,28 @@
+{% extends "quizes/base.html" %}
+
+{% block content %}
+    <h1>{{ answer.text }}</h1>
+    <!-- {{ answer.text  }} = {{ answer.question.correct_answer }} -->
+    {% if answer.text == answer.question.correct_answer %}
+    <h2>The correct answer was: <span>{{ answer.text }}</span></h2>
+
+
+    {% else %}
+    <h2>Was a bluff by:</h2>
+    <div>
+        {% for bluff in answer.bluffs.all %}
+        <span>{{ bluff.player.email }}, </span>
+        {% endfor %}
+    </div>
+    {% url 'next_answer' answer.id as url %}
+
+    <a href="{{ url }}"">
+        <button>Next Question</button>
+    </a>
+    {% endif %}
+
+    <a href="/round/{{ answer.question.round.id }}/next_question">
+        Next Question
+    </a>
+    </form>
+{% endblock %}

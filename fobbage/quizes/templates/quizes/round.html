@@ -1,0 +1,45 @@
+{% extends "quizes/base.html" %}
+
+{% block content %}
+    <h1>{{ round.title }}</h1>
+    {{ question.text }}
+    {% if question %}
+        <h2>{{ question.text }}: {{ question.status }}</h2>
+
+        {% if question.status == 1 %}
+        <a href="/question/{{ question.id }}/show_answers">
+            <button>Show Answers</button>
+        </a>
+        {% elif question.status == 2 %}
+        <ul>
+            {% for answer in rounds.active_question.answers %}
+                <li>
+                    <!-- <a href="/round/{{ round.id }}/"> -->
+                        {{ answer.text }}
+                    <!-- </a> -->
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="/question/{{ question.id }}/show_answers">
+            <button>Show Answers</button>
+        </a>
+        {% endif %}
+    {% endif %}
+
+    <div>
+        <a href="/round/{{ round.id }}/prev_question">
+            <button>Previous Question</button>
+        </a>
+        <a href="/round/{{ round.id }}/next_question">
+            <button>Next Question</button>
+        </a>
+        <a href="/quiz/{{ round.quiz.id }}/">
+            <button>Back to quiz</button>
+        </a>
+        <a href="/quiz/{{ round.quiz.id }}/scoreboard/">
+            <button>Scoreboard</button>
+        </a>
+
+    </div>
+
+{% endblock %}

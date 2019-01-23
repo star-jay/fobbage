@@ -1,7 +1,9 @@
 {% extends "quizes/base.html" %}
 
 {% block content %}
-    <h2>Answers</h2>
+    <h1>{{ question.text }}</h1>
+    <h2>Answers : </h2>
+
     <ol>
         {% for answer in question.answers.all %}
             <li>
@@ -9,8 +11,8 @@
             </li>
         {% endfor %}
     </ol>
-    <a href="/round/{{ question.round.id }}/next_question">
-        Next Question
+    <a href="/question/{{ question.id }}/show_scores">
+        Show scores
     </a>
     </form>
 {% endblock %}

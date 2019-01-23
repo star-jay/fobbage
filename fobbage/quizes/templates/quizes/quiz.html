@@ -1,7 +1,8 @@
 {% extends "quizes/base.html" %}
 
 {% block content %}
-    <h2>Rondes</h2>
+    <h1>{{ quiz.title }}</h1>
+    <!-- <h2>Rondes</h2> -->
     <ul>
         {% for round in quiz.rounds.all %}
             <li>

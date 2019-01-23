@@ -13,6 +13,10 @@ class Quiz(models.Model):
     title = models.CharField(
         max_length=255,
     )
+    players = models.ManyToManyField(
+        User,
+        related_name='quizes',
+    )
 
     def __str__(self):
         """ string representation """
@@ -23,6 +27,8 @@ class Quiz(models.Model):
 
 
 class Round(models.Model):
+    class Meta:
+        ordering = ['multiplier']
     quiz = models.ForeignKey(
         Quiz,
         related_name='rounds',
@@ -37,37 +43,73 @@ class Round(models.Model):
     is_active = models.BooleanField(
         default=False,
     )
+    active_question = models.IntegerField(
+        null=True,
+        default=None,
+    )
 
     def __str__(self):
         """ string representation """
         if self.title:
             return "Round: {}".format(self.title)
 
-    def active_question(self):
-        return self.questions.get(
-            status__in=[Question.BLUFF, Question.GUESS])
+    # def active_question(self):
+    #     return self.questions.filter(
+    #         status__in=[Question.BLUFF, Question.GUESS]).first()
 
     def first_question(self):
-        first = self.questions.get(order=1)
-        first.status = Question.BLUFF
-        first.save()
+        first = self.questions.filter(
+            status=0,
+        ).first()
+        if first:
+            first.status = Question.BLUFF
+            first.save()
+            return True
+        return False
 
     def next_question(self):
-        active = self.active_question()
-        if active:
-            next = self.questions.get(
-                order=active.order+1)
-            active.status = Question.FINISHED
-            active.save()
+        if self.active_question:
+            active = self.questions.get(id=self.active_question)
+            if active is not self.questions.last():
+                next = self.questions.filter(
+                    order__gte=active.order,
+                ).exclude(
+                    id=active.id,
+                ).first()
         else:
-            next = self.questions.order('order').first()
+            next = self.questions.first()
 
         if next:
-            next.status = Question.BLUFF
-            next.save()
+            self.active_question = next.id
+            self.save()
+            if next.status == Question.INACTIVE:
+                next.status = Question.BLUFF
+                next.save()
+
+    def prev_question(self):
+        if self.active_question:
+            active = self.questions.get(id=self.active_question)
+            if active is not self.questions.last():
+                prev = self.questions.filter(
+                    order__lt=active.order,
+                ).exclude(
+                    id=active.id,
+                ).last()
+        else:
+            prev = self.questions.first()
+
+        if prev:
+            self.active_question = prev.id
+            self.save()
+            if prev.status == Question.INACTIVE:
+                prev.status = Question.BLUFF
+                prev.save()
 
 
 class Question(models.Model):
+    class Meta:
+        ordering = ['order', 'id']
+
     INACTIVE = 0
     BLUFF = 1
     GUESS = 2
@@ -101,6 +143,10 @@ class Question(models.Model):
 
     def list_answers(self):
         """Create's a new list of possible answers"""
+        # TODO: Check if all players have bluffed
+        if not len(self.bluffs.all()) == len(self.round.quiz.players.all()):
+            return False
+
         for answer in self.answers.all():
             answer.delete()
         Answer.objects.create(
@@ -113,13 +159,38 @@ class Question(models.Model):
                 text=bluff.text
             )
             bluff.answer = answer
+            bluff.save()
         answers = [answer for answer in self.answers.all()]
         random.shuffle(answers)
-        for index in range(len(answers)):
-            answers[index].round = index + 1
+        i = 0
+        for answer in answers:
+            # i += 1
+            answer.order = i = i + 1
+            answer.save()
+
+        self.status = Question.GUESS
+        self.save()
+        return True
+
+    def players_without_guess(self):
+        return [
+            player for player in self.round.quiz.players.all()
+            if len(player.guesses.filter(answer__question=self)) == 0]
+
+    def finish(self):
+        """Finish the question if all playes have guessed"""
+        # TODO: Check if all players have guessed
+        if len(self.players_without_guess()) == 0:
+            self.status = Question.FINISHED
+            self.save()
+            return True
+        return False
 
 
 class Answer(models.Model):
+    class Meta:
+        ordering = ['order']
+
     question = models.ForeignKey(
         Question,
         related_name='answers',
@@ -132,7 +203,7 @@ class Answer(models.Model):
 
     def __str__(self):
         """ string representation """
-        return "{}: {}".format(self.order, self.text)
+        return "{}: {}".format(self.question.text, self.order)
 
 
 class Bluff(models.Model):
@@ -153,7 +224,8 @@ class Bluff(models.Model):
         Answer,
         related_name='bluffs',
         null=True,
-        on_delete=models.CASCADE,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
 
     def __str__(self):
@@ -193,14 +265,18 @@ def score_for_round(player, round):
 def score_for_question(player, question):
     score = 0
     player_bluff = question.bluffs.filter(player=player)
+    player_guess = Guess.objects.filter(
+        player=player)
+
     # 0 plunten als jouw bluff = correct antwoord
     if question.correct_answer == player_bluff:
         return 0
-    # score voor juist antwoord
-    my_guess = Guess.objects.filter(
-        player=player)
+    # 0 punten als je op je eigen antwoord stemt
+    if player_guess.answer == player_bluff.answer:
+        return 0
 
-    if my_guess.answer.text == question.correct_answer:
+    # score voor juist antwoord
+    if player_guess.answer.text == question.correct_answer:
         score += question.round.multiplier * 1000
 
     # score voor anders spelers kiezen jouw bluff
@@ -210,7 +286,3 @@ def score_for_question(player, question):
         Bluff.objects.filter(answer=player_bluff.answer))
 
     return score
-
-
-# def score_for_answer(play, answer):
-
