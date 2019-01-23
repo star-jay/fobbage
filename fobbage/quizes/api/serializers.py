@@ -1,11 +1,22 @@
 from rest_framework import serializers
 from fobbage.quizes.models import (
-    Quiz, Round, Question
+    Quiz, Round, Question, Bluff, Answer
 )
 
 
-class QuestionSerializer(serializers.ModelSerializer):
+class BluffSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bluff
+        fields = ('id', 'text', 'question', 'player')
 
+
+class AnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ('id', 'text', 'question', 'order')
+
+
+class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = ('id', 'text', 'status')

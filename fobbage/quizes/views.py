@@ -2,22 +2,42 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render
 from django.views.generic import DetailView
-from rest_framework import viewsets
-from fobbage.quizes.models import Quiz, Round, Question, Answer
-from fobbage.quizes.api.serializers import QuizSerializer
+from rest_framework import viewsets, generics
+from rest_framework.mixins import (
+    CreateModelMixin, RetrieveModelMixin, UpdateModelMixin)
+from fobbage.quizes.models import Quiz, Round, Question, Answer, Bluff
+from fobbage.quizes.api.serializers import (
+    QuizSerializer, BluffSerializer, AnswerSerializer)
 
 
+# API
+class QuizViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Quiz.objects.all()
+    serializer_class = QuizSerializer
+
+
+class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Answer.objects.all()
+    serializer_class = AnswerSerializer
+
+
+class BluffViewSet(
+        viewsets.GenericViewSet, CreateModelMixin, RetrieveModelMixin,
+        UpdateModelMixin):
+    # queryset = Bluff.objects.all()
+    serializer_class = BluffSerializer
+
+    def get_queryset(self):
+        return Bluff.objects.all()
+
+
+# Quizmaster
 def index(request):
     active_quiz_list = Quiz.objects.all()
     context = {
         'active_quiz_list': active_quiz_list
         }
     return render(request, 'quizes/index.html', context)
-
-
-class QuizViewSet(viewsets.ModelViewSet):
-    queryset = Quiz.objects.all()
-    serializer_class = QuizSerializer
 
 
 class QuizDetail(DetailView):
