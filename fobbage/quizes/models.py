@@ -143,8 +143,11 @@ class Question(models.Model):
 
     def list_answers(self):
         """Create's a new list of possible answers"""
-        # TODO: Check if all players have bluffed
+        # Check if all players have bluffed
         if not len(self.bluffs.all()) == len(self.round.quiz.players.all()):
+            return False
+        # Check if not already listed
+        if self.status == Question.GUESS:
             return False
 
         for answer in self.answers.all():
@@ -164,7 +167,6 @@ class Question(models.Model):
         random.shuffle(answers)
         i = 0
         for answer in answers:
-            # i += 1
             answer.order = i = i + 1
             answer.save()
 

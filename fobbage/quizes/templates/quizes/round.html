@@ -2,17 +2,13 @@
 
 {% block content %}
     <h1>{{ round.title }}</h1>
-    {{ question.text }}
     {% if question %}
-        <h2>{{ question.text }}: {{ question.status }}</h2>
-
+        <h2>{{ question.text }} </h2>
         {% if question.status == 1 %}
-        <a href="/question/{{ question.id }}/show_answers">
-            <button>Show Answers</button>
-        </a>
+
         {% elif question.status == 2 %}
         <ul>
-            {% for answer in rounds.active_question.answers %}
+            {% for answer in question.answers.all %}
                 <li>
                     <!-- <a href="/round/{{ round.id }}/"> -->
                         {{ answer.text }}
@@ -20,10 +16,18 @@
                 </li>
             {% endfor %}
         </ul>
-        <a href="/question/{{ question.id }}/show_answers">
-            <button>Show Answers</button>
-        </a>
         {% endif %}
+        <div>
+            <a href="/question/{{ question.id }}/show_answers">
+                <button>Show Answers</button>
+            </a>
+            <!-- <a href="/question/{{ question.id }}/show_answers"> -->
+                <button>Hide Answers</button>
+            <!-- </a> -->
+            <a href="/question/{{ question.id }}/show_scores">
+                <button>Show Scores</button>
+            </a>
+        </div>
     {% endif %}
 
     <div>

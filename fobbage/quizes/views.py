@@ -61,10 +61,7 @@ def first_question(self, pk):
 
 def show_answers(request, question):
     question = Question.objects.get(pk=question)
-    if question.list_answers():
-        context = {'question': question}
-        return render(
-            request, 'quizes/answers.html', context)
+    question.list_answers()
 
     return HttpResponseRedirect(
         reverse('round', args=(question.round.id,)))
@@ -79,6 +76,5 @@ def show_scores(request, question):
         return render(
             request, 'quizes/scores.html', context)
     else:
-        context = {'question': question}
-        return render(
-            request, 'quizes/answers.html', context)
+        return HttpResponseRedirect(
+            reverse('round', args=(question.round.id,)))
