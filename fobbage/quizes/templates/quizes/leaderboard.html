@@ -2,7 +2,6 @@
 
 {% block content %}
     <h1>Leaderboard</h1>
-    {% if answer.text == answer.question.correct_answer %}
     <ol>
         {% for player in scores %}
             <li>
@@ -11,11 +10,14 @@
         {% endfor %}
     </ol>
 
-
-    {% url 'next_answer' answer.id as url %}
-    <a href="{{ url }}"">
-        <button>Next Question</button>
+    {% if active_round %}
+    {% url 'round' active_round.id as url %}
+    <!-- <a href="{{ url }}""> -->
+    <a href="/round/{{ active_round.id }}">
+        <button>Back to Round</button>
     </a>
+    {% else %}
+
     {% endif %}
     </form>
 {% endblock %}

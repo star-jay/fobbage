@@ -62,4 +62,6 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/', include('fobbage.accounts.api.urls')),
 
+    path('api-auth/', include('rest_framework.urls')),
+
 ]

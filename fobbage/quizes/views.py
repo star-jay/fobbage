@@ -28,7 +28,10 @@ class BluffViewSet(
     serializer_class = BluffSerializer
 
     def get_queryset(self):
-        return Bluff.objects.all()
+        if self.request.user:
+            return Bluff.objects.filter(player=self.request.user)
+        else:
+            return Bluff.objects.none()
 
 
 # Quizmaster
@@ -47,6 +50,12 @@ class QuizDetail(DetailView):
 
 def round_view(request, round):
     round = Round.objects.get(pk=round)
+    active_round = round.quiz.active_round
+    if active_round:
+        active_round.is_active = False
+        active_round.save()
+    round.is_active = True
+    round.save()
     context = {'round': round}
     if round.active_question is not None:
         question = Question.objects.get(pk=round.active_question)
@@ -99,6 +108,7 @@ def show_scores(request, question):
 
 def scoreboard(request, pk):
     quiz = Quiz.objects.get(pk=pk)
+    active_round = quiz.active_round
     scores = {
         player: score_for_quiz(player, quiz)
         for player in quiz.players.all()
@@ -107,6 +117,7 @@ def scoreboard(request, pk):
     ranked_scores = [(player, scores[player]) for player in ranking]
     context = {
         'scores': ranked_scores,
+        'active_round': active_round,
         # 'ranking': ranking,
     }
     return render(

@@ -18,6 +18,19 @@ class Quiz(models.Model):
         related_name='quizes',
     )
 
+    @property
+    def active_round(self):
+        # if round:
+        #     self.rounds.update(is_active=False)
+        #     round.is_active = True
+        #     round.save()
+        #     return round
+
+        for round in self.rounds.all():
+            if round.is_active:
+                return round
+        return None
+
     def __str__(self):
         """ string representation """
         if self.title:
