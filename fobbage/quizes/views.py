@@ -21,10 +21,7 @@ class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AnswerSerializer
 
 
-class BluffViewSet(
-        viewsets.GenericViewSet, CreateModelMixin, RetrieveModelMixin,
-        UpdateModelMixin):
-    # queryset = Bluff.objects.all()
+class BluffView(generics.CreateAPIView):
     serializer_class = BluffSerializer
 
     def get_queryset(self):
@@ -32,6 +29,22 @@ class BluffViewSet(
             return Bluff.objects.filter(player=self.request.user)
         else:
             return Bluff.objects.none()
+
+    def post(self, request, *args, **kwargs):
+        return self.create(
+            request, player=request.user, *args, **kwargs)
+
+# class BluffViewSet(
+#         viewsets.GenericViewSet, CreateModelMixin, RetrieveModelMixin,
+#         UpdateModelMixin):
+#     # queryset = Bluff.objects.all()
+#     serializer_class = BluffSerializer
+
+#     def get_queryset(self):
+#         if self.request.user:
+#             return Bluff.objects.filter(player=self.request.user)
+#         else:
+#             return Bluff.objects.none()
 
 
 # Quizmaster

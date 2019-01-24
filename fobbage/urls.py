@@ -22,14 +22,14 @@ from rest_framework.routers import DefaultRouter
 
 
 from fobbage.quizes.views import (
-    QuizViewSet, BluffViewSet, AnswerViewSet,
+    QuizViewSet, AnswerViewSet, BluffView,
     QuizDetail, round_view, index, show_answers, scoreboard,
     next_question, prev_question, first_question, show_scores
 )
 
 router = DefaultRouter()
 router.register(r'quizes', QuizViewSet)
-router.register(r'bluffs', BluffViewSet, base_name='bluff')
+# router.register(r'bluffs', BluffViewSet, base_name='bluff')
 router.register(r'answers', AnswerViewSet)
 
 urlpatterns = [
@@ -61,7 +61,7 @@ urlpatterns = [
 
     path('api/', include(router.urls)),
     path('api/', include('fobbage.accounts.api.urls')),
-
     path('api-auth/', include('rest_framework.urls')),
+    path('api/bluffs/', BluffView.as_view(), name='bluff')
 
 ]

@@ -7,7 +7,20 @@ from fobbage.quizes.models import (
 class BluffSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bluff
-        fields = ('id', 'text', 'question', 'player')
+        fields = ('text', 'question')
+
+    # orverrride create to save user
+    def create(self, validated_data):
+
+        validated_data['player'] = self.context['request'].user
+
+        if Bluff.objects.filter(
+            player=validated_data['player'],
+            question=validated_data['question'],
+        ).count() > 0:
+            raise serializers.ValidationError
+
+        return Bluff.objects.create(**validated_data)
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -17,9 +30,17 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
+    answers = serializers.SerializerMethodField()
+
+    def get_answers(self, instance):
+        if instance.status >= Question.GUESS:
+            return AnswerSerializer(
+                instance.answers, many=True).data
+        return None
+
     class Meta:
         model = Question
-        fields = ('id', 'text', 'status')
+        fields = ('id', 'text', 'status', 'answers')
 
 
 class QuizSerializer(serializers.ModelSerializer):
@@ -27,11 +48,11 @@ class QuizSerializer(serializers.ModelSerializer):
     active_question = serializers.SerializerMethodField()
 
     def get_active_question(self, quiz):
-        active_round = quiz.rounds.get(is_active=True)
-        if active_round:
+        # active_round = quiz.rounds.get(is_active=True)
+        if quiz.active_round:
             return QuestionSerializer(
-                active_round.questions.get(
-                    status__in=[Question.BLUFF, Question.GUESS])
+                Question.objects.get(
+                    id=quiz.active_round.active_question)
             ).data
         return None
 
