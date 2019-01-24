@@ -250,22 +250,25 @@ class Guess(models.Model):
 
 
 def score_for_quiz(player, quiz):
-
     score = 0
-    for round in quiz.rounds:
+    for round in quiz.rounds.all():
         score += score_for_round(player, round)
-
     return score
 
 
 def score_for_round(player, round):
     score = 0
-    for question in round.questions:
+    for question in round.questions.all():
         score += score_for_question(player, question)
+    return score
 
 
 def score_for_question(player, question):
     score = 0
+    # only finnished questions have scores
+    if question.status != Question.FINISHED:
+        return 0
+
     player_bluff = question.bluffs.filter(player=player)
     player_guess = Guess.objects.filter(
         player=player)

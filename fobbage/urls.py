@@ -23,7 +23,7 @@ from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
     QuizViewSet, BluffViewSet, AnswerViewSet,
-    QuizDetail, round_view, index, show_answers,
+    QuizDetail, round_view, index, show_answers, scoreboard,
     next_question, prev_question, first_question, show_scores
 )
 
@@ -35,6 +35,7 @@ router.register(r'answers', AnswerViewSet)
 urlpatterns = [
     path('', index, name='index'),
     path('quiz/<int:pk>/', QuizDetail.as_view()),
+    path('quiz/<int:pk>/scoreboard', scoreboard, name='scoreboard'),
     path('round/<int:round>/', round_view, name='round'),
     path('round/<int:pk>/next_question', next_question, name='next_question'),
     path('round/<int:pk>/prev_question', prev_question, name='prev_question'),

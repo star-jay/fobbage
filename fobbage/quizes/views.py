@@ -5,7 +5,7 @@ from django.views.generic import DetailView
 from rest_framework import viewsets, generics
 from rest_framework.mixins import (
     CreateModelMixin, RetrieveModelMixin, UpdateModelMixin)
-from fobbage.quizes.models import Quiz, Round, Question, Answer, Bluff
+from fobbage.quizes.models import Quiz, Round, Question, Answer, Bluff, score_for_quiz
 from fobbage.quizes.api.serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer)
 
@@ -45,9 +45,6 @@ class QuizDetail(DetailView):
     model = Quiz
 
 
-# class RoundDetail(DetailView):
-#     template_name = 'quizes/round.html'
-#     model = Round
 def round_view(request, round):
     round = Round.objects.get(pk=round)
     context = {'round': round}
@@ -98,3 +95,19 @@ def show_scores(request, question):
     else:
         return HttpResponseRedirect(
             reverse('round', args=(question.round.id,)))
+
+
+def scoreboard(request, pk):
+    quiz = Quiz.objects.get(pk=pk)
+    scores = {
+        player: score_for_quiz(player, quiz)
+        for player in quiz.players.all()
+    }
+    ranking = sorted(scores, key=scores.__getitem__)
+    ranked_scores = [(player, scores[player]) for player in ranking]
+    context = {
+        'scores': ranked_scores,
+        # 'ranking': ranking,
+    }
+    return render(
+        request, 'quizes/leaderboard.html', context)
