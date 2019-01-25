@@ -11,7 +11,7 @@
             {% for answer in question.answers.all %}
                 <li>
                     <!-- <a href="/round/{{ round.id }}/"> -->
-                        {{ answer.text }}
+                       {{answer.order}}: {{ answer.text }}
                     <!-- </a> -->
                 </li>
             {% endfor %}
@@ -21,9 +21,9 @@
             <a href="/question/{{ question.id }}/show_answers">
                 <button>Show Answers</button>
             </a>
-            <!-- <a href="/question/{{ question.id }}/show_answers"> -->
+            <a href="/question/{{ question.id }}/hide_answers">
                 <button>Hide Answers</button>
-            <!-- </a> -->
+            </a>
             <a href="/question/{{ question.id }}/show_scores">
                 <button>Show Scores</button>
             </a>

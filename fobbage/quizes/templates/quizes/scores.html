@@ -3,26 +3,35 @@
 {% block content %}
     <h1>{{ answer.text }}</h1>
     <!-- {{ answer.text  }} = {{ answer.question.correct_answer }} -->
-    {% if answer.text == answer.question.correct_answer %}
-    <h2>The correct answer was: <span>{{ answer.text }}</span></h2>
+    {% if answer.is_correct %}
+        <h2>Was the correct answer!</h2>
 
 
-    {% else %}
-    <h2>Was a bluff by:</h2>
-    <div>
-        {% for bluff in answer.bluffs.all %}
-        <span>{{ bluff.player.email }}, </span>
-        {% endfor %}
-    </div>
-    {% url 'next_answer' answer.id as url %}
+    {% endif %}
+    {% if bluffs %}
+        <h2>Was a bluff from: </h2>
+        <div>
+            {% for bluff in bluffs %}
+            <span>{{ bluff.player.email }} +{{bluff.score}} </span>
+            {% endfor %}
+        </div>
+        <br/>
+        <div>
 
+        </div>
+    {% endif %}
+
+    <h2>Players who guessed this answer: </h2>
+    {% for guess in answer.guesses.all %}
+        <span>{{ guess.player.email }}, </span>
+    {% endfor %}
+    <br/>
+    {% url 'show_scores' answer.question.id as url %}
     <a href="{{ url }}"">
         <button>Next Question</button>
     </a>
-    {% endif %}
-
-    <a href="/round/{{ answer.question.round.id }}/next_question">
-        Next Question
+    <a href="/round/{{ answer.question.round.id }}">
+      <button>Back to Round</button>
     </a>
     </form>
 {% endblock %}

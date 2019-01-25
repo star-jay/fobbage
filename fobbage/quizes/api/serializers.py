@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from fobbage.quizes.models import (
-    Quiz, Round, Question, Bluff, Answer
+    Quiz, Round, Question, Bluff, Answer, Guess
 )
 
 
@@ -9,8 +9,13 @@ class BluffSerializer(serializers.ModelSerializer):
         model = Bluff
         fields = ('text', 'question')
 
-    # orverrride create to save user
+    # overrride create to save user
     def create(self, validated_data):
+        # question = self.validated_data['question']
+        # question = Question.objects.filter(id=question)
+
+        # if self.context['request'].user not in question.round.quiz.players:
+        #     raise serializers.ValidationError
 
         validated_data['player'] = self.context['request'].user
 
@@ -19,8 +24,23 @@ class BluffSerializer(serializers.ModelSerializer):
             question=validated_data['question'],
         ).count() > 0:
             raise serializers.ValidationError
-
         return Bluff.objects.create(**validated_data)
+
+
+class GuessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Guess
+        fields = ('answer', )
+
+    # overide create to save user
+    def create(self, validated_data):
+        validated_data['player'] = self.context['request'].user
+        if Guess.objects.filter(
+            player=validated_data['player'],
+            answer=validated_data['answer'],
+        ).count() > 0:
+            raise serializers.ValidationError
+        return Guess.objects.create(**validated_data)
 
 
 class AnswerSerializer(serializers.ModelSerializer):

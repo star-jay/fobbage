@@ -2,12 +2,15 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render
 from django.views.generic import DetailView
+from django.db.models import Count
 from rest_framework import viewsets, generics
 from rest_framework.mixins import (
     CreateModelMixin, RetrieveModelMixin, UpdateModelMixin)
-from fobbage.quizes.models import Quiz, Round, Question, Answer, Bluff, score_for_quiz
+from fobbage.quizes.models import (
+    Quiz, Round, Question, Answer, Bluff,
+    score_for_quiz, score_for_bluff, Guess)
 from fobbage.quizes.api.serializers import (
-    QuizSerializer, BluffSerializer, AnswerSerializer)
+    QuizSerializer, BluffSerializer, AnswerSerializer, GuessSerializer)
 
 
 # API
@@ -34,20 +37,21 @@ class BluffView(generics.CreateAPIView):
         return self.create(
             request, player=request.user, *args, **kwargs)
 
-# class BluffViewSet(
-#         viewsets.GenericViewSet, CreateModelMixin, RetrieveModelMixin,
-#         UpdateModelMixin):
-#     # queryset = Bluff.objects.all()
-#     serializer_class = BluffSerializer
 
-#     def get_queryset(self):
-#         if self.request.user:
-#             return Bluff.objects.filter(player=self.request.user)
-#         else:
-#             return Bluff.objects.none()
+class GuessView(generics.CreateAPIView):
+    serializer_class = GuessSerializer
+
+    def get_queryset(self):
+        if self.request.user:
+            return Guess.objects.filter(player=self.request.user)
+        else:
+            return Guess.objects.none()
+
+    def post(self, request, *args, **kwargs):
+        return self.create(
+            request, player=request.user, *args, **kwargs)
 
 
-# Quizmaster
 def index(request):
     active_quiz_list = Quiz.objects.all()
     context = {
@@ -106,17 +110,59 @@ def show_answers(request, question):
         reverse('round', args=(question.round.id,)))
 
 
+def hide_answers(request, question):
+    question = Question.objects.get(pk=question)
+    question.hide_answers()
+
+    return HttpResponseRedirect(
+        reverse('round', args=(question.round.id,)))
+
+
 def show_scores(request, question):
     question = Question.objects.get(pk=question)
     if question.finish():
-        answer = Answer.objects.filter(
-            question=question).first()
-        context = {'answer': answer}
-        return render(
-            request, 'quizes/scores.html', context)
-    else:
-        return HttpResponseRedirect(
-            reverse('round', args=(question.round.id,)))
+        # show player answers
+        answer = Answer.objects \
+            .filter(
+                question=question,
+                showed=False,
+                is_correct=False) \
+            .annotate(num_guesses=Count('guesses')) \
+            .order_by('num_guesses') \
+            .first()
+        if answer:
+            answer.showed = True
+            answer.save()
+        else:
+            # reset answer to show again
+            Answer.objects.filter(
+                question=question).update(
+                    showed=False)
+            # show correct answer
+            answer = Answer.objects.get(
+                question=question,
+                is_correct=True)
+        if answer:
+            # bluffs en scores
+            if len(answer.bluffs.all()) > 0:
+                bluffs = [
+                    {
+                        'player': bluff.player,
+                        'score': score_for_bluff(bluff.player, bluff)
+                    } for bluff in answer.bluffs.all()
+                ]
+            else:
+                bluffs = None
+            # show the answer
+
+            context = {
+                'answer': answer,
+                'bluffs': bluffs}
+            return render(
+                request, 'quizes/scores.html', context)
+
+    return HttpResponseRedirect(
+        reverse('round', args=(question.round.id,)))
 
 
 def scoreboard(request, pk):

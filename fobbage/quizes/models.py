@@ -160,14 +160,15 @@ class Question(models.Model):
         if not len(self.bluffs.all()) == len(self.round.quiz.players.all()):
             return False
         # Check if not already listed
-        if self.status == Question.GUESS:
+        if self.status >= Question.GUESS:
             return False
 
         for answer in self.answers.all():
             answer.delete()
         Answer.objects.create(
             question=self,
-            text=self.correct_answer
+            text=self.correct_answer,
+            is_correct=True,
         )
         for bluff in self.bluffs.all():
             answer = Answer.objects.create(
@@ -186,6 +187,15 @@ class Question(models.Model):
         self.status = Question.GUESS
         self.save()
         return True
+
+    def hide_answers(self):
+        if self.status < Question.FINISHED:
+            # self.guesses.delete()
+            self.answers.all().delete()
+
+            self.status = Question.BLUFF
+            self.save()
+            return True
 
     def players_without_guess(self):
         return [
@@ -214,6 +224,12 @@ class Answer(models.Model):
     order = models.IntegerField(null=True)
     text = models.CharField(
         max_length=255,
+    )
+    showed = models.BooleanField(
+        default=False,
+    )
+    is_correct = models.BooleanField(
+        default=False
     )
 
     def __str__(self):
@@ -282,8 +298,11 @@ def score_for_question(player, question):
     if question.status != Question.FINISHED:
         return 0
 
-    player_bluff = question.bluffs.filter(player=player)
-    player_guess = Guess.objects.filter(
+    player_bluff = question.bluffs.get(
+        player=player,
+        question=question)
+    player_guess = Guess.objects.get(
+        answer__question=question,
         player=player)
 
     # 0 plunten als jouw bluff = correct antwoord
@@ -302,5 +321,17 @@ def score_for_question(player, question):
 
     score += (aantal_gepakt * question.round.multiplier * 500) / len(
         Bluff.objects.filter(answer=player_bluff.answer))
+
+    return score
+
+
+def score_for_bluff(player, bluff):
+    score = 0
+
+    # score voor anders spelers kiezen jouw bluff
+    aantal_gepakt = len(Guess.objects.filter(answer=bluff.answer))
+
+    score += (aantal_gepakt * bluff.question.round.multiplier * 500) / len(
+        Bluff.objects.filter(answer=bluff.answer))
 
     return score

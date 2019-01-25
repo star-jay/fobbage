@@ -23,8 +23,8 @@ from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
     QuizViewSet, AnswerViewSet, BluffView,
-    QuizDetail, round_view, index, show_answers, scoreboard,
-    next_question, prev_question, first_question, show_scores
+    QuizDetail, round_view, index, show_answers, scoreboard, hide_answers,
+    next_question, prev_question, first_question, show_scores, GuessView
 )
 
 router = DefaultRouter()
@@ -51,6 +51,10 @@ urlpatterns = [
         show_answers,
         name='show_answers'),
     path(
+        'question/<int:question>/hide_answers/',
+        hide_answers,
+        name='hide_answers'),
+    path(
         'question/<int:question>/show_scores/',
         show_scores,
         name='show_scores'),
@@ -62,6 +66,8 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api/', include('fobbage.accounts.api.urls')),
     path('api-auth/', include('rest_framework.urls')),
-    path('api/bluffs/', BluffView.as_view(), name='bluff')
+
+    path('api/bluffs/', BluffView.as_view(), name='bluff'),
+    path('api/guess/', GuessView.as_view(), name='bluff'),
 
 ]
