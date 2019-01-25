@@ -1,23 +1,36 @@
-{% extends "quizes/base.html" %}
+{% extends "bulma/base.html" %}
+{% load bulma_tags %}
+
+
+{% block header %}
+{% endblock header %}
 
 {% block content %}
-    <h1>Leaderboard</h1>
+    <h1 class="title">Leaderboard</h1>
     <ol>
         {% for player in scores %}
             <li>
-                {{ player.0 }}: {{ player.1 }}
+                {{ player.0.first_name }}: {{ player.1 }}
             </li>
         {% endfor %}
     </ol>
 
+
+    </form>
+{% endblock %}
+
+{% block footer %}
+<div class="level">
+  <div class="level-item">
     {% if active_round %}
     {% url 'round' active_round.id as url %}
-    <!-- <a href="{{ url }}""> -->
-    <a href="/round/{{ active_round.id }}">
-        <button>Back to Round</button>
+    <a class="button" href="/round/{{ active_round.id }}">
+        Back to Round
     </a>
     {% else %}
 
     {% endif %}
-    </form>
+  </div>
+</div>
+
 {% endblock %}

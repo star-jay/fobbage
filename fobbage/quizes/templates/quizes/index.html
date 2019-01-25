@@ -1,5 +1,13 @@
+{% extends "bulma/base.html" %}
+{% load bulma_tags %}
 
-<h1>Fobbage</h1>
+
+{% block header %}
+{% endblock header %}
+
+
+{% block content %}
+<h1 class="title">Fobbage</h1>
 {% if active_quiz_list %}
     <ul>
     {% for quiz in active_quiz_list %}
@@ -9,3 +17,9 @@
 {% else %}
     <p>No quizes are active.</p>
 {% endif %}
+
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

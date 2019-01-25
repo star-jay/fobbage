@@ -1,18 +1,23 @@
-{% extends "quizes/base.html" %}
+{% extends "bulma/base.html" %}
+{% load bulma_tags %}
+
+
+{% block header %}
+{% endblock header %}
+
 
 {% block content %}
-    <h1>{{ answer.text }}</h1>
-    <!-- {{ answer.text  }} = {{ answer.question.correct_answer }} -->
+    <h1 class="title">{{ answer.text }}</h1>
     {% if answer.is_correct %}
-        <h2>Was the correct answer!</h2>
+        <h2 class="subtitle">Was the correct answer!</h2>
 
 
     {% endif %}
     {% if bluffs %}
-        <h2>Was a bluff from: </h2>
+        <h2 class="subtitle">Was a bluff from: </h2>
         <div>
             {% for bluff in bluffs %}
-            <span>{{ bluff.player.email }} +{{bluff.score}} </span>
+            <span>{{ bluff.player.first_name }} +{{bluff.score}} </span>
             {% endfor %}
         </div>
         <br/>
@@ -21,17 +26,24 @@
         </div>
     {% endif %}
 
-    <h2>Players who guessed this answer: </h2>
+    <h2 class="subtitle">Players who guessed this answer: </h2>
     {% for guess in answer.guesses.all %}
-        <span>{{ guess.player.email }}, </span>
+        <span>{{ guess.player.first_name }}, </span>
     {% endfor %}
     <br/>
     {% url 'show_scores' answer.question.id as url %}
-    <a href="{{ url }}"">
-        <button>Next Question</button>
+{% endblock %}
+
+{% block footer %}
+<div class="level">
+  <div class="level-item">
+    <a class="button" href="{{ url }}">
+        Next Question
     </a>
-    <a href="/round/{{ answer.question.round.id }}">
-      <button>Back to Round</button>
+    <a class="button" href="/round/{{ answer.question.round.id }}">
+    Back to Round
     </a>
-    </form>
+  </div>
+</div>
+
 {% endblock %}
