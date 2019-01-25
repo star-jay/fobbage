@@ -1,49 +1,56 @@
-{% extends "quizes/base.html" %}
+{% extends "bulma/base.html" %}
+<!-- {% load static bulma_tags %} -->
+
+
+{% block header %}
+{% endblock header %}
 
 {% block content %}
-    <h1>{{ round.title }}</h1>
+    <h1 class="title">{{ round.title }}</h1>
+
     {% if question %}
-        <h2>{{ question.text }} </h2>
+        <h2 class="subtitle">{{ question.text }} </h2>
         {% if question.status == 1 %}
 
         {% elif question.status == 2 %}
         <ul>
             {% for answer in question.answers.all %}
                 <li>
-                    <!-- <a href="/round/{{ round.id }}/"> -->
-                       {{answer.order}}: {{ answer.text }}
-                    <!-- </a> -->
+                  {{answer.order}}: {{ answer.text }}
                 </li>
             {% endfor %}
         </ul>
         {% endif %}
         <div>
-            <a href="/question/{{ question.id }}/show_answers">
-                <button>Show Answers</button>
+            <a class="button" href="/question/{{ question.id }}/show_answers">
+              Show Answers
             </a>
-            <a href="/question/{{ question.id }}/hide_answers">
-                <button>Hide Answers</button>
+            <a class="button" href="/question/{{ question.id }}/hide_answers">
+              Hide Answers
             </a>
-            <a href="/question/{{ question.id }}/show_scores">
-                <button>Show Scores</button>
+            <a class="button" href="/question/{{ question.id }}/show_scores">
+              Show Scores
             </a>
         </div>
     {% endif %}
-
-    <div>
-        <a href="/round/{{ round.id }}/prev_question">
-            <button>Previous Question</button>
-        </a>
-        <a href="/round/{{ round.id }}/next_question">
-            <button>Next Question</button>
-        </a>
-        <a href="/quiz/{{ round.quiz.id }}/">
-            <button>Back to quiz</button>
-        </a>
-        <a href="/quiz/{{ round.quiz.id }}/scoreboard">
-            <button>Scoreboard</button>
-        </a>
-
-    </div>
-
 {% endblock %}
+
+
+{% block footer %}
+        <div class="level">
+    <div class="level-item">
+        <a class="button" href="/round/{{ round.id }}/prev_question">
+          Previous Question
+        </a>
+        <a class="button" href="/round/{{ round.id }}/next_question">
+          Next Question
+        </a>
+        <a class="button" href="/quiz/{{ round.quiz.id }}/">
+          Back to quiz
+        </a>
+        <a class="button" href="/quiz/{{ round.quiz.id }}/scoreboard">
+          Scoreboard
+        </a>
+      </div>
+    </div>
+{% endblock %}q

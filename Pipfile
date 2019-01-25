@@ -16,6 +16,7 @@ django-cors-headers = "*"
 djangorestframework-jwt = "*"
 djangorestframework = "*"
 django-rest-auth = "*"
+django-bulma = "*"
 
 [dev-packages]
 pytest = "*"

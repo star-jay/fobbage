@@ -52,11 +52,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_auth',
     'corsheaders',
+    'bulma',
 
-    # auth
-    # 'allauth',
-    # 'allauth.account',
-    # 'allauth.socialaccount',
     # fobbage
     'fobbage',
     'fobbage.quizes',
