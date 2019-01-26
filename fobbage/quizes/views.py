@@ -78,6 +78,13 @@ def round_view(request, round):
         question = Question.objects.get(pk=round.active_question)
         context['question'] = question
 
+        if question.status == Question.BLUFF:
+            players = question.players_without_bluff()
+        elif question.status == Question.GUESS:
+            players = question.players_without_guess()
+
+        context['players'] = players
+
     return render(
         request, 'quizes/round.html', context)
 

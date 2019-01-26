@@ -21,6 +21,15 @@
             {% endfor %}
         </ul>
         {% endif %}
+
+        {% if players %}
+        <h2 class="subtitle">Players who need to take action:</h2>
+        {% for player in players %}
+
+          <span>{{ player.first_name }}, </span>
+        {% endfor %}
+        {% endif %}
+
         <div>
             <a class="button" href="/question/{{ question.id }}/show_answers">
               Show Answers
@@ -37,6 +46,7 @@
 
 
 {% block footer %}
+
   <div class="level">
     <div class="level-item">
       <a class="button" href="/round/{{ round.id }}/prev_question">

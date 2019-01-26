@@ -212,6 +212,11 @@ class Question(models.Model):
             player for player in self.round.quiz.players.all()
             if len(player.guesses.filter(answer__question=self)) == 0]
 
+    def players_without_bluff(self):
+        return [
+            player for player in self.round.quiz.players.all()
+            if len(player.bluffs.filter(question=self)) == 0]
+
     def finish(self):
         """Finish the question if all playes have guessed"""
         # TODO: Check if all players have guessed
@@ -331,17 +336,24 @@ def score_for_question(player, question):
     if player_guess.answer.text == question.correct_answer:
         score += question.round.multiplier * 1000
 
-    # score voor anders spelers kiezen jouw bluff
-    aantal_gepakt = len(Guess.objects.filter(answer=player_bluff.answer))
-
-    score += (aantal_gepakt * question.round.multiplier * 500) / len(
-        Bluff.objects.filter(answer=player_bluff.answer))
+    score += score_for_bluff(question, player_bluff)
 
     return score
 
 
 def score_for_bluff(player, bluff):
     score = 0
+
+    player_guess = Guess.objects.get(
+        bluff__question=bluff.question,
+        player=player)
+
+    # 0 plunten als jouw bluff = correct antwoord
+    if bluff.answer.is_correct is True:
+        return 0
+    # 0 punten als je op je eigen antwoord stemtgit
+    if player_guess.answer == bluff.answer:
+        return 0
 
     # score voor anders spelers kiezen jouw bluff
     aantal_gepakt = len(Guess.objects.filter(answer=bluff.answer))
