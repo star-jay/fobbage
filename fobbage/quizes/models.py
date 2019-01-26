@@ -345,7 +345,7 @@ def score_for_bluff(player, bluff):
     score = 0
 
     player_guess = Guess.objects.get(
-        bluff__question=bluff.question,
+        answer__question=bluff.question,
         player=player)
 
     # 0 plunten als jouw bluff = correct antwoord
