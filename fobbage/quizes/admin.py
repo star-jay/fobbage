@@ -3,6 +3,14 @@ from django.contrib import admin
 from .models import Quiz, Round, Question, Bluff, Guess
 
 
+def reset(modeladmin, request, queryset):
+    for round in queryset:
+        round.reset()
+
+
+reset.short_description = "reset round"
+
+
 class QuestionInline(admin.TabularInline):
     model = Question
 
@@ -10,6 +18,7 @@ class QuestionInline(admin.TabularInline):
 class RoundAdmin(admin.ModelAdmin):
     model = Question
     inlines = (QuestionInline,)
+    actions = [reset, ]
 
 
 admin.site.register(Round, RoundAdmin)

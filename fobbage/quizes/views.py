@@ -134,7 +134,7 @@ def show_scores(request, question):
             answer.showed = True
             answer.save()
         else:
-            # reset answer to show again
+            # reset answers to show again
             Answer.objects.filter(
                 question=question).update(
                     showed=False)

@@ -70,6 +70,12 @@ class Round(models.Model):
     #     return self.questions.filter(
     #         status__in=[Question.BLUFF, Question.GUESS]).first()
 
+    def reset(self):
+        for question in self.questions.all():
+            question.reset()
+        self.active_question = None
+        self.save()
+
     def first_question(self):
         first = self.questions.filter(
             status=0,
@@ -210,6 +216,11 @@ class Question(models.Model):
             self.save()
             return True
         return False
+
+    def reset(self):
+        self.status = Question.INACTIVE
+        self.bluffs.all().delete()
+        self.save()
 
 
 class Answer(models.Model):
