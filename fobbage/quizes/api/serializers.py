@@ -69,7 +69,7 @@ class QuizSerializer(serializers.ModelSerializer):
 
     def get_active_question(self, quiz):
         # active_round = quiz.rounds.get(is_active=True)
-        if quiz.active_round:
+        if quiz.active_round and quiz.active_round.active_question:
             return QuestionSerializer(
                 Question.objects.get(
                     id=quiz.active_round.active_question)
