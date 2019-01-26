@@ -35,12 +35,18 @@ class GuessSerializer(serializers.ModelSerializer):
     # overide create to save user
     def create(self, validated_data):
         validated_data['player'] = self.context['request'].user
-        if Guess.objects.filter(
-            player=validated_data['player'],
-            answer=validated_data['answer'],
-        ).count() > 0:
-            raise serializers.ValidationError
-        return Guess.objects.create(**validated_data)
+        answer = Answer.objects.filter(
+            id=validated_data['answer'].id
+        ).first()
+        if answer:
+            if Guess.objects.filter(
+                player=validated_data['player'],
+                answer__question=answer.question,
+            ).count() > 0:
+                raise serializers.ValidationError
+            return Guess.objects.create(**validated_data)
+
+        raise serializers.ValidationError
 
 
 class AnswerSerializer(serializers.ModelSerializer):
