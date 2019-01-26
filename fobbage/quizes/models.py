@@ -336,7 +336,7 @@ def score_for_question(player, question):
     if player_guess.answer.text == question.correct_answer:
         score += question.round.multiplier * 1000
 
-    score += score_for_bluff(question, player_bluff)
+    score += score_for_bluff(player, player_bluff)
 
     return score
 
