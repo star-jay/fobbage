@@ -177,10 +177,14 @@ class Question(models.Model):
             is_correct=True,
         )
         for bluff in self.bluffs.all():
-            answer, _ = Answer.objects.get_or_create(
+            answer = Answer.objects.filter(
                 question=self,
-                text=bluff.text
-            )
+                text__iexact=bluff.text).first()
+            if answer is None:
+                answer = Answer.objects.create(
+                    question=self,
+                    text=bluff.text)
+
             bluff.answer = answer
             bluff.save()
         answers = [answer for answer in self.answers.all()]
