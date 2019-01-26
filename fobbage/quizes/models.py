@@ -317,9 +317,9 @@ def score_for_question(player, question):
         player=player)
 
     # 0 plunten als jouw bluff = correct antwoord
-    if player.answer in question.answers.filter(is_correct=True):
+    if player_bluff.answer.is_correct is True:
         return 0
-    # 0 punten als je op je eigen antwoord stemt
+    # 0 punten als je op je eigen antwoord stemtgit
     if player_guess.answer == player_bluff.answer:
         return 0
 
