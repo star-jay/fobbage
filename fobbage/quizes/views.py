@@ -83,7 +83,8 @@ def round_view(request, round):
         elif question.status == Question.GUESS:
             players = question.players_without_guess()
 
-        context['players'] = players
+        if players:
+            context['players'] = players
 
     return render(
         request, 'quizes/round.html', context)
