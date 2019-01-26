@@ -323,12 +323,12 @@ def score_for_question(player, question):
     if question.status != Question.FINISHED:
         return 0
 
-    player_bluff = question.bluffs.get(
+    player_bluff = question.bluffs.filter(
         player=player,
-        question=question)
-    player_guess = Guess.objects.get(
+        question=question).first()
+    player_guess = Guess.objects.filter(
         answer__question=question,
-        player=player)
+        player=player).first()
 
     # 0 plunten als jouw bluff = correct antwoord
     if player_bluff.answer.is_correct is True:
@@ -349,9 +349,9 @@ def score_for_question(player, question):
 def score_for_bluff(player, bluff):
     score = 0
 
-    player_guess = Guess.objects.get(
+    player_guess = Guess.objects.filter(
         answer__question=bluff.question,
-        player=player)
+        player=player).first()
 
     # 0 plunten als jouw bluff = correct antwoord
     if bluff.answer.is_correct is True:
