@@ -139,9 +139,12 @@ def show_scores(request, question):
                 question=question).update(
                     showed=False)
             # show correct answer
-            answer = Answer.objects.get(
-                question=question,
-                is_correct=True)
+            try:
+                answer = Answer.objects.get(
+                    question=question,
+                    is_correct=True)
+            except:
+                answer = None
         if answer:
             # bluffs en scores
             if len(answer.bluffs.all()) > 0:
