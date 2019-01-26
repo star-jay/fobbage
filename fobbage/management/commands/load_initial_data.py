@@ -145,11 +145,11 @@ QUIZ = {
                 {
                     'text': 'Het boek  Arsène Houssaye’s “Des destinées de l’ame” uit de bibliotheek van Harvard veroorzaakte heel wat ophef in 2014, waarom?',
                     'correct_answer': 'Het is gebonden in de huid van een vrouw',
-                }
+                },
                 {
                     'text': 'Iedereen heeft wel eens een fantastisch idee wanneer men zich in een dronken toestand bevindt. De Duitsers hebben voor zulke ideeen zelfs een apart woord. Welk woord?',
                     'correct_answer': 'Schnapsidee',
-                },
+                }
             ]
         }
     ]
@@ -179,11 +179,14 @@ class Command(BaseCommand):
                 quiz=quiz,
                 title=r['title'],
             )
+            i = 0
             for q in r['questions']:
+                i += 1
                 Question.objects.create(
                     round=round,
                     text=q['text'],
                     correct_answer=q['correct_answer'],
+                    order=i,
                 )
 
     def handle(self, *args, **options):
