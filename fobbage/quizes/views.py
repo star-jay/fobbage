@@ -75,17 +75,18 @@ def round_view(request, round):
     round.save()
     context = {'round': round}
     if round.active_question is not None:
-        question = Question.objects.get(pk=round.active_question)
-        context['question'] = question
+        question = Question.objects.filter(pk=round.active_question).first()
+        if question:
+            context['question'] = question
 
-        players = None
-        if question.status == Question.BLUFF:
-            players = question.players_without_bluff()
-        elif question.status == Question.GUESS:
-            players = question.players_without_guess()
+            players = None
+            if question.status == Question.BLUFF:
+                players = question.players_without_bluff()
+            elif question.status == Question.GUESS:
+                players = question.players_without_guess()
 
-        if players:
-            context['players'] = players
+            if players:
+                context['players'] = players
 
     return render(
         request, 'quizes/round.html', context)
