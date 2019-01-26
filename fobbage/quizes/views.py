@@ -78,6 +78,7 @@ def round_view(request, round):
         question = Question.objects.get(pk=round.active_question)
         context['question'] = question
 
+        players = None
         if question.status == Question.BLUFF:
             players = question.players_without_bluff()
         elif question.status == Question.GUESS:
