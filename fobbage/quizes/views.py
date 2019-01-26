@@ -175,7 +175,7 @@ def scoreboard(request, pk):
         player: score_for_quiz(player, quiz)
         for player in quiz.players.all()
     }
-    ranking = sorted(scores, key=scores.__getitem__)
+    ranking = sorted(scores, key=scores.__getitem__, reverse=True)
     ranked_scores = [(player, scores[player]) for player in ranking]
     context = {
         'scores': ranked_scores,

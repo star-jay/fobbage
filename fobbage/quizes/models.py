@@ -177,7 +177,7 @@ class Question(models.Model):
             is_correct=True,
         )
         for bluff in self.bluffs.all():
-            answer = Answer.objects.create(
+            answer = Answer.objects.get_or_create(
                 question=self,
                 text=bluff.text
             )
