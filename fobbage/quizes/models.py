@@ -155,6 +155,11 @@ class Question(models.Model):
         default=0
     )
     order = models.IntegerField()
+    url = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
 
     def __str__(self):
         """ string representation """

@@ -10,6 +10,9 @@
 
     {% if question %}
         <h2 class="subtitle">{{ question.text }} </h2>
+        {% if question.url %}
+        <img src="{{ question.url }}"/>
+        {% endif %}
         {% if question.status == 1 %}
 
         {% elif question.status == 2 %}
@@ -21,7 +24,9 @@
             {% endfor %}
         </ul>
         {% endif %}
-
+        <br/>
+        <br/>
+        <br/>
         {% if players %}
         <h2 class="subtitle">Players who need to take action:</h2>
         {% for player in players %}
@@ -29,6 +34,8 @@
           <span>{{ player.first_name }}, </span>
         {% endfor %}
         {% endif %}
+        <br/>
+        <br/>
 
         <div>
             <a class="button" href="/question/{{ question.id }}/show_answers">
