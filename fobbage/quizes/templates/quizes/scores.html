@@ -44,7 +44,7 @@
     Back to Round
     </a>
     {% if answer.is_correct %}
-        <a class="button" href="/quiz/{{ round.quiz.id }}/scoreboard">
+        <a class="button" href="/quiz/{{ answer.question.round.quiz.id }}/scoreboard">
         Scoreboard
         </a>
     {% endif %}
