@@ -259,7 +259,7 @@ class Answer(models.Model):
 
     def __str__(self):
         """ string representation """
-        return "{}: {}".format(self.question.text, self.order)
+        return "{}: Answer {}".format(self.question.text, self.order)
 
 
 class Bluff(models.Model):

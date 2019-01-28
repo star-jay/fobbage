@@ -35,6 +35,7 @@ class QuestionFactory(factory.django.DjangoModelFactory):
     text = factory.Sequence(lambda n: "question {}".format(n))
     correct_answer = factory.Sequence(lambda n: "answer {}".format(n))
     round = factory.SubFactory(RoundFactory)
+    order = factory.Sequence(lambda n: n)
 
 
 class AnswerFactory(factory.django.DjangoModelFactory):

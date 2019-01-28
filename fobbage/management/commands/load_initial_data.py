@@ -14,6 +14,9 @@ User = get_user_model()
 #     }
 # ]
 
+
+# flake8: noqa
+
 QUIZ = {
     'title': 'Momos SuperDuperQuizz',
     'rounds': [

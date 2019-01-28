@@ -4,8 +4,6 @@ from django.shortcuts import render
 from django.views.generic import DetailView
 from django.db.models import Count
 from rest_framework import viewsets, generics
-from rest_framework.mixins import (
-    CreateModelMixin, RetrieveModelMixin, UpdateModelMixin)
 from fobbage.quizes.models import (
     Quiz, Round, Question, Answer, Bluff,
     score_for_quiz, score_for_bluff, Guess)
@@ -149,12 +147,10 @@ def show_scores(request, question):
                 question=question).update(
                     showed=False)
             # show correct answer
-            try:
-                answer = Answer.objects.get(
-                    question=question,
-                    is_correct=True)
-            except:
-                answer = None
+            answer = Answer.objects.filter(
+                question=question,
+                is_correct=True).get()
+
         if answer:
             # bluffs en scores
             if len(answer.bluffs.all()) > 0:
