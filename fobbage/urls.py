@@ -23,6 +23,9 @@ from fobbage.quizes.views import (
     QuizDetail, round_view, index, show_answers, scoreboard, hide_answers,
     next_question, prev_question, first_question, show_scores, GuessView
 )
+from fobbage.accounts.api.views import CreateUserView
+from fobbage.accounts.views import signup
+
 
 router = DefaultRouter()
 router.register(r'quizes', QuizViewSet)
@@ -58,7 +61,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('accounts/', include('django.contrib.auth.urls')),
-    # url(r'^accounts/', include('allauth.urls')),
+    path('accounts/register', CreateUserView.as_view(), name="create-user"),
+    path('signup/', signup, name='signup'),
 
     path('api/', include(router.urls)),
     path('api/', include('fobbage.accounts.api.urls')),
