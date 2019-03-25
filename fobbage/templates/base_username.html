@@ -1,0 +1,8 @@
+{% block header %}
+    {% if user.is_authenticated %}
+        <p>{{ user.username }} </p>
+        <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+
+    {% endif %}
+{% endblock header %}

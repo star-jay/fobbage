@@ -35,12 +35,18 @@ ALLOWED_HOSTS = [
     'fobbage.herokuapp.com',
     'localhost',
     '127.0.0.1',
+    '192.168.0.141',
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    # fobbage
+    'fobbage',
+    'fobbage.quizes',
+    'fobbage.accounts',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,11 +59,6 @@ INSTALLED_APPS = [
     'rest_auth',
     'corsheaders',
     'bulma',
-
-    # fobbage
-    'fobbage',
-    'fobbage.quizes',
-    'fobbage.accounts',
 ]
 
 MIDDLEWARE = [
@@ -89,6 +90,8 @@ TEMPLATES = [
         },
     },
 ]
+
+LOGOUT_REDIRECT_URL = 'index'
 
 WSGI_APPLICATION = 'fobbage.wsgi.application'
 

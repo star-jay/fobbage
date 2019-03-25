@@ -15,7 +15,11 @@ class Quiz(models.Model):
     )
     players = models.ManyToManyField(
         User,
-        related_name='quizes',
+        related_name='quizes_playing',
+    )
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
     )
 
     @property

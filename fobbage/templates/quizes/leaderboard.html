@@ -1,11 +1,11 @@
-{% extends "bulma/base.html" %}
+{% extends "base.html" %}
 {% load bulma_tags %}
 
 
 {% block header %}
 {% endblock header %}
 
-{% block content %}
+{% block quiz %}
     <h1 class="title">Leaderboard</h1>
     <ol>
         {% for player in scores %}
@@ -19,7 +19,7 @@
     </form>
 {% endblock %}
 
-{% block footer %}
+{% block quiz_footer %}
 <div class="level">
   <div class="level-item">
     {% if active_round %}
