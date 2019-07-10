@@ -14,13 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.contrib import auth as auth_views
-from django.urls import path, include, re_path
+# from django.contrib import auth as auth_views
+from django.urls import path, include
+from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
-    round_view, index, play, show_answers, scoreboard, hide_answers,
-    next_question, prev_question, first_question, show_scores
+    round_view, index, play, chat, room, show_answers, scoreboard,
+    hide_answers, next_question, prev_question, first_question, show_scores
 )
 from fobbage.quizes.api.views import (
     QuizViewSet, AnswerViewSet, BluffView,
@@ -39,6 +40,9 @@ urlpatterns = [
     path('', index, name='index'),
     path('host/', QuizList.as_view()),
     path('play/', play, name='play'),
+    path('chat/', chat, name='chat'),
+    url(r'^chat/(?P<room_name>[^/]+)/$', room, name='room'),
+
     path('quiz/<int:pk>/', QuizDetail.as_view()),
     path('quiz/<int:pk>/scoreboard', scoreboard, name='scoreboard'),
     path('round/<int:round>/', round_view, name='round'),

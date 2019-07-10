@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'fobbage',
     'fobbage.quizes',
     'fobbage.accounts',
+    'channels',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -189,3 +190,13 @@ REST_FRAMEWORK = {
         'django.contrib.auth.backends.ModelBackend',
     ),
 }
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
+ASGI_APPLICATION = 'fobbage.routing.application'

@@ -1,6 +1,8 @@
+import json
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render
+from django.utils.safestring import mark_safe
 from django.db.models import Count
 from fobbage.quizes.models import (
     Quiz, Round, Question, Answer,
@@ -9,6 +11,16 @@ from fobbage.quizes.models import (
 
 def index(request):
     return render(request, 'quizes/index.html')
+
+
+def chat(request):
+    return render(request, 'chat/chat.html', {})
+
+
+def room(request, room_name):
+    return render(request, 'chat/room.html', {
+        'room_name_json': mark_safe(json.dumps(room_name))
+    })
 
 
 def play(request):
