@@ -17,6 +17,8 @@ djangorestframework-jwt = "*"
 djangorestframework = "*"
 django-rest-auth = "*"
 django-bulma = "*"
+channels = "*"
+channels-redis = "*"
 
 [dev-packages]
 pytest = "*"

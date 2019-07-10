@@ -1,68 +1,30 @@
+import json
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render
-from django.views.generic import DetailView
+from django.utils.safestring import mark_safe
 from django.db.models import Count
-from rest_framework import viewsets, generics
-from rest_framework.mixins import (
-    CreateModelMixin, RetrieveModelMixin, UpdateModelMixin)
 from fobbage.quizes.models import (
-    Quiz, Round, Question, Answer, Bluff,
-    score_for_quiz, score_for_bluff, Guess)
-from fobbage.quizes.api.serializers import (
-    QuizSerializer, BluffSerializer, AnswerSerializer, GuessSerializer)
-
-
-# API
-class QuizViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Quiz.objects.all()
-    serializer_class = QuizSerializer
-
-
-class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Answer.objects.all()
-    serializer_class = AnswerSerializer
-
-
-class BluffView(generics.CreateAPIView):
-    serializer_class = BluffSerializer
-
-    def get_queryset(self):
-        if self.request.user:
-            return Bluff.objects.filter(player=self.request.user)
-        else:
-            return Bluff.objects.none()
-
-    def post(self, request, *args, **kwargs):
-        return self.create(
-            request, player=request.user, *args, **kwargs)
-
-
-class GuessView(generics.CreateAPIView):
-    serializer_class = GuessSerializer
-
-    def get_queryset(self):
-        if self.request.user:
-            return Guess.objects.filter(player=self.request.user)
-        else:
-            return Guess.objects.none()
-
-    def post(self, request, *args, **kwargs):
-        return self.create(
-            request, player=request.user, *args, **kwargs)
+    Quiz, Round, Question, Answer,
+    score_for_quiz, score_for_bluff)
 
 
 def index(request):
-    active_quiz_list = Quiz.objects.all()
-    context = {
-        'active_quiz_list': active_quiz_list
-        }
-    return render(request, 'quizes/index.html', context)
+    return render(request, 'quizes/index.html')
 
 
-class QuizDetail(DetailView):
-    template_name = 'quizes/quiz.html'
-    model = Quiz
+def chat(request):
+    return render(request, 'chat/chat.html', {})
+
+
+def room(request, room_name):
+    return render(request, 'chat/room.html', {
+        'room_name_json': mark_safe(json.dumps(room_name))
+    })
+
+
+def play(request):
+    return render(request, 'quizes/play.html')
 
 
 def round_view(request, round):
@@ -149,12 +111,10 @@ def show_scores(request, question):
                 question=question).update(
                     showed=False)
             # show correct answer
-            try:
-                answer = Answer.objects.get(
-                    question=question,
-                    is_correct=True)
-            except:
-                answer = None
+            answer = Answer.objects.filter(
+                question=question,
+                is_correct=True).get()
+
         if answer:
             # bluffs en scores
             if len(answer.bluffs.all()) > 0:

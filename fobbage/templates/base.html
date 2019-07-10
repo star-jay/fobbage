@@ -1,0 +1,25 @@
+{% extends "bulma/base.html" %}
+{% load bulma_tags %}
+
+{% block header %}
+{% include "base_username.html" %}
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        {% block quiz %}
+        {% endblock %}
+    {% else %}
+        {% include "base_login.html" %}
+    {% endif %}
+{% endblock content%}
+
+{% block footer %}
+    {% if user.is_authenticated %}
+        {% block quiz_footer %}
+        {% endblock %}
+    {% endif %}
+{% endblock %}
+
+{% csrf_token %}
+

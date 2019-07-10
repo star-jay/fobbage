@@ -1,12 +1,7 @@
-{% extends "bulma/base.html" %}
+{% extends "base.html" %}
 {% load bulma_tags %}
 
-
-{% block header %}
-{% endblock header %}
-
-
-{% block content %}
+{% block quiz %}
     <h1 class="title">{{ answer.text }}</h1>
     {% if answer.is_correct %}
         <h2 class="subtitle">Was the correct answer!</h2>
@@ -34,7 +29,7 @@
     {% url 'show_scores' answer.question.id as url %}
 {% endblock %}
 
-{% block footer %}
+{% block quiz_footer %}
 <div class="level">
   <div class="level-item">
     <a class="button" href="{{ url }}">

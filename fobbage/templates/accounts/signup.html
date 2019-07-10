@@ -1,0 +1,18 @@
+{% extends "bulma/base.html" %}
+{% load i18n bulma_tags %}
+
+{% block header %}
+{% endblock header %}
+{% block content %}
+  <h1 class="title">Sign up</h1>
+
+  <form class="signup" method="post">
+    {% csrf_token %}
+    {{ form|bulma }}
+    <button class="button is-primary" type="submit">Sign up</button>
+  </form>
+
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

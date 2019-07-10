@@ -15,7 +15,11 @@ class Quiz(models.Model):
     )
     players = models.ManyToManyField(
         User,
-        related_name='quizes',
+        related_name='quizes_playing',
+    )
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
     )
 
     @property
@@ -259,7 +263,7 @@ class Answer(models.Model):
 
     def __str__(self):
         """ string representation """
-        return "{}: {}".format(self.question.text, self.order)
+        return "{}: Answer {}".format(self.question.text, self.order)
 
 
 class Bluff(models.Model):

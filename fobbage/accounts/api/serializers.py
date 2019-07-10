@@ -5,6 +5,26 @@ from rest_framework import serializers
 UserModel = get_user_model()
 
 
+class UserSerializer(serializers.ModelSerializer):
+
+    password = serializers.CharField(write_only=True)
+
+    def create(self, validated_data):
+
+        user = UserModel.objects.create(
+            **validated_data
+        )
+        user.set_password(validated_data['password'])
+        user.save()
+
+        return user
+
+    class Meta:
+        model = UserModel
+        # Tuple of serialized model fields (see link [2])
+        fields = ("id", "email", "first_name", "last_name", "password", )
+
+
 class UserDetailsSerializer(serializers.ModelSerializer):
     """
     User model w/o password

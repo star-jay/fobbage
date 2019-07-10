@@ -14,6 +14,9 @@ User = get_user_model()
 #     }
 # ]
 
+
+# flake8: noqa
+
 QUIZ = {
     'title': 'Momos SuperDuperQuizz',
     'rounds': [
@@ -161,11 +164,11 @@ class Command(BaseCommand):
 
     def create_superuser_from_env(self):
         """creates a super user if info is in .env file"""
-        if env.str('DEFAULT_ADMIN_EMAIL', None) and env.str(
+        if env.str('DEFAULT_ADMIN_USERNAME', None) and env.str(
            'DEFAULT_ADMIN_PASSWORD', None):
             self.stdout.write('Create superuser...')
             User.objects.create_superuser(
-                email=env.str('DEFAULT_ADMIN_EMAIL'),
+                username=env.str('DEFAULT_ADMIN_USERNAME'),
                 password=env.str('DEFAULT_ADMIN_PASSWORD'),
             )
         else:
@@ -191,6 +194,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write('Creating superuser from env-file')
-
+        self.create_superuser_from_env()
         self.stdout.write('Create first quiz')
         self.create_quiz()

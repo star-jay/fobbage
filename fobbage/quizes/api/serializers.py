@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from fobbage.quizes.models import (
-    Quiz, Round, Question, Bluff, Answer, Guess
+    Quiz, Question, Bluff, Answer, Guess
 )
 
 
