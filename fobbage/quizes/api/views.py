@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render
-from django.views.generic import DetailView
+from django.views.generic import DetailView, ListView
 from django.db.models import Count
 from rest_framework import viewsets, generics
 from fobbage.quizes.models import (
@@ -51,5 +51,22 @@ class GuessView(generics.CreateAPIView):
 
 
 class QuizDetail(DetailView):
-    template_name = 'quizes/quiz.html'
+    template_name = 'quizes/quiz_detail.html'
     model = Quiz
+
+    def get_queryset(self):
+        if self.request.user:
+            return Quiz.objects.filter(created_by=self.request.user)
+        else:
+            return Quiz.objects.none()
+
+
+class QuizList(ListView):
+    template_name = 'quizes/quiz_list.html'
+    model = Quiz
+
+    def get_queryset(self):
+        if self.request.user:
+            return Quiz.objects.filter(created_by=self.request.user)
+        else:
+            return Quiz.objects.none()

@@ -1,14 +1,8 @@
 {% extends "base.html" %}
 
 {% block quiz %}
-<h1 class="title">Fobbage</h1>
-    {% if active_quiz_list %}
-        <ul>
-        {% for quiz in active_quiz_list %}
-            <li><a href="/quiz/{{ quiz.id }}/">{{ quiz.title }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>No quizes are active.</p>
-    {% endif %}
+<ul>
+    <li><a href="/play/">Join a quiz</a></li>
+    <li><a href="/host/">Host a quiz</a></li>
+</ul>
 {% endblock %}

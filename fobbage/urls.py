@@ -19,12 +19,12 @@ from django.urls import path, include, re_path
 from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
-    round_view, index, show_answers, scoreboard, hide_answers,
+    round_view, index, play, show_answers, scoreboard, hide_answers,
     next_question, prev_question, first_question, show_scores
 )
 from fobbage.quizes.api.views import (
     QuizViewSet, AnswerViewSet, BluffView,
-    QuizDetail, GuessView
+    QuizDetail, QuizList, GuessView
 )
 # from fobbage.accounts.api.views import CreateUserView
 from fobbage.accounts.views import signup
@@ -37,6 +37,8 @@ router.register(r'answers', AnswerViewSet)
 
 urlpatterns = [
     path('', index, name='index'),
+    path('host/', QuizList.as_view()),
+    path('play/', play, name='play'),
     path('quiz/<int:pk>/', QuizDetail.as_view()),
     path('quiz/<int:pk>/scoreboard', scoreboard, name='scoreboard'),
     path('round/<int:round>/', round_view, name='round'),

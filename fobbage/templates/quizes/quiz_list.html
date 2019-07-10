@@ -1,10 +1,10 @@
-{% extends "quizes/base.html" %}
+{% extends "base.html" %}
 
 {% block quiz %}
-<h1 class="title">Fobbage</h1>
-    {% if active_quiz_list %}
+<h1 class="title">Host a quiz</h1>
+    {% if object_list %}
         <ul>
-        {% for quiz in active_quiz_list %}
+        {% for quiz in object_list %}
             <li><a href="/quiz/{{ quiz.id }}/">{{ quiz.title }}</a></li>
         {% endfor %}
         </ul>
