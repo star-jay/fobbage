@@ -17,7 +17,6 @@ import datetime
 env = environ.Env()
 environ.Env.read_env()
 
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -191,11 +190,15 @@ REST_FRAMEWORK = {
     ),
 }
 
+# if you have a redis url(heroku) connect to that, else use a local redis
+# $ sudo docker run -p 6379:6379 -d redis:2.8
+REDIS_URL = os.environ.get("REDIS_URL", ('localhost', 6379))
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("localhost", 6379)],
+            "hosts": [REDIS_URL, ],
         },
     },
 }
