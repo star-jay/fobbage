@@ -1,2 +1,2 @@
 release: python manage.py migrate
-web: daphne fobbage.wsgi:application
+web: daphne fobbage.asgi:application -b 0.0.0.0
