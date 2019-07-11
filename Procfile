@@ -1,2 +1,2 @@
 release: python manage.py migrate
-web: gunicorn fobbage.wsgi:application --log-file -
+web: daphne fobbage.wsgi:application
