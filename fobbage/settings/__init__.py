@@ -36,8 +36,22 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '192.168.0.141',
     '0.0.0.0',
+    "localhost:8080",
+    "127.0.0.1:8080",
 ]
 
+MY_HOSTS = env.list('HOSTNAMES', default=[])
+for host in MY_HOSTS:
+    ALLOWED_HOSTS.append(host)
+
+CORS_ORIGIN_WHITELIST = [
+    'http://'+host
+    for host in ALLOWED_HOSTS
+]
+CORS_ORIGIN_WHITELIST += [
+    'https://'+host
+    for host in ALLOWED_HOSTS
+]
 
 # Application definition
 
