@@ -79,10 +79,6 @@ class QuizSerializer(serializers.ModelSerializer):
 
     def get_websocket(self, instance):
         request = self.context.get('request', None)
-        if request.scheme == 'http':
-            scheme = 'ws'
-        else:
-            scheme = 'wss'
 
         location = django_reverse(
             'room',
@@ -95,7 +91,6 @@ class QuizSerializer(serializers.ModelSerializer):
         # )
 
         return '{}/ws{}'.format(
-            scheme,
             request.get_host(),
             location,
         )
