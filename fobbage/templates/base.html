@@ -6,12 +6,14 @@
 {% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
+    {% block quiz %}
+    {% endblock %}
+    {% comment %} {% if user.is_authenticated %}
         {% block quiz %}
         {% endblock %}
     {% else %}
         {% include "base_login.html" %}
-    {% endif %}
+    {% endif %} {% endcomment %}
 {% endblock content%}
 
 {% block footer %}
