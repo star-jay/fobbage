@@ -94,7 +94,7 @@ class QuizSerializer(serializers.ModelSerializer):
         #     request=request,
         # )
 
-        return '{}://{}/ws{}'.format(
+        return '{}/ws{}'.format(
             scheme,
             request.get_host(),
             location,
