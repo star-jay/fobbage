@@ -66,7 +66,7 @@ class QuestionAdmin(ModelAdmin):
 @register(Round)
 class RoundAdmin(ModelAdmin):
     model = Round
-    inlines = (Round,)
+    inlines = (QuestionInline,)
     actions = [reset, ]
 
 
