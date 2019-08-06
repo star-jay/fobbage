@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.urls import reverse as django_reverse
-from rest_framework.reverse import reverse
+# from rest_framework.reverse import reverse
 
 from fobbage.quizes.models import (
     Quiz, Question, Bluff, Answer, Guess
@@ -59,13 +59,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    answers = serializers.SerializerMethodField()
-
-    def get_answers(self, instance):
-        if instance.status >= Question.GUESS:
-            return AnswerSerializer(
-                instance.answers, many=True).data
-        return None
+    answers = AnswerSerializer(many=True)
 
     class Meta:
         model = Question
@@ -73,42 +67,20 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class QuizSerializer(serializers.ModelSerializer):
-
-    active_question = serializers.SerializerMethodField()
     websocket = serializers.SerializerMethodField()
 
     def get_websocket(self, instance):
         request = self.context.get('request', None)
 
-        location = django_reverse(
-            'room',
-            args=(instance.id, ),
-        )
-        # location = django_reverse(
-        #      'room',
-        #     args=(instance.id, ),
-        #     request=request,
-        # )
-
-        return '{}/ws{}'.format(
+        return '{}/ws/quiz/{}/'.format(
             request.get_host(),
-            location,
+            instance.id,
         )
-
-    def get_active_question(self, quiz):
-        # active_round = quiz.rounds.get(is_active=True)
-        if quiz.active_round and quiz.active_round.active_question:
-            return QuestionSerializer(
-                Question.objects.get(
-                    id=quiz.active_round.active_question)
-            ).data
-        return None
 
     class Meta:
         model = Quiz
         fields = (
             'id',
             'title',
-            'active_question',
             'websocket',
         )

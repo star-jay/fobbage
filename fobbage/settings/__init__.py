@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     '0.0.0.0',
     "localhost:8080",
     "127.0.0.1:8080",
+    "10.127.67.77",
 ]
 
 MY_HOSTS = env.list('HOSTNAMES', default=[])
@@ -204,6 +205,8 @@ REST_FRAMEWORK = {
     ),
 }
 
+ASGI_APPLICATION = 'fobbage.routing.application'
+
 # if you have a redis url(heroku) connect to that, else use a local redis
 # $ sudo docker run -p 6379:6379 -d redis:2.8
 REDIS_URL = os.environ.get("REDIS_URL", ('localhost', 6379))
@@ -216,4 +219,18 @@ CHANNEL_LAYERS = {
         },
     },
 }
-ASGI_APPLICATION = 'fobbage.routing.application'
+
+# # RABBITMQ
+# AMQP_URL = os.environ.get('AMQP_URL', default=None)
+# EXCHANGE = os.environ.get('EXCHANGE', default="fobbage-groups")
+
+# CHANNEL_LAYERS = {
+#     "default": {
+#         "BACKEND": "channels_rabbitmq.core.RabbitmqChannelLayer",
+#         "CONFIG": {
+#             "host": AMQP_URL,
+#             "groups_exchange": EXCHANGE,
+#             # "ssl_context": ... (optional)
+#         },
+#     },
+# }

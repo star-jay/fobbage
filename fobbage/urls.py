@@ -20,28 +20,32 @@ from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
-    round_view, index, play, chat, room, show_answers, scoreboard,
-    hide_answers, next_question, prev_question, first_question, show_scores
-)
-from fobbage.quizes.api.views import (
-    QuizViewSet, AnswerViewSet, BluffView,
-    QuizDetail, QuizList, GuessView
+    round_view, index, play, chat, room, show_answers, scoreboard, new_quiz,
+    hide_answers, next_question, prev_question, first_question, show_scores,
+    QuizDetail, QuizList, BluffView, GuessView,
+    # API
+    AnswerViewSet, QuizViewSet, ActiveQuestionViewSet
 )
 # from fobbage.accounts.api.views import CreateUserView
 from fobbage.accounts.views import signup
 
 
 router = DefaultRouter()
-router.register(r'quizes', QuizViewSet)
+router.register(r'quizes', QuizViewSet, base_name='quiz')
+
 # router.register(r'bluffs', BluffViewSet, base_name='bluff')
-router.register(r'answers', AnswerViewSet)
+router.register(r'answers', AnswerViewSet, base_name='answer')
+router.register(
+    r'active_questions', ActiveQuestionViewSet, base_name='active_question')
+
 
 urlpatterns = [
+
     path('', index, name='index'),
+    path('new_quiz/', new_quiz, name='new_quiz'),
     path('host/', QuizList.as_view()),
     path('play/', play, name='play'),
     path('chat/', chat, name='chat'),
-    url(r'^chat/(?P<room_name>[^/]+)/$', room, name='room'),
 
     path('quiz/<int:pk>/', QuizDetail.as_view()),
     path('quiz/<int:pk>/scoreboard', scoreboard, name='scoreboard'),

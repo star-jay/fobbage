@@ -3,10 +3,49 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render
 from django.utils.safestring import mark_safe
+from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from django.views.generic import DetailView, ListView
+
+from rest_framework import viewsets, generics
+from rest_framework.response import Response
+
+from .serializers import (
+    QuizSerializer, BluffSerializer, AnswerSerializer,
+    GuessSerializer, QuestionSerializer)
+from .services import (
+    generate_answers, score_for_quiz, score_for_bluff, )
 from fobbage.quizes.models import (
-    Quiz, Round, Question, Answer,
-    score_for_quiz, score_for_bluff)
+    Quiz, Round, Question, Answer, Bluff, Guess, )
+
+from .forms import NewQuizForm
+
+
+def new_quiz(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = NewQuizForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            quiz = Quiz.objects.create(
+                title=form.cleaned_data['title'],
+                created_by=request.user)
+
+            Round.objects.create(
+                title='Round 1',
+                quiz=quiz,
+            )
+            # redirect to a new URL:
+            return HttpResponseRedirect('/chat/{}/'.format(quiz.id))
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = NewQuizForm()
+
+    return render(request, 'quizes/new.html', {'form': form})
 
 
 def index(request):
@@ -29,26 +68,19 @@ def play(request):
 
 def round_view(request, round):
     round = Round.objects.get(pk=round)
-    active_round = round.quiz.active_round
-    if active_round:
-        active_round.is_active = False
-        active_round.save()
-    round.is_active = True
-    round.save()
     context = {'round': round}
-    if round.active_question is not None:
-        question = Question.objects.filter(pk=round.active_question).first()
-        if question:
-            context['question'] = question
+    if round.quiz.active_question.round == round:
+        question = round.quiz.active_question
+        context['question'] = question
 
-            players = None
-            if question.status == Question.BLUFF:
-                players = question.players_without_bluff()
-            elif question.status == Question.GUESS:
-                players = question.players_without_guess()
+        players = None
+        if question.status == Question.BLUFF:
+            players = question.players_without_bluff()
+        elif question.status == Question.GUESS:
+            players = question.players_without_guess()
 
-            if players:
-                context['players'] = players
+        if players:
+            context['players'] = players
 
     return render(
         request, 'quizes/round.html', context)
@@ -76,7 +108,7 @@ def first_question(self, pk):
 
 def show_answers(request, question):
     question = Question.objects.get(pk=question)
-    question.list_answers()
+    generate_answers(question.id)
 
     return HttpResponseRedirect(
         reverse('round', args=(question.round.id,)))
@@ -140,7 +172,7 @@ def show_scores(request, question):
 
 def scoreboard(request, pk):
     quiz = Quiz.objects.get(pk=pk)
-    active_round = quiz.active_round
+    active_question = quiz.active_question
     scores = {
         player: score_for_quiz(player, quiz)
         for player in quiz.players.all()
@@ -149,8 +181,83 @@ def scoreboard(request, pk):
     ranked_scores = [(player, scores[player]) for player in ranking]
     context = {
         'scores': ranked_scores,
-        'active_round': active_round,
+        'active_question': active_question,
         # 'ranking': ranking,
     }
     return render(
         request, 'quizes/leaderboard.html', context)
+
+
+class QuizDetail(DetailView):
+    template_name = 'quizes/quiz_detail.html'
+    model = Quiz
+
+    def get_queryset(self):
+        if self.request.user:
+            return Quiz.objects.filter(created_by=self.request.user)
+        else:
+            return Quiz.objects.none()
+
+
+class QuizList(ListView):
+    template_name = 'quizes/quiz_list.html'
+    model = Quiz
+
+    def get_queryset(self):
+        if self.request.user:
+            return Quiz.objects.filter(created_by=self.request.user)
+        else:
+            return Quiz.objects.none()
+
+
+# API
+class QuizViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Quiz.objects.all()
+    serializer_class = QuizSerializer
+
+
+class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Answer.objects.all()
+    serializer_class = AnswerSerializer
+
+
+class ActiveQuestionViewSet(viewsets.ModelViewSet):
+    serializer_class = QuestionSerializer
+
+    def get_queryset(self):
+        return Question.objects.filter(
+            id__in=Quiz.objects.values_list('active_question', flat=True))
+
+    def retrieve(self, request, pk=None):
+        question = get_object_or_404(Quiz, id=pk).active_question
+        Quiz.objects.get(id=pk).active_question
+        serializer = QuestionSerializer(question)
+        return Response(serializer.data)
+
+
+class BluffView(generics.CreateAPIView):
+    serializer_class = BluffSerializer
+
+    def get_queryset(self):
+        if self.request.user:
+            return Bluff.objects.filter(player=self.request.user)
+        else:
+            return Bluff.objects.none()
+
+    def post(self, request, *args, **kwargs):
+        return self.create(
+            request, player=request.user, *args, **kwargs)
+
+
+class GuessView(generics.CreateAPIView):
+    serializer_class = GuessSerializer
+
+    def get_queryset(self):
+        if self.request.user:
+            return Guess.objects.filter(player=self.request.user)
+        else:
+            return Guess.objects.none()
+
+    def post(self, request, *args, **kwargs):
+        return self.create(
+            request, player=request.user, *args, **kwargs)
