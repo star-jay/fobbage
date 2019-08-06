@@ -28,9 +28,15 @@
 
         chatSocket.onmessage = function(e) {
             var data = JSON.parse(e.data);
-            var message = data['message'];
-            var username = data['user'];
-            document.querySelector('#chat-log').value += (username+': '+message + '\n');
+            if ('message' in data) {
+                var message = data['message'];
+                var username = data['user'];
+                document.querySelector('#chat-log').value += (username+': '+message + '\n');
+            } else {
+                var answer = data['answer'];
+                var username = data['user'];
+                document.querySelector('#chat-log').value += ('new answer from: '+username + '\n');
+            }
         };
 
         chatSocket.onclose = function(e) {

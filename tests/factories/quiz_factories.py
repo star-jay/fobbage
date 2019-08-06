@@ -13,6 +13,7 @@ class QuizFactory(factory.django.DjangoModelFactory):
 
     # add a value for the required fields
     title = "factory quiz"
+    created_by = factory.SubFactory(UserFactory)
 
 
 class RoundFactory(factory.django.DjangoModelFactory):

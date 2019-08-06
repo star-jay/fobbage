@@ -53,30 +53,3 @@ def test_bluff_string_representation():
     )
 
     assert bluff.__str__() == 'otto: test'
-
-
-@pytest.mark.django_db
-def test_question_list_answers():
-    """Make a clear string representation for the bluff"""
-    bluff = BluffFactory(question__status=1)
-    bluff.question.round.quiz.players.set(
-        [bluff.player])
-
-    bluff.question.list_answers()
-
-    assert len(bluff.question.answers.all()) == 2
-
-
-@pytest.mark.django_db
-def test_answers_group_unique():
-    """Make a clear string representation for the bluff"""
-    question = QuestionFactory(status=1)
-    bluff = BluffFactory(question=question)
-    bluff2 = BluffFactory(question=question, text=bluff.text)
-
-    question.round.quiz.players.set(
-        [bluff.player, bluff2.player])
-
-    bluff.question.list_answers()
-
-    assert len(bluff.question.answers.all()) == 2
