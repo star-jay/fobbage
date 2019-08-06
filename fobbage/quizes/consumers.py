@@ -64,7 +64,7 @@ class ChatConsumer(WebsocketConsumer):
         elif 'answer' in text_data_json:
             answer = Bluff.objects.create(
                 player=self.user,
-                question=self.quiz.active_round.active_question,
+                question=self.quiz.active_question,
                 text=text_data_json['answer']
             )
 

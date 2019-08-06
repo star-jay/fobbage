@@ -69,19 +69,18 @@ def play(request):
 def round_view(request, round):
     round = Round.objects.get(pk=round)
     context = {'round': round}
-    if round.active_question is not None:
-        question = Question.objects.filter(pk=round.active_question).first()
-        if question:
-            context['question'] = question
+    if round.quiz.active_question.round == round:
+        question = round.quiz.active_question
+        context['question'] = question
 
-            players = None
-            if question.status == Question.BLUFF:
-                players = question.players_without_bluff()
-            elif question.status == Question.GUESS:
-                players = question.players_without_guess()
+        players = None
+        if question.status == Question.BLUFF:
+            players = question.players_without_bluff()
+        elif question.status == Question.GUESS:
+            players = question.players_without_guess()
 
-            if players:
-                context['players'] = players
+        if players:
+            context['players'] = players
 
     return render(
         request, 'quizes/round.html', context)
@@ -173,7 +172,7 @@ def show_scores(request, question):
 
 def scoreboard(request, pk):
     quiz = Quiz.objects.get(pk=pk)
-    active_round = quiz.active_round
+    active_question = quiz.active_question
     scores = {
         player: score_for_quiz(player, quiz)
         for player in quiz.players.all()
@@ -182,7 +181,7 @@ def scoreboard(request, pk):
     ranked_scores = [(player, scores[player]) for player in ranking]
     context = {
         'scores': ranked_scores,
-        'active_round': active_round,
+        'active_question': active_question,
         # 'ranking': ranking,
     }
     return render(

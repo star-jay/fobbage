@@ -60,12 +60,10 @@ class Round(models.Model):
             return "Round: {}".format(self.title)
 
     def reset(self):
-
         for question in self.questions.all():
             question.reset()
-        self.active_question = None
         self.save()
-
+        # message
         round_reset(self.quiz.id)
 
     def first_question(self):
@@ -79,8 +77,9 @@ class Round(models.Model):
         return False
 
     def next_question(self):
-        if self.active_question:
-            active = self.questions.get(id=self.active_question)
+        # current active question in this round?
+        if self.quiz.active_question.round == self:
+            active = self.quiz.active_question
             if active is not self.questions.last():
                 next = self.questions.filter(
                     order__gte=active.order,
@@ -91,15 +90,13 @@ class Round(models.Model):
             next = self.questions.first()
 
         if next:
-            self.active_question = next.id
+            self.quiz.active_question = next
+            self.quiz.save()
             self.save()
-            if next.status == Question.INACTIVE:
-                next.status = Question.BLUFF
-                next.save()
 
     def prev_question(self):
-        if self.active_question:
-            active = self.questions.get(id=self.active_question)
+        if self.quiz.active_question.round == self:
+            active = self.quiz.active_question
             if active is not self.questions.last():
                 prev = self.questions.filter(
                     order__lt=active.order,
@@ -110,11 +107,9 @@ class Round(models.Model):
             prev = self.questions.first()
 
         if prev:
-            self.active_question = prev.id
+            self.quiz.active_question = prev
+            self.quiz.save()
             self.save()
-            if prev.status == Question.INACTIVE:
-                prev.status = Question.BLUFF
-                prev.save()
 
 
 class Question(models.Model):
