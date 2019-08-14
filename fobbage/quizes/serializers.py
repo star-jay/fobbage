@@ -10,23 +10,29 @@ from fobbage.quizes.models import (
 class BluffSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bluff
-        fields = ('text', 'question')
+        fields = ('id', 'text', 'question', 'player')
+        extra_kwargs = {
+            'text': {'write_only': True},
+            'player': {'read_only': True},
+        }
 
     # overrride create to save user
     def create(self, validated_data):
-        # question = self.validated_data['question']
-        # question = Question.objects.filter(id=question)
+        question = self.validated_data['question']
+        user = self.context['request'].user
 
-        # if self.context['request'].user not in question.round.quiz.players:
-        #     raise serializers.ValidationError
+        if user not in question.round.quiz.players.all():
+            raise serializers.ValidationError(
+                'player is not playing this quiz')
 
-        validated_data['player'] = self.context['request'].user
+        validated_data['player'] = user
 
         if Bluff.objects.filter(
             player=validated_data['player'],
             question=validated_data['question'],
         ).count() > 0:
-            raise serializers.ValidationError
+            raise serializers.ValidationError(
+                'player already bluffed for this question')
         return Bluff.objects.create(**validated_data)
 
 

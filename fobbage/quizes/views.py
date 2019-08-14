@@ -236,7 +236,7 @@ class ActiveQuestionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class BluffView(generics.CreateAPIView):
+class BluffViewSet(viewsets.ModelViewSet):
     serializer_class = BluffSerializer
 
     def get_queryset(self):
@@ -250,7 +250,7 @@ class BluffView(generics.CreateAPIView):
             request, player=request.user, *args, **kwargs)
 
 
-class GuessView(generics.CreateAPIView):
+class GuessViewSet(viewsets.ModelViewSet):
     serializer_class = GuessSerializer
 
     def get_queryset(self):
