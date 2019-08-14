@@ -69,7 +69,8 @@ def play(request):
 def round_view(request, round):
     round = Round.objects.get(pk=round)
     context = {'round': round}
-    if round.quiz.active_question.round == round:
+
+    if round.quiz.active_question and round.quiz.active_question.round == round:
         question = round.quiz.active_question
         context['question'] = question
 
