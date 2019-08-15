@@ -250,9 +250,17 @@ class Guess(models.Model):
     )
 
 
-@receiver(post_save, sender=Quiz, dispatch_uid='task_updated')
-def task_updated(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Quiz)
+def quiz_update_signal(sender, instance, created, **kwargs):
     if created:
         quiz_updated(instance.id)
     else:
         quiz_updated(instance.id)
+
+
+@receiver(post_save, sender=Question)
+def question_updated_signal(sender, instance, created, **kwargs):
+    if created:
+        quiz_updated(instance.round.quiz.id)
+    else:
+        quiz_updated(instance.round.quiz.id)

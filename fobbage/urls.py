@@ -16,24 +16,25 @@ Including another URLconf
 from django.contrib import admin
 # from django.contrib import auth as auth_views
 from django.urls import path, include
-from django.conf.urls import url
+# from django.conf.urls import url
 from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
-    round_view, index, play, chat, room, show_answers, scoreboard, new_quiz,
+    round_view, index, play, show_answers, scoreboard, new_quiz,
     hide_answers, next_question, prev_question, first_question, show_scores,
-    QuizDetail, QuizList, BluffView, GuessView,
+    QuizDetail, QuizList,
     # API
-    AnswerViewSet, QuizViewSet, ActiveQuestionViewSet
+    AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet,
+    GuessViewSet,
 )
-# from fobbage.accounts.api.views import CreateUserView
+from fobbage.accounts.api.views import CreateUserView
 from fobbage.accounts.views import signup
 
 
 router = DefaultRouter()
 router.register(r'quizes', QuizViewSet, base_name='quiz')
-
-# router.register(r'bluffs', BluffViewSet, base_name='bluff')
+router.register(r'bluffs', BluffViewSet, base_name='bluff')
+router.register(r'guesses', GuessViewSet, base_name='guess')
 router.register(r'answers', AnswerViewSet, base_name='answer')
 router.register(
     r'active_questions', ActiveQuestionViewSet, base_name='active_question')
@@ -45,7 +46,6 @@ urlpatterns = [
     path('new_quiz/', new_quiz, name='new_quiz'),
     path('host/', QuizList.as_view()),
     path('play/', play, name='play'),
-    path('chat/', chat, name='chat'),
 
     path('quiz/<int:pk>/', QuizDetail.as_view()),
     path('quiz/<int:pk>/scoreboard', scoreboard, name='scoreboard'),
@@ -74,12 +74,10 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
 
     path('admin/', admin.site.urls),
-    # path('accounts/register', CreateUserView.as_view(), name="create-user"),
     path('signup/', signup, name='signup'),
     # path('login/', auth_views.login, name='login'),
     path('api/', include(router.urls)),
+    path('api/register', CreateUserView.as_view(), name="create-user"),
     path('api/', include('fobbage.accounts.api.urls')),
     path('api-auth/', include('rest_framework.urls')),
-    path('api/bluffs/', BluffView.as_view(), name='bluff'),
-    path('api/guess/', GuessView.as_view(), name='bluff'),
 ]

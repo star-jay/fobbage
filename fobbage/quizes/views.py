@@ -69,7 +69,8 @@ def play(request):
 def round_view(request, round):
     round = Round.objects.get(pk=round)
     context = {'round': round}
-    if round.quiz.active_question.round == round:
+
+    if round.quiz.active_question and round.quiz.active_question.round == round:
         question = round.quiz.active_question
         context['question'] = question
 
@@ -231,11 +232,11 @@ class ActiveQuestionViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         question = get_object_or_404(Quiz, id=pk).active_question
         Quiz.objects.get(id=pk).active_question
-        serializer = QuestionSerializer(question)
+        serializer = QuestionSerializer(question, context={'request': request})
         return Response(serializer.data)
 
 
-class BluffView(generics.CreateAPIView):
+class BluffViewSet(viewsets.ModelViewSet):
     serializer_class = BluffSerializer
 
     def get_queryset(self):
@@ -249,7 +250,7 @@ class BluffView(generics.CreateAPIView):
             request, player=request.user, *args, **kwargs)
 
 
-class GuessView(generics.CreateAPIView):
+class GuessViewSet(viewsets.ModelViewSet):
     serializer_class = GuessSerializer
 
     def get_queryset(self):

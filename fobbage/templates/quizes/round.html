@@ -31,7 +31,8 @@
         <h2 class="subtitle">Players who need to take action:</h2>
         {% for player in players %}
 
-          <span>{{ player.first_name }}, </span>
+          {% comment %} <span>{{ firstof player.first_name or player.username }}, </span> {% endcomment %}
+          <span>{% firstof player.first_name player.username %}, </span>
         {% endfor %}
         {% endif %}
         <br/>
