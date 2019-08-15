@@ -232,7 +232,7 @@ class ActiveQuestionViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, pk=None):
         question = get_object_or_404(Quiz, id=pk).active_question
         Quiz.objects.get(id=pk).active_question
-        serializer = QuestionSerializer(question)
+        serializer = QuestionSerializer(question, context={'request': request})
         return Response(serializer.data)
 
 

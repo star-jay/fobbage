@@ -52,7 +52,8 @@ class GuessSerializer(serializers.ModelSerializer):
                 player=validated_data['player'],
                 answer__question=answer.question,
             ).count() > 0:
-                raise serializers.ValidationError
+                raise serializers.ValidationError(
+                    'you already made a guess for this question')
             return Guess.objects.create(**validated_data)
 
         raise serializers.ValidationError
@@ -66,10 +67,23 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True)
+    have_bluffed = serializers.SerializerMethodField()
+    have_guessed = serializers.SerializerMethodField()
+
+    def get_have_bluffed(self, instance):
+        player = self.context['request'].user
+        return Bluff.objects.filter(
+            player=player, question=instance.id).count() > 0
+
+    def get_have_guessed(self, instance):
+        player = self.context['request'].user
+        return Guess.objects.filter(
+            player=player, answer__question=instance.id).count() > 0
 
     class Meta:
         model = Question
-        fields = ('id', 'text', 'status', 'answers')
+        fields = (
+            'id', 'text', 'status', 'answers', 'have_bluffed', 'have_guessed')
 
 
 class QuizSerializer(serializers.ModelSerializer):
