@@ -24,9 +24,10 @@ from fobbage.quizes.views import (
     hide_answers, next_question, prev_question, first_question, show_scores,
     QuizDetail, QuizList,
     # API
-    AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet, GuessViewSet,
+    AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet,
+    GuessViewSet,
 )
-# from fobbage.accounts.api.views import CreateUserView
+from fobbage.accounts.api.views import CreateUserView
 from fobbage.accounts.views import signup
 
 
@@ -73,10 +74,10 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
 
     path('admin/', admin.site.urls),
-    # path('accounts/register', CreateUserView.as_view(), name="create-user"),
     path('signup/', signup, name='signup'),
     # path('login/', auth_views.login, name='login'),
     path('api/', include(router.urls)),
+    path('api/register', CreateUserView.as_view(), name="create-user"),
     path('api/', include('fobbage.accounts.api.urls')),
     path('api-auth/', include('rest_framework.urls')),
 ]
