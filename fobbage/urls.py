@@ -20,7 +20,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
-    round_view, index, play, show_answers, scoreboard, new_quiz,
+    quiz_view, index, play, show_answers, scoreboard, new_quiz,
     hide_answers, next_question, prev_question, first_question, show_scores,
     QuizDetail, QuizList,
     # API
@@ -47,11 +47,11 @@ urlpatterns = [
     path('host/', QuizList.as_view()),
     path('play/', play, name='play'),
 
-    path('quiz/<int:pk>/', QuizDetail.as_view()),
+    path('quiz/<int:quiz_id>/', quiz_view),
     path('quiz/<int:pk>/scoreboard', scoreboard, name='scoreboard'),
-    path('round/<int:round>/', round_view, name='round'),
-    path('round/<int:pk>/next_question', next_question, name='next_question'),
-    path('round/<int:pk>/prev_question', prev_question, name='prev_question'),
+    # path('round/<int:round>/', round_view, name='round'),
+    path('quiz/<int:pk>/next_question', next_question, name='next_question'),
+    path('quiz/<int:pk>/prev_question', prev_question, name='prev_question'),
 
     path(
         'round/<int:pk>/first_question',

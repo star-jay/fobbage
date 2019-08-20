@@ -52,10 +52,6 @@ def index(request):
     return render(request, 'quizes/index.html')
 
 
-def chat(request):
-    return render(request, 'chat/chat.html', {})
-
-
 def room(request, room_name):
     return render(request, 'chat/room.html', {
         'room_name_json': mark_safe(json.dumps(room_name))
@@ -66,12 +62,16 @@ def play(request):
     return render(request, 'quizes/play.html')
 
 
-def round_view(request, round):
-    round = Round.objects.get(pk=round)
-    context = {'round': round}
+def quiz_view(request, quiz_id):
+    quiz = Quiz.objects.get(pk=quiz_id)
+    context = {
+        'quiz': quiz,
+    }
 
-    if round.quiz.active_question and round.quiz.active_question.round == round:
-        question = round.quiz.active_question
+    question = quiz.active_question
+
+    if quiz.active_question is not None:
+        round = quiz.active_question.round
         context['question'] = question
 
         players = None
@@ -82,9 +82,15 @@ def round_view(request, round):
 
         if players:
             context['players'] = players
+        else:
+            context['players'] = quiz.players
+    else:
+        round = quiz.rounds.first()
+
+    context['round'] = round
 
     return render(
-        request, 'quizes/round.html', context)
+        request, 'quizes/quiz.html', context)
 
 
 def next_question(self, pk):
