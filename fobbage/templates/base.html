@@ -6,8 +6,12 @@
 {% endblock %}
 
 {% block content %}
-    {% block quiz %}
-    {% endblock %}
+    {% if user.is_authenticated %}
+        {% block quiz %}
+        {% endblock %}
+    {% else %}
+
+    {% endif %}
     {% comment %} {% if user.is_authenticated %}
         {% block quiz %}
         {% endblock %}

@@ -47,11 +47,15 @@ urlpatterns = [
     path('host/', QuizList.as_view()),
     path('play/', play, name='play'),
 
-    path('quiz/<int:quiz_id>/', quiz_view),
-    path('quiz/<int:pk>/scoreboard', scoreboard, name='scoreboard'),
+    path('quiz/<int:quiz_id>/', quiz_view, name='quiz'),
+    path('quiz/<int:quiz_id>/scoreboard', scoreboard, name='scoreboard'),
     # path('round/<int:round>/', round_view, name='round'),
-    path('quiz/<int:pk>/next_question', next_question, name='next_question'),
-    path('quiz/<int:pk>/prev_question', prev_question, name='prev_question'),
+    path(
+        'quiz/<int:quiz_id>/next_question', next_question,
+        name='next_question'),
+    path(
+        'quiz/<int:quiz_id>/prev_question', prev_question,
+        name='prev_question'),
 
     path(
         'round/<int:pk>/first_question',

@@ -83,7 +83,7 @@ def quiz_view(request, quiz_id):
         if players:
             context['players'] = players
         else:
-            context['players'] = quiz.players
+            context['players'] = quiz.players.all()
     else:
         round = quiz.rounds.first()
 
@@ -93,24 +93,24 @@ def quiz_view(request, quiz_id):
         request, 'quizes/quiz.html', context)
 
 
-def next_question(self, pk):
-    round = Round.objects.get(id=pk)
-    round.next_question()
-    return HttpResponseRedirect(reverse('round', args=(round.id,)))
+def next_question(self, quiz_id):
+    quiz = Quiz.objects.get(id=quiz_id)
+    quiz.next_question()
+    return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
 
 
-def prev_question(self, pk):
-    round = Round.objects.get(id=pk)
-    round.prev_question()
-    return HttpResponseRedirect(reverse('round', args=(round.id,)))
+def prev_question(self, quiz_id):
+    quiz = Quiz.objects.get(id=quiz_id)
+    quiz.prev_question()
+    return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
 
 
-def first_question(self, pk):
-    round = Round.objects.get(id=pk)
-    if round.first_question():
-        return HttpResponseRedirect(reverse('round', args=(round.id,)))
+def first_question(self, quiz_id):
+    quiz = Quiz.objects.get(id=quiz_id)
+    if quiz.first_question():
+        return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
 
-    return HttpResponseRedirect(reverse('round', args=(round.id,)))
+    return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
 
 
 def show_answers(request, question):
@@ -177,8 +177,8 @@ def show_scores(request, question):
         reverse('round', args=(question.round.id,)))
 
 
-def scoreboard(request, pk):
-    quiz = Quiz.objects.get(pk=pk)
+def scoreboard(request, quiz_id):
+    quiz = Quiz.objects.get(pk=quiz_id)
     active_question = quiz.active_question
     scores = {
         player: score_for_quiz(player, quiz)
@@ -189,7 +189,7 @@ def scoreboard(request, pk):
     context = {
         'scores': ranked_scores,
         'active_question': active_question,
-        # 'ranking': ranking,
+        'quiz': quiz,
     }
     return render(
         request, 'quizes/leaderboard.html', context)
