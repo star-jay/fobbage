@@ -85,6 +85,16 @@ class Round(models.Model):
     multiplier = models.FloatField(
         default=1,
     )
+    BLUFFING, GUESSING = range(2)
+    MODI = [
+        (BLUFFING, 'Bluffing'),
+        (GUESSING, 'Guessing'),
+    ]
+
+    modus = models.IntegerField(
+        choices=MODI,
+        default=BLUFFING,
+    )
 
     def __str__(self):
         """ string representation """

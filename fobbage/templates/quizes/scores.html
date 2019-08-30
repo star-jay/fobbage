@@ -35,9 +35,14 @@
     <a class="button" href="{{ url }}">
         Next Question
     </a>
-    <a class="button" href="/round/{{ answer.question.round.id }}">
-    Back to Round
-    </a>
+    {% if quiz %}
+        {% url 'quiz' quiz.id as url %}
+        <a class="button" href="/quiz/{{ quiz.id }}">
+            Back to Quiz
+        </a>
+    {% else %}
+
+    {% endif %}
     {% if answer.is_correct %}
         <a class="button" href="/quiz/{{ answer.question.round.quiz.id }}/scoreboard">
         Scoreboard

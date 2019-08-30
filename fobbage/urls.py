@@ -68,6 +68,10 @@ urlpatterns = [
         show_answers,
         name='show_answers'),
     path(
+        'question/<int:question>/collect_answers/',
+        show_answers,
+        name='show_answers'),
+    path(
         'question/<int:question>/hide_answers/',
         hide_answers,
         name='hide_answers'),

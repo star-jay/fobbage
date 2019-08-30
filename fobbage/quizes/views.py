@@ -113,12 +113,20 @@ def first_question(self, quiz_id):
     return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
 
 
+def collect_answers(request, question):
+    question = Question.objects.get(pk=question)
+    generate_answers(question.id)
+
+    return HttpResponseRedirect(
+        reverse('quiz', args=(question.round.quiz.id,)))
+
+
 def show_answers(request, question):
     question = Question.objects.get(pk=question)
     generate_answers(question.id)
 
     return HttpResponseRedirect(
-        reverse('round', args=(question.round.id,)))
+        reverse('quiz', args=(question.round.quiz.id,)))
 
 
 def hide_answers(request, question):
@@ -174,7 +182,7 @@ def show_scores(request, question):
                 request, 'quizes/scores.html', context)
 
     return HttpResponseRedirect(
-        reverse('round', args=(question.round.id,)))
+        reverse('quiz', args=(question.round.quiz.id,)))
 
 
 def scoreboard(request, quiz_id):
