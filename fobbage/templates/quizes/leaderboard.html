@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% load bulma_tags %}
 
-
 {% block header %}
 {% endblock header %}
 
@@ -14,19 +13,17 @@
             </li>
         {% endfor %}
     </ol>
-
-
     </form>
 {% endblock %}
 
 {% block quiz_footer %}
 <div class="level">
   <div class="level-item">
-    {% if active_question %}
-    {% url 'round' active_question.round.id as url %}
-    <a class="button" href="/round/{{ active_question.round.id }}">
-        Back to Round
-    </a>
+    {% if quiz %}
+        {% url 'quiz' quiz.id as url %}
+        <a class="button" href="/quiz/{{ quiz.id }}">
+            Back to Quiz
+        </a>
     {% else %}
 
     {% endif %}

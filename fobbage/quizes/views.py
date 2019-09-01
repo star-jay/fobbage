@@ -52,10 +52,6 @@ def index(request):
     return render(request, 'quizes/index.html')
 
 
-def chat(request):
-    return render(request, 'chat/chat.html', {})
-
-
 def room(request, room_name):
     return render(request, 'chat/room.html', {
         'room_name_json': mark_safe(json.dumps(room_name))
@@ -66,12 +62,16 @@ def play(request):
     return render(request, 'quizes/play.html')
 
 
-def round_view(request, round):
-    round = Round.objects.get(pk=round)
-    context = {'round': round}
+def quiz_view(request, quiz_id):
+    quiz = Quiz.objects.get(pk=quiz_id)
+    context = {
+        'quiz': quiz,
+    }
 
-    if round.quiz.active_question and round.quiz.active_question.round == round:
-        question = round.quiz.active_question
+    question = quiz.active_question
+
+    if quiz.active_question is not None:
+        round = quiz.active_question.round
         context['question'] = question
 
         players = None
@@ -82,37 +82,43 @@ def round_view(request, round):
 
         if players:
             context['players'] = players
+        else:
+            context['players'] = quiz.players.all()
+    else:
+        round = quiz.rounds.first()
+
+    context['round'] = round
 
     return render(
-        request, 'quizes/round.html', context)
+        request, 'quizes/quiz.html', context)
 
 
-def next_question(self, pk):
-    round = Round.objects.get(id=pk)
-    round.next_question()
-    return HttpResponseRedirect(reverse('round', args=(round.id,)))
+def next_question(self, quiz_id):
+    quiz = Quiz.objects.get(id=quiz_id)
+    quiz.next_question()
+    return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
 
 
-def prev_question(self, pk):
-    round = Round.objects.get(id=pk)
-    round.prev_question()
-    return HttpResponseRedirect(reverse('round', args=(round.id,)))
+def prev_question(self, quiz_id):
+    quiz = Quiz.objects.get(id=quiz_id)
+    quiz.prev_question()
+    return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
 
 
-def first_question(self, pk):
-    round = Round.objects.get(id=pk)
+def first_question(self, round):
+    round = Round.objects.get(id=round)
     if round.first_question():
-        return HttpResponseRedirect(reverse('round', args=(round.id,)))
+        return HttpResponseRedirect(reverse('quiz', args=(round.quiz.id,)))
 
-    return HttpResponseRedirect(reverse('round', args=(round.id,)))
+    return HttpResponseRedirect(reverse('quiz', args=(round.quiz.id,)))
 
 
-def show_answers(request, question):
+def collect_answers(request, question):
     question = Question.objects.get(pk=question)
     generate_answers(question.id)
 
     return HttpResponseRedirect(
-        reverse('round', args=(question.round.id,)))
+        reverse('quiz', args=(question.round.quiz.id,)))
 
 
 def hide_answers(request, question):
@@ -121,6 +127,28 @@ def hide_answers(request, question):
 
     return HttpResponseRedirect(
         reverse('round', args=(question.round.id,)))
+
+
+def start_guessing(request, round):
+    round = Round.objects.get(pk=round)
+    round.modus = Round.GUESSING
+    round.save()
+
+    round.active_question = round.questions.first()
+
+    return HttpResponseRedirect(
+        reverse('quiz', args=(round.quiz.id,)))
+
+
+def start_bluffing(request, round):
+    round = Round.objects.get(pk=round)
+    round.modus = Round.BLUFFING
+    round.save()
+
+    round.active_question = round.questions.first()
+
+    return HttpResponseRedirect(
+        reverse('quiz', args=(round.quiz.id,)))
 
 
 def show_scores(request, question):
@@ -168,11 +196,11 @@ def show_scores(request, question):
                 request, 'quizes/scores.html', context)
 
     return HttpResponseRedirect(
-        reverse('round', args=(question.round.id,)))
+        reverse('quiz', args=(question.round.quiz.id,)))
 
 
-def scoreboard(request, pk):
-    quiz = Quiz.objects.get(pk=pk)
+def scoreboard(request, quiz_id):
+    quiz = Quiz.objects.get(pk=quiz_id)
     active_question = quiz.active_question
     scores = {
         player: score_for_quiz(player, quiz)
@@ -183,7 +211,7 @@ def scoreboard(request, pk):
     context = {
         'scores': ranked_scores,
         'active_question': active_question,
-        # 'ranking': ranking,
+        'quiz': quiz,
     }
     return render(
         request, 'quizes/leaderboard.html', context)

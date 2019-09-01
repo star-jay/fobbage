@@ -20,9 +20,9 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
-    round_view, index, play, show_answers, scoreboard, new_quiz,
+    quiz_view, index, play, scoreboard, new_quiz, collect_answers,
     hide_answers, next_question, prev_question, first_question, show_scores,
-    QuizDetail, QuizList,
+    QuizList, start_guessing, start_bluffing,
     # API
     AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet,
     GuessViewSet,
@@ -47,26 +47,42 @@ urlpatterns = [
     path('host/', QuizList.as_view()),
     path('play/', play, name='play'),
 
-    path('quiz/<int:pk>/', QuizDetail.as_view()),
-    path('quiz/<int:pk>/scoreboard', scoreboard, name='scoreboard'),
-    path('round/<int:round>/', round_view, name='round'),
-    path('round/<int:pk>/next_question', next_question, name='next_question'),
-    path('round/<int:pk>/prev_question', prev_question, name='prev_question'),
+    path('quiz/<int:quiz_id>/', quiz_view, name='quiz'),
+    path('quiz/<int:quiz_id>/scoreboard', scoreboard, name='scoreboard'),
+    # path('round/<int:round>/', round_view, name='round'),
+    path(
+        'quiz/<int:quiz_id>/next_question', next_question,
+        name='next_question'),
+    path(
+        'quiz/<int:quiz_id>/prev_question', prev_question,
+        name='prev_question'),
 
     path(
-        'round/<int:pk>/first_question',
+        'round/<int:round>/first_question',
         first_question,
         name='first_question'),
     # path('question/<int:pk>/', QuestionDetail.as_view()),
 
     path(
-        'question/<int:question>/show_answers/',
-        show_answers,
-        name='show_answers'),
+        'round/<int:round>/start_guessing/',
+        start_guessing,
+        name='start_guessing'),
+    path(
+        'round/<int:round>/start_bluffing/',
+        start_bluffing,
+        name='start_bluffing'),
+    # path(
+    #     'question/<int:question>/collect_answers/',
+    #     show_answers,
+    #     name='show_answers'),
     path(
         'question/<int:question>/hide_answers/',
         hide_answers,
         name='hide_answers'),
+    path(
+        'question/<int:question>/collect_answers/',
+        collect_answers,
+        name='collect_answers'),
     path(
         'question/<int:question>/show_scores/',
         show_scores,

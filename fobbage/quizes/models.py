@@ -38,10 +38,42 @@ class Quiz(models.Model):
         else:
             return "Quiz: unnamed quiz"
 
+    def next_question(self):
+        active = self.active_question
+
+        if active:
+            round = active.round
+            if active is not round.questions.last():
+                self.active_question = round.questions.filter(
+                        order__gte=active.order,
+                    ).exclude(
+                        id=active.id,
+                    ).first()
+        else:
+            round = self.rounds.first()
+            self.active_question = round.questions.first()
+        self.save()
+
+    def prev_question(self):
+        active = self.active_question
+
+        if active:
+            round = active.round
+            if active is not round.questions.last():
+                self.active_question = round.questions.filter(
+                        order__lte=active.order,
+                    ).exclude(
+                        id=active.id,
+                    ).last()
+        else:
+            round = self.rounds.first()
+            self.active_question = round.questions.last()
+        self.save()
+
 
 class Round(models.Model):
     class Meta:
-        ordering = ['multiplier']
+        ordering = ['multiplier', 'id']
     quiz = models.ForeignKey(
         Quiz,
         related_name='rounds',
@@ -52,6 +84,16 @@ class Round(models.Model):
     )
     multiplier = models.FloatField(
         default=1,
+    )
+    BLUFFING, GUESSING = range(2)
+    MODI = [
+        (BLUFFING, 'Bluffing'),
+        (GUESSING, 'Guessing'),
+    ]
+
+    modus = models.IntegerField(
+        choices=MODI,
+        default=BLUFFING,
     )
 
     def __str__(self):
@@ -67,49 +109,10 @@ class Round(models.Model):
         round_reset(self.quiz.id)
 
     def first_question(self):
-        first = self.questions.filter(
-            status=0,
-        ).first()
-        if first:
-            first.status = Question.BLUFF
-            first.save()
-            return True
+        question = self.questions.first()
+        self.quiz.active_question = question
+        self.quiz.save()
         return False
-
-    def next_question(self):
-        # current active question in this round?
-        if self.quiz.active_question.round == self:
-            active = self.quiz.active_question
-            if active is not self.questions.last():
-                next = self.questions.filter(
-                    order__gte=active.order,
-                ).exclude(
-                    id=active.id,
-                ).first()
-        else:
-            next = self.questions.first()
-
-        if next:
-            self.quiz.active_question = next
-            self.quiz.save()
-            self.save()
-
-    def prev_question(self):
-        if self.quiz.active_question.round == self:
-            active = self.quiz.active_question
-            if active is not self.questions.last():
-                prev = self.questions.filter(
-                    order__lt=active.order,
-                ).exclude(
-                    id=active.id,
-                ).last()
-        else:
-            prev = self.questions.first()
-
-        if prev:
-            self.quiz.active_question = prev
-            self.quiz.save()
-            self.save()
 
 
 class Question(models.Model):
