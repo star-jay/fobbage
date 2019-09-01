@@ -9,7 +9,7 @@
     <ol>
         {% for player in scores %}
             <li>
-                {{ player.0.first_name }}: {{ player.1 }}
+                {% firstof player.0.first_name player.0.username %}: {{ player.1 }}
             </li>
         {% endfor %}
     </ol>
