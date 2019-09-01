@@ -60,29 +60,24 @@ class GuessSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
-    text = serializers.SerializerMethodField()
-
-    def get_text(self, instance):
-        return self.order()
-
     class Meta:
         model = Answer
         fields = ('id', 'text', 'question', 'order')
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    answers = serializers.SerializerMethodField()
+    answers = AnswerSerializer(many=True)
 
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
     text = serializers.SerializerMethodField()
+    round_modus = serializers.SerializerMethodField()
+
+    def get_round_modus(self, instance):
+        return instance.round.modus
 
     def get_text(self, instance):
         return instance.text[:15] + '...'
-
-    def get_answers(self, instance):
-        if instance.round.modus == Round.GUESSING:
-            return AnswerSerializer(data=instance.answers, many=True)
 
     def get_have_bluffed(self, instance):
         player = self.context['request'].user
@@ -97,7 +92,8 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         fields = (
-            'id', 'text', 'status', 'answers', 'have_bluffed', 'have_guessed')
+            'id', 'text', 'status', 'answers', 'have_bluffed', 'have_guessed',
+            'round_modus')
 
 
 class QuizSerializer(serializers.ModelSerializer):
