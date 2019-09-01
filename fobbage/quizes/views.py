@@ -105,23 +105,15 @@ def prev_question(self, quiz_id):
     return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
 
 
-def first_question(self, quiz_id):
-    quiz = Quiz.objects.get(id=quiz_id)
-    if quiz.first_question():
-        return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
+def first_question(self, round):
+    round = Round.objects.get(id=round)
+    if round.first_question():
+        return HttpResponseRedirect(reverse('quiz', args=(round.quiz.id,)))
 
-    return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
+    return HttpResponseRedirect(reverse('quiz', args=(round.quiz.id,)))
 
 
 def collect_answers(request, question):
-    question = Question.objects.get(pk=question)
-    generate_answers(question.id)
-
-    return HttpResponseRedirect(
-        reverse('quiz', args=(question.round.quiz.id,)))
-
-
-def show_answers(request, question):
     question = Question.objects.get(pk=question)
     generate_answers(question.id)
 
@@ -135,6 +127,17 @@ def hide_answers(request, question):
 
     return HttpResponseRedirect(
         reverse('round', args=(question.round.id,)))
+
+
+def start_guessing(request, round):
+    round = Round.objects.get(pk=round)
+    round.modus = Round.GUESSING
+    round.save()
+
+    round.active_question = round.questions.first()
+
+    return HttpResponseRedirect(
+        reverse('quiz', args=(round.quiz.id,)))
 
 
 def show_scores(request, question):

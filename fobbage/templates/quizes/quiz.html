@@ -6,15 +6,14 @@
 {% endblock header %}
 
 {% block quiz %}
-    {% if round %}
+  {% if round %}
 
-      <h1 class="title">{{ round.title }}</h1>
+    <h1 class="title">{{ round.title }}</h1>
 
-      {% if question %}
+      {% if round.modus == 0 %}
+        {% if question %}
           <h2 class="subtitle">{{ question.text }} </h2>
-
           {% if question.status == 1 %}
-
           {% elif question.status == 2 %}
           <ul>
               {% for answer in question.answers.all %}
@@ -45,21 +44,21 @@
               <a class="button" href="/question/{{ question.id }}/collect_answers">
                 Collect Answers
               </a>
-              <a class="button" href="/question/{{ question.id }}/show_answers">
-                Show Answers
-              </a>
-              <a class="button" href="/question/{{ question.id }}/hide_answers">
-                Hide Answers
-              </a>
-              <a class="button" href="/question/{{ question.id }}/show_scores">
-                Show Scores
-              </a>
           </div>
+        {% endif %}
+      {% elif round.modus == 1 %}
+          <div>
+        <a class="button" href="/question/{{ question.id }}/hide_answers">
+          Hide Answers
+        </a>
+        <a class="button" href="/question/{{ question.id }}/show_scores">
+          Show Scores
+        </a>
       {% endif %}
-    {% endif %}
+  {% else %}
+    <p>No round selected, go to the next question to start the quiz</p>
+  {% endif %}
 {% endblock %}
-
-
 {% block quiz_footer %}
   <div class="level">
     <div class="level-item">
@@ -72,6 +71,16 @@
       <a class="button" href="/quiz/{{ quiz.id }}/scoreboard">
         Scoreboard
       </a>
+    </div>
+  </div>
+
+  <div class="level">
+    <div class="level-item">
+      {% for round in quiz.rounds.all %}
+        <a class="button" href="/round/{{ round.id }}/first_question">
+        {{ round.title }}
+      </a>
+      {% endfor %}
     </div>
   </div>
 {% endblock %}

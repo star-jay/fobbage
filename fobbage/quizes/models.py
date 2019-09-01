@@ -73,7 +73,7 @@ class Quiz(models.Model):
 
 class Round(models.Model):
     class Meta:
-        ordering = ['multiplier']
+        ordering = ['multiplier', 'id']
     quiz = models.ForeignKey(
         Quiz,
         related_name='rounds',
@@ -109,13 +109,9 @@ class Round(models.Model):
         round_reset(self.quiz.id)
 
     def first_question(self):
-        first = self.questions.filter(
-            status=0,
-        ).first()
-        if first:
-            first.status = Question.BLUFF
-            first.save()
-            return True
+        question = self.questions.first()
+        self.quiz.active_question = question
+        self.quiz.save()
         return False
 
 

@@ -3,7 +3,7 @@ from django.urls import reverse as django_reverse
 # from rest_framework.reverse import reverse
 
 from fobbage.quizes.models import (
-    Quiz, Question, Bluff, Answer, Guess
+    Quiz, Question, Bluff, Answer, Guess, Round,
 )
 
 
@@ -66,9 +66,14 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    answers = AnswerSerializer(many=True)
+    answers = serializers.SerializerMethodField()
+
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
+
+    def get_answers(self, instance):
+        if instance.round.modus == Round.GUESSING:
+            return AnswerSerializer(data=instance.answers, many=True)
 
     def get_have_bluffed(self, instance):
         player = self.context['request'].user
