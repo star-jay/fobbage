@@ -267,3 +267,11 @@ def question_updated_signal(sender, instance, created, **kwargs):
         quiz_updated(instance.round.quiz.id)
     else:
         quiz_updated(instance.round.quiz.id)
+
+
+@receiver(post_save, sender=Round)
+def round_updated_signal(sender, instance, created, **kwargs):
+    if created:
+        quiz_updated(instance.quiz.id)
+    else:
+        quiz_updated(instance.quiz.id)
