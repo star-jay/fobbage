@@ -140,6 +140,17 @@ def start_guessing(request, round):
         reverse('quiz', args=(round.quiz.id,)))
 
 
+def start_bluffing(request, round):
+    round = Round.objects.get(pk=round)
+    round.modus = Round.BLUFFING
+    round.save()
+
+    round.active_question = round.questions.first()
+
+    return HttpResponseRedirect(
+        reverse('quiz', args=(round.quiz.id,)))
+
+
 def show_scores(request, question):
     question = Question.objects.get(pk=question)
     if question.finish():

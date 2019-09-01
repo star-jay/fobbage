@@ -60,6 +60,11 @@ class GuessSerializer(serializers.ModelSerializer):
 
 
 class AnswerSerializer(serializers.ModelSerializer):
+    text = serializers.SerializerMethodField()
+
+    def get_text(self, instance):
+        return self.order()
+
     class Meta:
         model = Answer
         fields = ('id', 'text', 'question', 'order')
@@ -70,6 +75,10 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
+    text = serializers.SerializerMethodField()
+
+    def get_text(self, instance):
+        return instance.text[:15] + '...'
 
     def get_answers(self, instance):
         if instance.round.modus == Round.GUESSING:

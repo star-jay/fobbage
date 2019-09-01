@@ -7,22 +7,14 @@
 
 {% block quiz %}
   {% if round %}
-
     <h1 class="title">{{ round.title }}</h1>
-
+      {% if question %}
+        <h2 class="subtitle">{{ question.text }} </h2>
+      {% endif %}
       {% if round.modus == 0 %}
-        {% if question %}
-          <h2 class="subtitle">{{ question.text }} </h2>
-          {% if question.status == 1 %}
-          {% elif question.status == 2 %}
-          <ul>
-              {% for answer in question.answers.all %}
-                  <li>
-                    {{answer.order}}: {{ answer.text }}
-                  </li>
-              {% endfor %}
-          </ul>
-          {% endif %}
+        </p>Bluffing</p>
+        {% if question.status == 0 %}
+
           {% if question.url %}
           <img src="{{ question.url }}"/>
           {% endif %}
@@ -31,30 +23,61 @@
           <br/>
           <br/>
           {% if players %}
-          <h2 class="subtitle">Players who need to take action:</h2>
-          {% for player in players %}
-            {% comment %} <span>{{ firstof player.first_name or player.username }}, </span> {% endcomment %}
-            <span>{% firstof player.first_name player.username %}, </span>
-          {% endfor %}
+            <h2 class="subtitle">Players who need to take action:</h2>
+            {% for player in players %}
+              {% comment %} <span>{{ firstof player.first_name or player.username }}, </span> {% endcomment %}
+              <span>{% firstof player.first_name player.username %}, </span>
+            {% endfor %}
           {% endif %}
-          <br/>
-          <br/>
-
-          <div>
-              <a class="button" href="/question/{{ question.id }}/collect_answers">
-                Collect Answers
-              </a>
-          </div>
+        {% else %}
+          Question is ready!
         {% endif %}
+        <br/>
+        <br/>
+
+        <div>
+            <a class="button" href="/question/{{ question.id }}/collect_answers">
+              Collect Answers
+            </a>
+            <a class="button" href="/round/{{ round.id }}/start_guessing">
+              Start Guessing
+            </a>
+        </div>
       {% elif round.modus == 1 %}
-          <div>
+        <p>Guess rondes</p>
+        {% if question.status == 0 %}
+          <p>Please finish the bluffing stage for this question.</p>
+
+          {% elif question.status == 1 %}
+          <ul>
+              {% for answer in question.answers.all %}
+                  <li>
+                    {{answer.order}}: {{ answer.text }}
+                  </li>
+              {% endfor %}
+            <br/>
+            {% if players %}
+              <h2 class="subtitle">Players who need to take action:</h2>
+              {% for player in players %}
+                {% comment %} <span>{{ firstof player.first_name or player.username }}, </span> {% endcomment %}
+                <span>{% firstof player.first_name player.username %}, </span>
+              {% endfor %}
+            {% endif %}
+          </ul>
+          {% elif question.status == 2 %}
+            <p>Question finished!</p>
+          {% endif %}
+        <div>
         <a class="button" href="/question/{{ question.id }}/hide_answers">
           Hide Answers
         </a>
         <a class="button" href="/question/{{ question.id }}/show_scores">
           Show Scores
         </a>
-      {% endif %}
+        <a class="button" href="/round/{{ round.id }}/start_bluffing">
+          back to Bluffing
+        </a>
+    {% endif %}
   {% else %}
     <p>No round selected, go to the next question to start the quiz</p>
   {% endif %}
