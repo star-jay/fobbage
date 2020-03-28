@@ -1,5 +1,5 @@
-from django.utils.html import format_html
-from django.urls import reverse, path
+# from django.utils.html import format_html
+# from django.urls import reverse, path
 from django.contrib.admin import register, TabularInline, ModelAdmin, site
 from django.shortcuts import redirect
 
@@ -33,34 +33,34 @@ class BluffInline(TabularInline):
     model = Bluff
 
 
-@register(Question)
-class QuestionAdmin(ModelAdmin):
-    model = Question
-    inlines = (BluffInline,)
+# @register(Question)
+# class QuestionAdmin(ModelAdmin):
+#     model = Question
+#     # inlines = (BluffInline,)
 
-    list_display = (
-        'round',
-        'text',
-        'status',
-        'question_actions',
-    )
+#     list_display = (
+#         'round',
+#         'text',
+#         'status',
+#         'question_actions',
+#     )
 
-    def get_urls(self):
-        urls = super().get_urls()
-        custom_urls = [
-            path(
-                '<int:question_id>/generate_answers/',
-                generate_answers_action,
-                name='generate_answers',
-            ),
-        ]
-        return custom_urls + urls
+#     def get_urls(self):
+#         urls = super().get_urls()
+#         custom_urls = [
+#             path(
+#                 '<int:question_id>/generate_answers/',
+#                 generate_answers_action,
+#                 name='generate_answers',
+#             ),
+#         ]
+#         return custom_urls + urls
 
-    def question_actions(self, obj):
-        return format_html(
-            '<a class="button" href="{}">Generate Answers</a>&nbsp',
-            reverse('admin:generate_answers', args=[obj.pk]),
-        )
+#     def question_actions(self, obj):
+#         return format_html(
+#             '<a class="button" href="{}">Generate Answers</a>&nbsp',
+#             reverse('admin:generate_answers', args=[obj.pk]),
+#         )
 
 
 @register(Round)

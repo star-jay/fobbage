@@ -3,35 +3,36 @@ import pytest
 from tests.factories.quiz_factories import (
     # QuizFactory,
     # RoundFactory,
-    QuestionFactory,
+    # QuestionFactory,
     # AnswerFactory,
     BluffFactory,
+    FobbitFactory,
 )
 
 from fobbage.quizes.services import generate_answers
-from fobbage.quizes.models import Question
+from fobbage.quizes.models import Fobbit
 
 
 @pytest.mark.django_db
 def test_question_generate_answers():
-    bluff = BluffFactory(question__status=Question.BLUFF)
-    bluff.question.round.quiz.players.set(
+    bluff = BluffFactory(fobbit__status=Fobbit.BLUFF)
+    bluff.fobbit.session.players.set(
         [bluff.player])
 
-    assert generate_answers(bluff.question.id)
+    assert generate_answers(bluff.fobbit.id)
 
-    assert len(bluff.question.answers.all()) == 2
+    assert len(bluff.fobbit.answers.all()) == 2
 
 
 @pytest.mark.django_db
 def test_answers_group_unique():
-    question = QuestionFactory(status=Question.BLUFF)
-    bluff = BluffFactory(question=question)
-    bluff2 = BluffFactory(question=question, text=bluff.text)
+    fobbit = FobbitFactory(status=Fobbit.BLUFF)
+    bluff = BluffFactory(fobbit=fobbit)
+    bluff2 = BluffFactory(fobbit=fobbit, text=bluff.text)
 
-    question.round.quiz.players.set(
+    fobbit.session.players.set(
         [bluff.player, bluff2.player])
 
-    assert generate_answers(bluff.question.id)
+    assert generate_answers(bluff.fobbit.id)
 
-    assert len(bluff.question.answers.all()) == 2
+    assert len(bluff.fobbit.answers.all()) == 2

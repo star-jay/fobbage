@@ -7,14 +7,14 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django.views.generic import DetailView, ListView
 
-from rest_framework import viewsets, generics
+from rest_framework import viewsets
 from rest_framework.response import Response
 
 from .serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer,
     GuessSerializer, QuestionSerializer)
 from .services import (
-    generate_answers, score_for_quiz, score_for_bluff, )
+    generate_answers, score_for_session, score_for_bluff, )
 from fobbage.quizes.models import (
     Quiz, Round, Question, Answer, Bluff, Guess, )
 
@@ -203,7 +203,7 @@ def scoreboard(request, quiz_id):
     quiz = Quiz.objects.get(pk=quiz_id)
     active_question = quiz.active_question
     scores = {
-        player: score_for_quiz(player, quiz)
+        player: score_for_session(player, quiz)
         for player in quiz.players.all()
     }
     ranking = sorted(scores, key=scores.__getitem__, reverse=True)

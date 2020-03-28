@@ -1,7 +1,7 @@
 import factory
 
 from fobbage.quizes.models import (
-    Quiz, Round, Question, Answer, Bluff
+    Quiz, Round, Question, Answer, Bluff, Fobbit, Session
 )
 from tests.factories.account_factories import UserFactory
 
@@ -37,6 +37,29 @@ class QuestionFactory(factory.django.DjangoModelFactory):
     correct_answer = factory.Sequence(lambda n: "answer {}".format(n))
     round = factory.SubFactory(RoundFactory)
     order = factory.Sequence(lambda n: n)
+    player = factory.SubFactory(UserFactory)
+
+
+class SessionFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for `Session`.
+    """
+    class Meta:
+        model = Session
+    # Example sequence field
+    quiz = factory.SubFactory(QuizFactory)
+    name = factory.Sequence(lambda n: 'Dummy Session: {}'.format(n))
+
+
+class FobbitFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for `Fobbit`.
+    """
+    class Meta:
+        model = Fobbit
+    # Example sequence field
+    session = factory.SubFactory(SessionFactory)
+    question = factory.SubFactory(QuestionFactory)
 
 
 class AnswerFactory(factory.django.DjangoModelFactory):
@@ -47,7 +70,7 @@ class AnswerFactory(factory.django.DjangoModelFactory):
     # add a value for the required fields
     text = factory.Sequence(lambda n: "answer {}".format(n))
     order = factory.Sequence(lambda n: n)
-    question = factory.SubFactory(QuestionFactory)
+    fobbit = factory.SubFactory(FobbitFactory)
 
 
 class BluffFactory(factory.django.DjangoModelFactory):
@@ -57,5 +80,5 @@ class BluffFactory(factory.django.DjangoModelFactory):
 
     # # add a value for the required fields
     # text = 'bluff'
-    question = factory.SubFactory(QuestionFactory)
+    fobbit = factory.SubFactory(FobbitFactory)
     player = factory.SubFactory(UserFactory)

@@ -15,10 +15,7 @@ class Quiz(models.Model):
     title = models.CharField(
         max_length=255,
     )
-    players = models.ManyToManyField(
-        User,
-        related_name='quizes_playing',
-    )
+
     created_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -119,14 +116,6 @@ class Question(models.Model):
     class Meta:
         ordering = ['order', 'id']
 
-    # INACTIVE = 0
-    BLUFF, GUESS, FINISHED = range(3)
-    STATUS_CHOICES = (
-        # (INACTIVE, 'Inactive'),
-        (BLUFF, 'Bluff'),
-        (GUESS, 'Guess'),
-        (FINISHED, 'Finished'),
-    )
     text = models.CharField(
         max_length=255,
     )
@@ -138,51 +127,96 @@ class Question(models.Model):
         related_name='questions',
         on_delete=models.CASCADE,
     )
-    status = models.IntegerField(
-        choices=STATUS_CHOICES,
-        default=0
-    )
+
     order = models.IntegerField()
     url = models.CharField(
         max_length=255,
         null=True,
         blank=True,
     )
+    player = models.ForeignKey(
+        User,
+        related_name='questions',
+        on_delete=models.CASCADE,
+    )
 
     def __str__(self):
         """ string representation """
         return "Question: {}".format(self.text)
 
+
+class Session(models.Model):
+    # class Meta:
+
+    quiz = models.ForeignKey(
+        Quiz,
+        related_name='sessions',
+        on_delete=models.CASCADE,
+    )
+    created = models.DateField(auto_now=True)
+    name = models.CharField(
+        max_length=255,
+    )
+    players = models.ManyToManyField(
+        User,
+        related_name='quizes_playing',
+    )
+
+
+class Fobbit(models.Model):
+    """Combination of session and question"""
+    session = models.ForeignKey(
+        Session,
+        related_name='fobbits',
+        on_delete=models.CASCADE,
+    )
+
+    question = models.ForeignKey(
+        Question,
+        related_name='fobbits',
+        on_delete=models.CASCADE,
+    )
+    BLUFF, GUESS, FINISHED = range(3)
+    STATUS_CHOICES = (
+        (BLUFF, 'Bluff'),
+        (GUESS, 'Guess'),
+        (FINISHED, 'Finished'),
+    )
+    status = models.IntegerField(
+        choices=STATUS_CHOICES,
+        default=0
+    )
+
     def hide_answers(self):
-        if self.status < Question.FINISHED:
+        if self.status < Fobbit.FINISHED:
             # self.guesses.delete()
             self.answers.all().delete()
 
-            self.status = Question.BLUFF
+            self.status = Fobbit.BLUFF
             self.save()
             return True
 
-    def players_without_guess(self):
+    def players_without_guess(self, session):
         return [
             player for player in self.round.quiz.players.all()
             if len(player.guesses.filter(answer__question=self)) == 0]
 
-    def players_without_bluff(self):
+    def players_without_bluff(self, session):
         return [
             player for player in self.round.quiz.players.all()
             if len(player.bluffs.filter(question=self)) == 0]
 
-    def finish(self):
+    def finish(self, session):
         """Finish the question if all playes have guessed"""
         # TODO: Check if all players have guessed
         if len(self.players_without_guess()) == 0:
-            self.status = Question.FINISHED
+            self.status = Fobbit.FINISHED
             self.save()
             return True
         return False
 
-    def reset(self):
-        self.status = Question.BLUFF
+    def reset(self, session):
+        self.status = Fobbit.BLUFF
         self.bluffs.all().delete()
         self.save()
 
@@ -191,8 +225,8 @@ class Answer(models.Model):
     class Meta:
         ordering = ['order']
 
-    question = models.ForeignKey(
-        Question,
+    fobbit = models.ForeignKey(
+        Fobbit,
         related_name='answers',
         on_delete=models.CASCADE,
     )
@@ -209,15 +243,15 @@ class Answer(models.Model):
 
     def __str__(self):
         """ string representation """
-        return "{}: Answer {}".format(self.question.text, self.order)
+        return "{}: Answer {}".format(self.fobbit.question.text, self.order)
 
 
 class Bluff(models.Model):
     text = models.CharField(
         max_length=255,
     )
-    question = models.ForeignKey(
-        Question,
+    fobbit = models.ForeignKey(
+        Fobbit,
         related_name='bluffs',
         on_delete=models.CASCADE,
     )

@@ -38,7 +38,7 @@ def test_answer_string_representation():
     """Make a clear string representation for the answer"""
     answer = AnswerFactory(
         order=1,
-        question__text='test',
+        fobbit__question__text='test',
     )
 
     assert answer.__str__() == 'test: Answer 1'

@@ -32,12 +32,12 @@ from fobbage.accounts.views import signup
 
 
 router = DefaultRouter()
-router.register(r'quizes', QuizViewSet, base_name='quiz')
-router.register(r'bluffs', BluffViewSet, base_name='bluff')
-router.register(r'guesses', GuessViewSet, base_name='guess')
-router.register(r'answers', AnswerViewSet, base_name='answer')
+router.register(r'quizes', QuizViewSet, basename='quiz')
+router.register(r'bluffs', BluffViewSet, basename='bluff')
+router.register(r'guesses', GuessViewSet, basename='guess')
+router.register(r'answers', AnswerViewSet, basename='answer')
 router.register(
-    r'active_questions', ActiveQuestionViewSet, base_name='active_question')
+    r'active_questions', ActiveQuestionViewSet, basename='active_question')
 
 
 urlpatterns = [

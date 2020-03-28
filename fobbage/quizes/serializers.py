@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from django.urls import reverse as django_reverse
+# from django.urls import reverse as django_reverse
 # from rest_framework.reverse import reverse
 
 from fobbage.quizes.models import (
-    Quiz, Question, Bluff, Answer, Guess, Round,
+    Quiz, Question, Bluff, Answer, Guess,
 )
 
 
