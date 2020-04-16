@@ -8,11 +8,13 @@ from fobbage.quizes.models import (
 
 
 class BluffSerializer(serializers.ModelSerializer):
+
+    username = serializers.CharField(source='player.username', read_only=True)
+
     class Meta:
         model = Bluff
-        fields = ('id', 'text', 'question', 'player')
+        fields = ('id', 'question', 'player', 'username', 'text',)
         extra_kwargs = {
-            'text': {'write_only': True},
             'player': {'read_only': True},
         }
 
@@ -70,14 +72,12 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
-    text = serializers.SerializerMethodField()
     round_modus = serializers.SerializerMethodField()
+
+    bluffs = BluffSerializer(many=True)
 
     def get_round_modus(self, instance):
         return instance.round.modus
-
-    def get_text(self, instance):
-        return instance.text[:15] + '...'
 
     def get_have_bluffed(self, instance):
         player = self.context['request'].user
@@ -93,7 +93,7 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = (
             'id', 'text', 'status', 'answers', 'have_bluffed', 'have_guessed',
-            'round_modus')
+            'round_modus', 'bluffs')
 
 
 class QuizSerializer(serializers.ModelSerializer):

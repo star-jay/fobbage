@@ -245,6 +245,11 @@ class QuizViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = QuizSerializer
 
 
+class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+
 class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
@@ -269,6 +274,8 @@ class BluffViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user:
+            if self.request.user.is_superuser:
+                return Bluff.objects.all()
             return Bluff.objects.filter(player=self.request.user)
         else:
             return Bluff.objects.none()

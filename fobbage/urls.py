@@ -25,7 +25,7 @@ from fobbage.quizes.views import (
     QuizList, start_guessing, start_bluffing,
     # API
     AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet,
-    GuessViewSet,
+    GuessViewSet, QuestionViewSet,
 )
 from fobbage.accounts.api.views import CreateUserView
 from fobbage.accounts.views import signup
@@ -33,6 +33,7 @@ from fobbage.accounts.views import signup
 
 router = DefaultRouter()
 router.register(r'quizes', QuizViewSet, base_name='quiz')
+router.register(r'questions', QuestionViewSet, base_name='question')
 router.register(r'bluffs', BluffViewSet, base_name='bluff')
 router.register(r'guesses', GuessViewSet, base_name='guess')
 router.register(r'answers', AnswerViewSet, base_name='answer')
