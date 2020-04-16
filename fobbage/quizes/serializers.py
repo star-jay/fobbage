@@ -80,14 +80,16 @@ class QuestionSerializer(serializers.ModelSerializer):
         return instance.round.modus
 
     def get_have_bluffed(self, instance):
-        player = self.context['request'].user
-        return Bluff.objects.filter(
-            player=player, question=instance.id).count() > 0
+        if 'request' in self.context:
+            player = self.context['request'].user
+            return Bluff.objects.filter(
+                player=player, question=instance.id).count() > 0
 
     def get_have_guessed(self, instance):
-        player = self.context['request'].user
-        return Guess.objects.filter(
-            player=player, answer__question=instance.id).count() > 0
+        if 'request' in self.context:
+            player = self.context['request'].user
+            return Guess.objects.filter(
+                player=player, answer__question=instance.id).count() > 0
 
     class Meta:
         model = Question
@@ -98,6 +100,10 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class QuizSerializer(serializers.ModelSerializer):
     websocket = serializers.SerializerMethodField()
+    questions = serializers.SerializerMethodField()
+
+    def get_questions(self, instance):
+        return QuestionSerializer(Question.objects.filter(round__quiz=instance), many=True).data
 
     def get_websocket(self, instance):
         request = self.context.get('request', None)
@@ -113,4 +119,5 @@ class QuizSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'websocket',
+            'questions'
         )
