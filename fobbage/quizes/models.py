@@ -20,13 +20,6 @@ class Quiz(models.Model):
         User,
         on_delete=models.CASCADE,
     )
-    active_question = models.ForeignKey(
-        to='quizes.Question',
-        null=True,
-        blank=True,
-        default=None,
-        on_delete=models.SET_NULL
-    )
 
     def __str__(self):
         """ string representation """
@@ -34,38 +27,6 @@ class Quiz(models.Model):
             return "Quiz: {}".format(self.title)
         else:
             return "Quiz: unnamed quiz"
-
-    def next_question(self):
-        active = self.active_question
-
-        if active:
-            round = active.round
-            if active is not round.questions.last():
-                self.active_question = round.questions.filter(
-                        order__gte=active.order,
-                    ).exclude(
-                        id=active.id,
-                    ).first()
-        else:
-            round = self.rounds.first()
-            self.active_question = round.questions.first()
-        self.save()
-
-    def prev_question(self):
-        active = self.active_question
-
-        if active:
-            round = active.round
-            if active is not round.questions.last():
-                self.active_question = round.questions.filter(
-                        order__lte=active.order,
-                    ).exclude(
-                        id=active.id,
-                    ).last()
-        else:
-            round = self.rounds.first()
-            self.active_question = round.questions.last()
-        self.save()
 
 
 class Round(models.Model):
@@ -122,8 +83,8 @@ class Question(models.Model):
     correct_answer = models.CharField(
         max_length=255,
     )
-    round = models.ForeignKey(
-        Round,
+    Quiz = models.ForeignKey(
+        Quiz,
         related_name='questions',
         on_delete=models.CASCADE,
     )
@@ -161,6 +122,58 @@ class Session(models.Model):
         User,
         related_name='quizes_playing',
     )
+    active_fobbit = models.ForeignKey(
+        to='quizes.Fobbit',
+        null=True,
+        blank=True,
+        default=None,
+        on_delete=models.SET_NULL,
+        related_name='active_in'
+    )
+    BLUFFING, GUESSING = range(2)
+    MODI = [
+        (BLUFFING, 'Bluffing'),
+        (GUESSING, 'Guessing'),
+    ]
+
+    modus = models.IntegerField(
+        choices=MODI,
+        default=BLUFFING,
+    )
+
+    def next_question(self):
+
+        if self.active_fobbit:
+            active = self.active_fobbit.question
+            next = self.quiz.questions.filter(
+                    order__gte=active.order,
+                ).exclude(id=active.id).first()
+        else:
+            next = self.quiz.questions.first()
+
+        fobbit = Fobbit.objects.create(
+            question=next,
+            session=self,
+        )
+        self.active_fobbit = fobbit
+        self.save()
+        return fobbit
+
+    def prev_question(self):
+        active = self.active_fobbit
+
+        if active:
+            round = active.round
+            if active is not round.questions.last():
+                self.active_question = round.questions.filter(
+                        order__lte=active.order,
+                    ).exclude(
+                        id=active.id,
+                    ).last()
+        else:
+            round = self.rounds.first()
+            self.active_question = round.questions.last()
+        self.save()
 
 
 class Fobbit(models.Model):
@@ -198,16 +211,16 @@ class Fobbit(models.Model):
 
     def players_without_guess(self, session):
         return [
-            player for player in self.round.quiz.players.all()
-            if len(player.guesses.filter(answer__question=self)) == 0]
+            player for player in self.session.players.all()
+            if len(player.guesses.filter(answer__fobbit=self)) == 0]
 
     def players_without_bluff(self, session):
         return [
-            player for player in self.round.quiz.players.all()
-            if len(player.bluffs.filter(question=self)) == 0]
+            player for player in self.session.players.all()
+            if len(player.bluffs.filter(fobbit=self)) == 0]
 
     def finish(self, session):
-        """Finish the question if all playes have guessed"""
+        """Finish the question if all players have guessed"""
         # TODO: Check if all players have guessed
         if len(self.players_without_guess()) == 0:
             self.status = Fobbit.FINISHED

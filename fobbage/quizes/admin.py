@@ -4,7 +4,7 @@ from django.contrib.admin import register, TabularInline, ModelAdmin, site
 from django.shortcuts import redirect
 
 
-from .models import Quiz, Round, Question, Bluff, Guess
+from .models import Quiz, Round, Question, Bluff, Guess, Session
 from .services import generate_answers
 
 
@@ -63,11 +63,11 @@ class BluffInline(TabularInline):
 #         )
 
 
-@register(Round)
-class RoundAdmin(ModelAdmin):
-    model = Round
-    inlines = (QuestionInline,)
-    actions = [reset, ]
+# @register(Round)
+# class RoundAdmin(ModelAdmin):
+#     model = Round
+#     inlines = (QuestionInline,)
+#     actions = [reset, ]
 
 
 @register(Quiz)
@@ -89,3 +89,5 @@ class QuizAdmin(ModelAdmin):
 
 site.register(Bluff)
 site.register(Guess)
+site.register(Session)
+

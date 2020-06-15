@@ -6,4 +6,4 @@ cd "$(dirname "$0")/.."
 
 scripts/update
 
-pipenv run python ./manage.py runserver 0.0.0.0:8010
+pipenv run python ./manage.py runserver 0.0.0.0:8000

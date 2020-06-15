@@ -22,10 +22,10 @@ from rest_framework.routers import DefaultRouter
 from fobbage.quizes.views import (
     quiz_view, index, play, scoreboard, new_quiz, collect_answers,
     hide_answers, next_question, prev_question, first_question, show_scores,
-    QuizList, start_guessing, start_bluffing,
+    QuizList, start_guessing, start_bluffing, session_view,
     # API
     AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet,
-    GuessViewSet,
+    GuessViewSet, SessionCreateView,
 )
 from fobbage.accounts.api.views import CreateUserView
 from fobbage.accounts.views import signup
@@ -44,17 +44,21 @@ urlpatterns = [
 
     path('', index, name='index'),
     path('new_quiz/', new_quiz, name='new_quiz'),
+    path('new_session/', SessionCreateView.as_view(), name='new_quiz'),
+
     path('host/', QuizList.as_view()),
     path('play/', play, name='play'),
 
     path('quiz/<int:quiz_id>/', quiz_view, name='quiz'),
+    path('session/<int:session_id>/', session_view, name='session'),
+
     path('quiz/<int:quiz_id>/scoreboard', scoreboard, name='scoreboard'),
-    # path('round/<int:round>/', round_view, name='round'),
+
     path(
-        'quiz/<int:quiz_id>/next_question', next_question,
+        'session/<int:session_id>/next_question', next_question,
         name='next_question'),
     path(
-        'quiz/<int:quiz_id>/prev_question', prev_question,
+        'session/<int:session_id>/prev_question', prev_question,
         name='prev_question'),
 
     path(

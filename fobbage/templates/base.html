@@ -9,11 +9,16 @@
     {% if user.is_authenticated %}
         {% block quiz %}
         {% endblock %}
+
+        {% block session %}
+        {% endblock %}
     {% else %}
 
     {% endif %}
     {% comment %} {% if user.is_authenticated %}
         {% block quiz %}
+        {% endblock %}
+        {% block session %}
         {% endblock %}
     {% else %}
         {% include "base_login.html" %}
@@ -23,6 +28,8 @@
 {% block footer %}
     {% if user.is_authenticated %}
         {% block quiz_footer %}
+        {% endblock %}
+        {% block session_footer %}
         {% endblock %}
     {% endif %}
 {% endblock %}

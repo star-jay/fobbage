@@ -5,7 +5,9 @@ from django.shortcuts import render
 from django.utils.safestring import mark_safe
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, CreateView
+# from django.views.generic import ListView, CreateView, UpdateView
+from django.urls import reverse_lazy
 
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -16,9 +18,9 @@ from .serializers import (
 from .services import (
     generate_answers, score_for_session, score_for_bluff, )
 from fobbage.quizes.models import (
-    Quiz, Round, Question, Answer, Bluff, Guess, )
+    Quiz, Round, Question, Answer, Bluff, Guess, Session, Fobbit)
 
-from .forms import NewQuizForm
+from .forms import NewQuizForm, SessionForm
 
 
 def new_quiz(request):
@@ -75,9 +77,9 @@ def quiz_view(request, quiz_id):
         context['question'] = question
 
         players = None
-        if question.status == Question.BLUFF:
+        if question.status == Fobbit.BLUFF:
             players = question.players_without_bluff()
-        elif question.status == Question.GUESS:
+        elif question.status == Fobbit.GUESS:
             players = question.players_without_guess()
 
         if players:
@@ -93,16 +95,42 @@ def quiz_view(request, quiz_id):
         request, 'quizes/quiz.html', context)
 
 
-def next_question(self, quiz_id):
-    quiz = Quiz.objects.get(id=quiz_id)
-    quiz.next_question()
-    return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
+def session_view(request, session_id):
+    session = Session.objects.get(pk=session_id)
+    context = {
+        'session': session,
+    }
+    fobbit = session.active_fobbit
+    context['fobbit'] = fobbit
+
+    if fobbit:
+        players = None
+        if fobbit.status == Fobbit.BLUFF:
+            players = fobbit.players_without_bluff(session)
+        elif fobbit.status == Fobbit.GUESS:
+            players = fobbit.players_without_guess(session)
+
+        if players:
+            context['players'] = players
+        else:
+            context['players'] = session.players.all()
+
+    return render(
+        request, 'quizes/session.html', context)
 
 
-def prev_question(self, quiz_id):
-    quiz = Quiz.objects.get(id=quiz_id)
-    quiz.prev_question()
-    return HttpResponseRedirect(reverse('quiz', args=(quiz.id,)))
+def next_question(self, session_id):
+    session = Session.objects.get(id=session_id)
+    session.next_question()
+    return HttpResponseRedirect(
+        reverse('session', args=(session.id,)))
+
+
+def prev_question(self, session_id):
+    session = Session.objects.get(id=session_id)
+    session.prev_question()
+    return HttpResponseRedirect(
+        reverse('quiz', args=(session.id,)))
 
 
 def first_question(self, round):
@@ -237,6 +265,14 @@ class QuizList(ListView):
             return Quiz.objects.filter(created_by=self.request.user)
         else:
             return Quiz.objects.none()
+
+
+class SessionCreateView(CreateView):
+    model = Session
+    form_class = SessionForm
+
+    def get_success_url(self):
+        return reverse_lazy('session', kwargs={'session_id': self.object.id})
 
 
 # API

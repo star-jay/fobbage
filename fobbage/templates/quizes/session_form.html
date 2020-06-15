@@ -1,0 +1,12 @@
+
+{% extends "base.html" %}
+
+{% block quiz %}
+<form action="/new_session/" method="post">
+    {% csrf_token %}
+    <table>
+    {{ form.as_table }}
+    </table>
+    <input type="submit" value="Submit">
+</form>
+{% endblock %}
