@@ -181,15 +181,11 @@ class Command(BaseCommand):
             title=QUIZ['title'],
             created_by=user)
         for r in QUIZ['rounds']:
-            round = Round.objects.create(
-                quiz=quiz,
-                title=r['title'],
-            )
             i = 0
             for q in r['questions']:
                 i += 1
                 Question.objects.create(
-                    round=round,
+                    quiz=quiz,
                     text=q['text'],
                     correct_answer=q['correct_answer'],
                     player=user,

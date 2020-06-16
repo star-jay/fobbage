@@ -83,7 +83,7 @@ class Question(models.Model):
     correct_answer = models.CharField(
         max_length=255,
     )
-    Quiz = models.ForeignKey(
+    quiz = models.ForeignKey(
         Quiz,
         related_name='questions',
         on_delete=models.CASCADE,
@@ -142,7 +142,6 @@ class Session(models.Model):
     )
 
     def next_question(self):
-
         if self.active_fobbit:
             active = self.active_fobbit.question
             next = self.quiz.questions.filter(
@@ -281,6 +280,9 @@ class Bluff(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    class Meta:
+        unique_together = ("fobbit", "player"),
+
     def __str__(self):
         """ string representation """
         return "{}: {}".format(self.player.first_name, self.text)
@@ -311,9 +313,9 @@ def quiz_update_signal(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Question)
 def question_updated_signal(sender, instance, created, **kwargs):
     if created:
-        quiz_updated(instance.round.quiz.id)
+        quiz_updated(instance.quiz.id)
     else:
-        quiz_updated(instance.round.quiz.id)
+        quiz_updated(instance.quiz.id)
 
 
 @receiver(post_save, sender=Round)

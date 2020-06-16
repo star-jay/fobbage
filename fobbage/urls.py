@@ -20,7 +20,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
-    quiz_view, index, play, scoreboard, new_quiz, collect_answers,
+    quiz_view, index, session_play, scoreboard, new_quiz, collect_answers,
     hide_answers, next_question, prev_question, first_question, show_scores,
     QuizList, start_guessing, start_bluffing, session_view,
     # API
@@ -47,10 +47,11 @@ urlpatterns = [
     path('new_session/', SessionCreateView.as_view(), name='new_quiz'),
 
     path('host/', QuizList.as_view()),
-    path('play/', play, name='play'),
 
     path('quiz/<int:quiz_id>/', quiz_view, name='quiz'),
     path('session/<int:session_id>/', session_view, name='session'),
+    path('session/<int:session_id>/play/', session_play, name='play'),
+
 
     path('quiz/<int:quiz_id>/scoreboard', scoreboard, name='scoreboard'),
 
@@ -84,11 +85,11 @@ urlpatterns = [
         hide_answers,
         name='hide_answers'),
     path(
-        'question/<int:question>/collect_answers/',
+        'fobbit/<int:question>/collect_answers/',
         collect_answers,
         name='collect_answers'),
     path(
-        'question/<int:question>/show_scores/',
+        'fobbit/<int:question>/show_scores/',
         show_scores,
         name='show_scores'),
     path('accounts/', include('django.contrib.auth.urls')),

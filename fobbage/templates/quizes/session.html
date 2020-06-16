@@ -7,77 +7,77 @@
 
 {% block session %}
   {{ fobbit }}
-  {{ session.name }}
 
-  <!-- {% if round %} -->
-    <!-- <h1 class="title">{{ round.title }}</h1> -->
-      {% if fobbit %}
-        <h2 class="subtitle">{{ session.name }} </h2>
-      {% endif %}
-      {% if round.modus == 0 %}
-        {% if fobbit.status == 0 %}
-          {% if fobbit.url %}
-          <img src="{{ fobbit.url }}"/>
-          {% endif %}
+  {{ session.modus }}
+  {{ fobbit.status }}
+  {{ players|length }}
+  {{ fobbit }}
 
-          <br/>
-          <br/>
-          <br/>
-          {% if players %}
-            <h2 class="subtitle">Players who need to take action:</h2>
-            {% for player in players %}
-              {% comment %} <span>{{ firstof player.first_name or player.username }}, </span> {% endcomment %}
-              <span>{% firstof player.first_name player.username %}, </span>
-            {% endfor %}
-          {% endif %}
-        {% else %}
-          Question is ready!
+  <h1>{{ session.name }}</h1>
+  {% if fobbit %}
+    <h2 class="subtitle">{{ fobbit.question.text }} </h2>
+    {% if session.modus == 0 %}
+      {% if fobbit.status == 0 %}
+        {% if fobbit.question.url %}
+        <img src="{{ fobbit.url }}"/>
         {% endif %}
+
         <br/>
         <br/>
+        <br/>
+        {% if players %}
+          <h2 class="subtitle">Players who need to take action:</h2>
+          {% for player in players %}
+            {% comment %} <span>{{ firstof player.first_name or player.username }}, </span> {% endcomment %}
+            <span>{% firstof player.first_name player.username %}, </span>
+          {% endfor %}
+        {% endif %}
+      {% else %}
+        Question is ready!
+      {% endif %}
+      <br/>
+      <br/>
+      <div>
+        <a class="button" href="/fobbit/{{ fobbit.id }}/collect_answers">
+          Collect Answers
+        </a>
+        <a class="button" href="/round/{{ round.id }}/start_guessing">
+          Start Guessing
+        </a>
+      </div>
+    {% elif session.modus == 1 %}
+      {% if fobbit.status == 0 %}
+        <p>Please finish the bluffing stage for this fobbit.</p>
 
-        <div>
-            <a class="button" href="/fobbit/{{ fobbit.id }}/collect_answers">
-              Collect Answers
-            </a>
-            <a class="button" href="/round/{{ round.id }}/start_guessing">
-              Start Guessing
-            </a>
-        </div>
-      {% elif round.modus == 1 %}
-        {% if fobbit.status == 0 %}
-          <p>Please finish the bluffing stage for this fobbit.</p>
-
-          {% elif fobbit.status == 1 %}
-          <ul>
-              {% for answer in fobbit.answers.all %}
-                  <li class="subtitle">
-                    {{answer.order}}: {{ answer.text.lower }}
-                  </li>
-              {% endfor %}
-            <br/>
-            {% if players %}
-              <h2 class="subtitle">Players who need to take action:</h2>
-              {% for player in players %}
-                {% comment %} <span>{{ firstof player.first_name or player.username }}, </span> {% endcomment %}
-                <span>{% firstof player.first_name player.username %}, </span>
-              {% endfor %}
-            {% endif %}
-          </ul>
-          {% elif fobbit.status == 2 %}
-            <p>Question finished!</p>
-          {% endif %}
-        <div>
+      {% elif fobbit.status == 1 %}
+      <ul>
+        {% for answer in fobbit.answers.all %}
+          <li class="subtitle">
+            {{answer.order}}: {{ answer.text.lower }}
+          </li>
+        {% endfor %}
+        <br/>
+        {% if players %}
+          <h2 class="subtitle">Players who need to take action:</h2>
+          {% for player in players %}
+            {% comment %} <span>{{ firstof player.first_name or player.username }}, </span> {% endcomment %}
+            <span>{% firstof player.first_name player.username %}, </span>
+          {% endfor %}
+        {% endif %}
+      </ul>
+      {% elif fobbit.status == 2 %}
+        <p>Question finished!</p>
+      {% endif %}
+      <div>
         <a class="button" href="/fobbit/{{ fobbit.id }}/show_scores">
           Show Scores
         </a>
         <a class="button" href="/round/{{ round.id }}/start_bluffing">
           back to Bluffing
         </a>
+      </div>
     {% endif %}
-  <!-- {% else %}
-    <p>No round selected, go to the next fobbit to start the session</p>
-  {% endif %} -->
+  {% endif %}
 {% endblock %}
 
 {% block session_footer %}

@@ -20,7 +20,7 @@ from .services import (
 from fobbage.quizes.models import (
     Quiz, Round, Question, Answer, Bluff, Guess, Session, Fobbit)
 
-from .forms import NewQuizForm, SessionForm
+from .forms import NewQuizForm, SessionForm, BluffForm
 
 
 def new_quiz(request):
@@ -58,10 +58,6 @@ def room(request, room_name):
     return render(request, 'chat/room.html', {
         'room_name_json': mark_safe(json.dumps(room_name))
     })
-
-
-def play(request):
-    return render(request, 'quizes/play.html')
 
 
 def quiz_view(request, quiz_id):
@@ -117,6 +113,45 @@ def session_view(request, session_id):
 
     return render(
         request, 'quizes/session.html', context)
+
+
+def session_play(request, session_id):
+    session = Session.objects.get(pk=session_id)
+    context = {
+            'session': session,
+            'fobbit': session.active_fobbit,
+        }
+    print(request.user)
+
+    if session.modus == Session.BLUFFING:
+        bluff = Bluff.objects.filter(
+            fobbit=session.active_fobbit,
+            player=request.user,
+        ).first()
+        # if this is a POST request we need to process the form data
+        if request.method == 'POST':
+            data = request.POST.copy()
+            data['player'] = request.user.id,
+            data['fobbit'] = session.active_fobbit
+            # create a form instance
+            # and populate it with data from the request:
+            form = BluffForm(data, instance=bluff)
+            # check whether it's valid:
+            if form.is_valid():
+                form.save()
+
+                return HttpResponseRedirect(f'/session/{session.id}/play')
+            else:
+                print(form.errors)
+
+                context['form'] = BluffForm(data)
+
+        else:
+            context['bluff'] = bluff
+            context['form'] = BluffForm(instance=bluff)
+
+        return render(
+            request, 'quizes/bluff.html', context)
 
 
 def next_question(self, session_id):
@@ -270,6 +305,19 @@ class QuizList(ListView):
 class SessionCreateView(CreateView):
     model = Session
     form_class = SessionForm
+
+    def get_success_url(self):
+        return reverse_lazy('session', kwargs={'session_id': self.object.id})
+
+
+class BluffCreateView(CreateView):
+    model = Bluff
+    form_class = BluffForm
+
+    def get_form_kwargs(self):
+        kwargs = super(NodeCreateView).get_form_kwargs()
+        kwargs['data'].update({'owner': 2})
+        return kwargs
 
     def get_success_url(self):
         return reverse_lazy('session', kwargs={'session_id': self.object.id})
