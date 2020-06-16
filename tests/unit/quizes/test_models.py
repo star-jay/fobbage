@@ -1,28 +1,11 @@
 import pytest
 
 from tests.factories.quiz_factories import (
-    QuizFactory,
-    RoundFactory,
+    # QuizFactory,
     QuestionFactory,
     AnswerFactory,
     BluffFactory,
 )
-
-
-@pytest.mark.django_db
-def test_quiz_string_representation():
-    """Make a clear string representation for the quiz"""
-    quiz = QuizFactory(title='test')
-
-    assert quiz.__str__() == 'Quiz: test'
-
-
-@pytest.mark.django_db
-def test_round_string_representation():
-    """Make a clear string representation for the round"""
-    obj = RoundFactory(title='test')
-
-    assert obj.__str__() == 'Round: test'
 
 
 @pytest.mark.django_db

@@ -1,7 +1,7 @@
 import environ
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from fobbage.quizes.models import Quiz, Round, Question
+from fobbage.quizes.models import Quiz, Question
 
 env = environ.Env()
 User = get_user_model()

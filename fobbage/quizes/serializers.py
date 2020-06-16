@@ -16,12 +16,12 @@ class BluffSerializer(serializers.ModelSerializer):
             'player': {'read_only': True},
         }
 
-    # overrride create to save user
+    # override create to save user
     def create(self, validated_data):
         question = self.validated_data['question']
         user = self.context['request'].user
 
-        if user not in question.round.quiz.players.all():
+        if user not in question.quiz.players.all():
             raise serializers.ValidationError(
                 'player is not playing this quiz')
 
@@ -66,18 +66,25 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Question
+        fields = ('id', 'text', 'quiz')
+
+
+class FobbitSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True)
 
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
     text = serializers.SerializerMethodField()
-    round_modus = serializers.SerializerMethodField()
+    modus = serializers.SerializerMethodField()
 
-    def get_round_modus(self, instance):
-        return instance.round.modus
+    def get_modus(self, instance):
+        return instance.session.modus
 
     def get_text(self, instance):
-        return instance.text[:15] + '...'
+        return instance.question.text
 
     def get_have_bluffed(self, instance):
         player = self.context['request'].user
@@ -93,7 +100,7 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = (
             'id', 'text', 'status', 'answers', 'have_bluffed', 'have_guessed',
-            'round_modus')
+            'modus')
 
 
 class QuizSerializer(serializers.ModelSerializer):

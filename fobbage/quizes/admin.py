@@ -4,16 +4,8 @@ from django.contrib.admin import register, TabularInline, ModelAdmin, site
 from django.shortcuts import redirect
 
 
-from .models import Quiz, Round, Question, Bluff, Guess, Session
+from .models import Quiz, Question, Bluff, Guess, Session
 from .services import generate_answers
-
-
-def reset(modeladmin, request, queryset):
-    for round in queryset:
-        round.reset()
-
-
-reset.short_description = "reset round"
 
 
 def generate_answers_action(request, question_id, *args, **kwargs):
@@ -23,10 +15,6 @@ def generate_answers_action(request, question_id, *args, **kwargs):
 
 class QuestionInline(TabularInline):
     model = Question
-
-
-class RoundInline(TabularInline):
-    model = Round
 
 
 class BluffInline(TabularInline):
@@ -39,7 +27,6 @@ class BluffInline(TabularInline):
 #     # inlines = (BluffInline,)
 
 #     list_display = (
-#         'round',
 #         'text',
 #         'status',
 #         'question_actions',
@@ -63,21 +50,14 @@ class BluffInline(TabularInline):
 #         )
 
 
-# @register(Round)
-# class RoundAdmin(ModelAdmin):
-#     model = Round
-#     inlines = (QuestionInline,)
-#     actions = [reset, ]
-
-
 @register(Quiz)
 class QuizAdmin(ModelAdmin):
-    inlines = (RoundInline,)
+    inlines = (QuestionInline,)
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if obj:
-            questions = Question.objects.filter(round__quiz=obj)
+            questions = Question.objects.filter(quiz=obj)
         else:
             questions = Question.objects.none()
 
@@ -90,4 +70,3 @@ class QuizAdmin(ModelAdmin):
 site.register(Bluff)
 site.register(Guess)
 site.register(Session)
-

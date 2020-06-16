@@ -1,7 +1,7 @@
 import factory
 
 from fobbage.quizes.models import (
-    Quiz, Round, Question, Answer, Bluff, Fobbit, Session
+    Quiz, Question, Answer, Bluff, Fobbit, Session
 )
 from tests.factories.account_factories import UserFactory
 
@@ -16,17 +16,6 @@ class QuizFactory(factory.django.DjangoModelFactory):
     created_by = factory.SubFactory(UserFactory)
 
 
-class RoundFactory(factory.django.DjangoModelFactory):
-    """ Factory that creates a round """
-    class Meta:
-        model = Round
-
-    # add a value for the required fields
-    quiz = factory.SubFactory(QuizFactory)
-    title = factory.Sequence(lambda n: "round {}".format(n))
-    multiplier = factory.Sequence(lambda n: n)
-
-
 class QuestionFactory(factory.django.DjangoModelFactory):
     """ Factory that creates an answer"""
     class Meta:
@@ -35,7 +24,7 @@ class QuestionFactory(factory.django.DjangoModelFactory):
     # add a value for the required fields
     text = factory.Sequence(lambda n: "question {}".format(n))
     correct_answer = factory.Sequence(lambda n: "answer {}".format(n))
-    round = factory.SubFactory(RoundFactory)
+    quiz = factory.SubFactory(QuizFactory)
     order = factory.Sequence(lambda n: n)
     player = factory.SubFactory(UserFactory)
 

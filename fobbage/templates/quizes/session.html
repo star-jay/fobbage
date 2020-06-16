@@ -41,7 +41,7 @@
         <a class="button" href="/fobbit/{{ fobbit.id }}/collect_answers">
           Collect Answers
         </a>
-        <a class="button" href="/round/{{ round.id }}/start_guessing">
+        <a class="button" href="/session/{{ session.id }}/start_guessing">
           Start Guessing
         </a>
       </div>
@@ -72,7 +72,7 @@
         <a class="button" href="/fobbit/{{ fobbit.id }}/show_scores">
           Show Scores
         </a>
-        <a class="button" href="/round/{{ round.id }}/start_bluffing">
+        <a class="button" href="/session/{{ session.id }}/start_bluffing">
           back to Bluffing
         </a>
       </div>
@@ -92,16 +92,6 @@
       <a class="button" href="/session/{{ session.id }}/scoreboard">
         Scoreboard
       </a>
-    </div>
-  </div>
-
-  <div class="level">
-    <div class="level-item">
-      {% for round in session.rounds.all %}
-        <a class="button" href="/round/{{ round.id }}/first_question">
-        {{ round.title }}
-      </a>
-      {% endfor %}
     </div>
   </div>
 {% endblock %}

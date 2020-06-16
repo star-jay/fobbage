@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from .messages import round_reset, quiz_updated
+from .messages import quiz_updated
 
 User = get_user_model()
 
@@ -27,50 +27,6 @@ class Quiz(models.Model):
             return "Quiz: {}".format(self.title)
         else:
             return "Quiz: unnamed quiz"
-
-
-class Round(models.Model):
-    class Meta:
-        ordering = ['multiplier', 'id']
-    quiz = models.ForeignKey(
-        Quiz,
-        related_name='rounds',
-        on_delete=models.CASCADE,
-    )
-    title = models.CharField(
-        max_length=255,
-    )
-    multiplier = models.FloatField(
-        default=1,
-    )
-    BLUFFING, GUESSING = range(2)
-    MODI = [
-        (BLUFFING, 'Bluffing'),
-        (GUESSING, 'Guessing'),
-    ]
-
-    modus = models.IntegerField(
-        choices=MODI,
-        default=BLUFFING,
-    )
-
-    def __str__(self):
-        """ string representation """
-        if self.title:
-            return "Round: {}".format(self.title)
-
-    def reset(self):
-        for question in self.questions.all():
-            question.reset()
-        self.save()
-        # message
-        round_reset(self.quiz.id)
-
-    def first_question(self):
-        question = self.questions.first()
-        self.quiz.active_question = question
-        self.quiz.save()
-        return False
 
 
 class Question(models.Model):
@@ -160,19 +116,14 @@ class Session(models.Model):
 
     def prev_question(self):
         active = self.active_fobbit
-
         if active:
-            round = active.round
-            if active is not round.questions.last():
-                self.active_question = round.questions.filter(
-                        order__lte=active.order,
+            if active is not self.questions.first():
+                self.active_fobbit = self.fobbits.filter(
+                        question__order__lte=active.question.order,
                     ).exclude(
                         id=active.id,
                     ).last()
-        else:
-            round = self.rounds.first()
-            self.active_question = round.questions.last()
-        self.save()
+                self.save()
 
 
 class Fobbit(models.Model):
@@ -312,14 +263,6 @@ def quiz_update_signal(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Question)
 def question_updated_signal(sender, instance, created, **kwargs):
-    if created:
-        quiz_updated(instance.quiz.id)
-    else:
-        quiz_updated(instance.quiz.id)
-
-
-@receiver(post_save, sender=Round)
-def round_updated_signal(sender, instance, created, **kwargs):
     if created:
         quiz_updated(instance.quiz.id)
     else:

@@ -3,7 +3,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer, SyncConsumer
 import json
 
-from .models import Bluff, Quiz, Round
+from .models import Bluff, Quiz
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -82,14 +82,6 @@ class ChatConsumer(WebsocketConsumer):
     def quiz_message(self, event):
         # Send message to WebSocket
         self.send(text_data=json.dumps(event))
-
-    # Receive message from room group
-    def round_reset(self, event):
-        round = Round.objects.get(id=event['round'])
-        # Send message to WebSocket
-        self.send(text_data=json.dumps({
-            'message': "Round reset: {}".format(round.title),
-        }))
 
     # Receive message from room group
     def user_joined(self):

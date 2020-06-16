@@ -5,10 +5,10 @@
     <h1 class="title">{{ quiz.title }}</h1>
     <div class="content">
         <ul>
-            {% for round in quiz.rounds.all %}
+            {% for question in quiz.question.all %}
                 <li>
-                    <a href="/round/{{ round.id }}/">
-                        {{ round.title }}
+                    <a href="/question/{{ question.id }}/">
+                        {{ question.text }}
                     </a>
                 </li>
             {% endfor %}

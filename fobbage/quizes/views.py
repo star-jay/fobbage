@@ -18,7 +18,7 @@ from .serializers import (
 from .services import (
     generate_answers, score_for_session, score_for_bluff, )
 from fobbage.quizes.models import (
-    Quiz, Round, Question, Answer, Bluff, Guess, Session, Fobbit)
+    Quiz, Question, Answer, Bluff, Guess, Session, Fobbit)
 
 from .forms import NewQuizForm, SessionForm, BluffForm
 
@@ -36,10 +36,6 @@ def new_quiz(request):
                 title=form.cleaned_data['title'],
                 created_by=request.user)
 
-            Round.objects.create(
-                title='Round 1',
-                quiz=quiz,
-            )
             # redirect to a new URL:
             return HttpResponseRedirect('/chat/{}/'.format(quiz.id))
 
@@ -65,27 +61,6 @@ def quiz_view(request, quiz_id):
     context = {
         'quiz': quiz,
     }
-
-    question = quiz.active_question
-
-    if quiz.active_question is not None:
-        round = quiz.active_question.round
-        context['question'] = question
-
-        players = None
-        if question.status == Fobbit.BLUFF:
-            players = question.players_without_bluff()
-        elif question.status == Fobbit.GUESS:
-            players = question.players_without_guess()
-
-        if players:
-            context['players'] = players
-        else:
-            context['players'] = quiz.players.all()
-    else:
-        round = quiz.rounds.first()
-
-    context['round'] = round
 
     return render(
         request, 'quizes/quiz.html', context)
@@ -168,50 +143,38 @@ def prev_question(self, session_id):
         reverse('quiz', args=(session.id,)))
 
 
-def first_question(self, round):
-    round = Round.objects.get(id=round)
-    if round.first_question():
-        return HttpResponseRedirect(reverse('quiz', args=(round.quiz.id,)))
-
-    return HttpResponseRedirect(reverse('quiz', args=(round.quiz.id,)))
-
-
 def collect_answers(request, question):
     question = Question.objects.get(pk=question)
     generate_answers(question.id)
 
     return HttpResponseRedirect(
-        reverse('quiz', args=(question.round.quiz.id,)))
+        reverse('session', args=(question.quiz.id,)))
 
 
-def hide_answers(request, question):
-    question = Question.objects.get(pk=question)
-    question.hide_answers()
-
-    return HttpResponseRedirect(
-        reverse('round', args=(question.round.id,)))
-
-
-def start_guessing(request, round):
-    round = Round.objects.get(pk=round)
-    round.modus = Round.GUESSING
-    round.save()
-
-    round.active_question = round.questions.first()
+def hide_answers(request, fobbit_id):
+    fobbit = Fobbit.objects.get(pk=fobbit_id)
+    fobbit.hide_answers()
 
     return HttpResponseRedirect(
-        reverse('quiz', args=(round.quiz.id,)))
+        reverse('session', args=(fobbit.session.id,)))
 
 
-def start_bluffing(request, round):
-    round = Round.objects.get(pk=round)
-    round.modus = Round.BLUFFING
-    round.save()
-
-    round.active_question = round.questions.first()
+def start_guessing(request, session_id):
+    session = Session.objects.get(pk=session_id)
+    session.modus = Session.GUESSING
+    session.save()
 
     return HttpResponseRedirect(
-        reverse('quiz', args=(round.quiz.id,)))
+        reverse('session', args=(session.id,)))
+
+
+def start_bluffing(request, session_id):
+    session = Session.objects.get(pk=session_id)
+    session.modus = Session.BLUFFING
+    session.save()
+
+    return HttpResponseRedirect(
+        reverse('session', args=(session.id,)))
 
 
 def show_scores(request, question):
@@ -259,7 +222,7 @@ def show_scores(request, question):
                 request, 'quizes/scores.html', context)
 
     return HttpResponseRedirect(
-        reverse('quiz', args=(question.round.quiz.id,)))
+        reverse('quiz', args=(question.quiz.id,)))
 
 
 def scoreboard(request, quiz_id):
@@ -305,19 +268,6 @@ class QuizList(ListView):
 class SessionCreateView(CreateView):
     model = Session
     form_class = SessionForm
-
-    def get_success_url(self):
-        return reverse_lazy('session', kwargs={'session_id': self.object.id})
-
-
-class BluffCreateView(CreateView):
-    model = Bluff
-    form_class = BluffForm
-
-    def get_form_kwargs(self):
-        kwargs = super(NodeCreateView).get_form_kwargs()
-        kwargs['data'].update({'owner': 2})
-        return kwargs
 
     def get_success_url(self):
         return reverse_lazy('session', kwargs={'session_id': self.object.id})
