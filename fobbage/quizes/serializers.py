@@ -10,9 +10,9 @@ from fobbage.quizes.models import (
 class BluffSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bluff
-        fields = ('id', 'text', 'question', 'player')
+        fields = ('id', 'text', 'fobbit', 'player')
         extra_kwargs = {
-            'text': {'write_only': True},
+            # 'text': {'write_only': True},
             'player': {'read_only': True},
         }
 
@@ -62,7 +62,7 @@ class GuessSerializer(serializers.ModelSerializer):
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
-        fields = ('id', 'text', 'question', 'order')
+        fields = ('id', 'text', 'fobbit', 'order')
 
 
 class QuestionSerializer(serializers.ModelSerializer):

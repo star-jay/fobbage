@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block quiz %}
-  <h2 class="title">Bluffing</h2>
+  <h2 class="title">Guessing</h2>
 
   <h2 class="subtitle">{{ fobbit.question.text }} </h2>
-  {% if bluff %}
-    You already bluffed, update if you want
+  {% if guess %}
+    You already Guessed, update if you want
   {% endif %}
     <form action="/session/{{ session.id }}/play/" method="post">
       {% csrf_token %}

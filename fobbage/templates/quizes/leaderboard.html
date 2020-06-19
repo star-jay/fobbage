@@ -19,10 +19,10 @@
 {% block quiz_footer %}
 <div class="level">
   <div class="level-item">
-    {% if quiz %}
-        {% url 'quiz' quiz.id as url %}
-        <a class="button" href="/quiz/{{ quiz.id }}">
-            Back to Quiz
+    {% if session %}
+        {% url 'session' session.id as url %}
+        <a class="button" href="/session/{{ session.id }}">
+            Back to Session
         </a>
     {% else %}
 

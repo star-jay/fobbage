@@ -5,8 +5,10 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.functional import cached_property
 
 from .messages import quiz_updated
+
 
 User = get_user_model()
 
@@ -74,9 +76,14 @@ class Session(models.Model):
     name = models.CharField(
         max_length=255,
     )
+    owner = models.ForeignKey(
+        User,
+        related_name='hosting',
+        on_delete=models.DO_NOTHING,
+    )
     players = models.ManyToManyField(
         User,
-        related_name='quizes_playing',
+        related_name='playing',
     )
     active_fobbit = models.ForeignKey(
         to='quizes.Fobbit',
@@ -150,6 +157,10 @@ class Fobbit(models.Model):
         default=0
     )
 
+    @cached_property
+    def multiplier(self):
+        return 1
+
     def hide_answers(self):
         if self.status < Fobbit.FINISHED:
             # self.guesses.delete()
@@ -159,17 +170,17 @@ class Fobbit(models.Model):
             self.save()
             return True
 
-    def players_without_guess(self, session):
+    def players_without_guess(self):
         return [
             player for player in self.session.players.all()
             if len(player.guesses.filter(answer__fobbit=self)) == 0]
 
-    def players_without_bluff(self, session):
+    def players_without_bluff(self):
         return [
             player for player in self.session.players.all()
             if len(player.bluffs.filter(fobbit=self)) == 0]
 
-    def finish(self, session):
+    def finish(self):
         """Finish the question if all players have guessed"""
         # TODO: Check if all players have guessed
         if len(self.players_without_guess()) == 0:

@@ -71,18 +71,21 @@ def score_for_fobbit(player, fobbit):
         answer__fobbit=fobbit,
         player=player).first()
 
-    # 0 plunten als jouw bluff = correct antwoord
-    if player_bluff.answer.is_correct is True:
-        return 0
-    # 0 punten als je op je eigen antwoord stemt
-    if player_guess.answer == player_bluff.answer:
-        return 0
+    # als de speler heeft gebluffed
+    if player_bluff:
+        # 0 plunten als jouw bluff = correct antwoord
+        if player_bluff.answer and player_bluff.answer.is_correct is True:
+            return 0
+        # 0 punten als je op je eigen antwoord stemt
+        if player_guess.answer == player_bluff.answer:
+            return 0
+
+        score += score_for_bluff(player, player_bluff)
 
     # score voor juist antwoord
-    if player_guess.answer.text == fobbit.correct_answer:
-        score += fobbit.multiplier * 1000
-
-    score += score_for_bluff(player, player_bluff)
+    if player_guess:
+        if player_guess.answer.text == fobbit.question.correct_answer:
+            score += fobbit.multiplier * 1000
 
     return score
 
@@ -95,7 +98,7 @@ def score_for_bluff(player, bluff):
         player=player).first()
 
     # 0 plunten als jouw bluff = correct antwoord
-    if bluff.answer.is_correct is True:
+    if bluff.answer and bluff.answer.is_correct is True:
         return 0
     # 0 punten als je op je eigen antwoord stemtgit
     if player_guess.answer == bluff.answer:

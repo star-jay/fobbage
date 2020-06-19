@@ -21,11 +21,11 @@ from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
     quiz_view, index, session_play, scoreboard, new_quiz, collect_answers,
-    hide_answers, next_question, prev_question, show_scores,
-    QuizList, start_guessing, start_bluffing, session_view,
+    hide_answers, next_question, prev_question, show_scores, session_join,
+    QuizList, SessionList, start_guessing, start_bluffing, session_view,
     # API
     AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet,
-    GuessViewSet, SessionCreateView,
+    GuessViewSet, SessionCreateView, SessionJoin, SessionContinue
 )
 from fobbage.accounts.api.views import CreateUserView
 from fobbage.accounts.views import signup
@@ -47,13 +47,15 @@ urlpatterns = [
     path('new_session/', SessionCreateView.as_view(), name='new_quiz'),
 
     path('host/', QuizList.as_view()),
+    path('join/', SessionJoin.as_view()),
+    path('continue/', SessionContinue.as_view()),
 
     path('quiz/<int:quiz_id>/', quiz_view, name='quiz'),
+
     path('session/<int:session_id>/', session_view, name='session'),
+    path('session/<int:session_id>/join/', session_join, name='join'),
     path('session/<int:session_id>/play/', session_play, name='play'),
-
-
-    path('quiz/<int:quiz_id>/scoreboard', scoreboard, name='scoreboard'),
+    path('session/<int:session_id>/scoreboard', scoreboard, name='scoreboard'),
 
     path(
         'session/<int:session_id>/next_question', next_question,
@@ -79,11 +81,11 @@ urlpatterns = [
         hide_answers,
         name='hide_answers'),
     path(
-        'fobbit/<int:question>/collect_answers/',
+        'fobbit/<int:fobbit_id>/collect_answers/',
         collect_answers,
         name='collect_answers'),
     path(
-        'fobbit/<int:question>/show_scores/',
+        'fobbit/<int:fobbit_id>/show_scores/',
         show_scores,
         name='show_scores'),
     path('accounts/', include('django.contrib.auth.urls')),

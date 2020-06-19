@@ -20,7 +20,12 @@ from .services import (
 from fobbage.quizes.models import (
     Quiz, Question, Answer, Bluff, Guess, Session, Fobbit)
 
-from .forms import NewQuizForm, SessionForm, BluffForm
+from .forms import NewQuizForm, SessionForm, BluffForm, GuessForm
+
+from django.contrib.auth import get_user_model
+
+# Get the UserModel
+User = get_user_model()
 
 
 def new_quiz(request):
@@ -77,9 +82,9 @@ def session_view(request, session_id):
     if fobbit:
         players = None
         if fobbit.status == Fobbit.BLUFF:
-            players = fobbit.players_without_bluff(session)
+            players = fobbit.players_without_bluff()
         elif fobbit.status == Fobbit.GUESS:
-            players = fobbit.players_without_guess(session)
+            players = fobbit.players_without_guess()
 
         if players:
             context['players'] = players
@@ -90,13 +95,20 @@ def session_view(request, session_id):
         request, 'quizes/session.html', context)
 
 
+def session_join(request, session_id):
+    session = Session.objects.get(pk=session_id)
+    session.players.add(request.user)
+    session.save()
+
+    return HttpResponseRedirect(f'/session/{session.id}/play')
+
+
 def session_play(request, session_id):
     session = Session.objects.get(pk=session_id)
     context = {
             'session': session,
             'fobbit': session.active_fobbit,
         }
-    print(request.user)
 
     if session.modus == Session.BLUFFING:
         bluff = Bluff.objects.filter(
@@ -106,27 +118,64 @@ def session_play(request, session_id):
         # if this is a POST request we need to process the form data
         if request.method == 'POST':
             data = request.POST.copy()
-            data['player'] = request.user.id,
+            data['player'] = request.user,
             data['fobbit'] = session.active_fobbit
             # create a form instance
             # and populate it with data from the request:
             form = BluffForm(data, instance=bluff)
             # check whether it's valid:
             if form.is_valid():
-                form.save()
-
+                bluff = form.save(commit=False)
+                bluff.player = request.user
+                bluff.fobbit = session.active_fobbit
+                bluff.save()
                 return HttpResponseRedirect(f'/session/{session.id}/play')
             else:
-                print(form.errors)
-
                 context['form'] = BluffForm(data)
-
         else:
             context['bluff'] = bluff
             context['form'] = BluffForm(instance=bluff)
 
         return render(
             request, 'quizes/bluff.html', context)
+
+    if session.modus == Session.GUESSING:
+        guess = Guess.objects.filter(
+            answer__fobbit=session.active_fobbit,
+            player=request.user,
+        ).first()
+        # if this is a POST request we need to process the form data
+        if request.method == 'POST':
+            data = request.POST.copy()
+            data['player'] = request.user.id,
+            data['fobbit'] = session.active_fobbit
+            # create a form instance
+            # and populate it with data from the request:
+            form = GuessForm(data, instance=guess)
+            # check whether it's valid:
+            if form.is_valid():
+                guess = form.save(commit=False)
+                guess.player = request.user
+                guess.fobbit = session.active_fobbit
+                guess.save()
+
+                return HttpResponseRedirect(f'/session/{session.id}/play')
+            else:
+                context['form'] = GuessForm(data)
+                answers = Answer.objects.filter(
+                    fobbit=session.active_fobbit,)
+                context['form'].fields["answer"].queryset = answers
+
+        else:
+            context['guess'] = guess
+            context['form'] = GuessForm(instance=guess)
+            answers = Answer.objects.filter(
+                fobbit=session.active_fobbit,)
+            print(answers)
+            context['form'].fields["answer"].queryset = answers
+
+        return render(
+            request, 'quizes/guess.html', context)
 
 
 def next_question(self, session_id):
@@ -143,12 +192,12 @@ def prev_question(self, session_id):
         reverse('quiz', args=(session.id,)))
 
 
-def collect_answers(request, question):
-    question = Question.objects.get(pk=question)
-    generate_answers(question.id)
+def collect_answers(request, fobbit_id):
+    fobbit = Fobbit.objects.get(pk=fobbit_id)
+    generate_answers(fobbit.id)
 
     return HttpResponseRedirect(
-        reverse('session', args=(question.quiz.id,)))
+        reverse('session', args=(fobbit.session.id,)))
 
 
 def hide_answers(request, fobbit_id):
@@ -177,13 +226,13 @@ def start_bluffing(request, session_id):
         reverse('session', args=(session.id,)))
 
 
-def show_scores(request, question):
-    question = Question.objects.get(pk=question)
-    if question.finish():
+def show_scores(request, fobbit_id):
+    fobbit = Fobbit.objects.get(pk=fobbit_id)
+    if fobbit.finish():
         # show player answers
         answer = Answer.objects \
             .filter(
-                question=question,
+                fobbit=fobbit,
                 showed=False,
                 is_correct=False) \
             .annotate(num_guesses=Count('guesses')) \
@@ -195,11 +244,11 @@ def show_scores(request, question):
         else:
             # reset answers to show again
             Answer.objects.filter(
-                question=question).update(
+                fobbit=fobbit).update(
                     showed=False)
             # show correct answer
             answer = Answer.objects.filter(
-                question=question,
+                fobbit=fobbit,
                 is_correct=True).get()
 
         if answer:
@@ -222,22 +271,22 @@ def show_scores(request, question):
                 request, 'quizes/scores.html', context)
 
     return HttpResponseRedirect(
-        reverse('quiz', args=(question.quiz.id,)))
+        reverse('session', args=(fobbit.session.id,)))
 
 
-def scoreboard(request, quiz_id):
-    quiz = Quiz.objects.get(pk=quiz_id)
-    active_question = quiz.active_question
+def scoreboard(request, session_id):
+    session = Session.objects.get(pk=session_id)
+    active_fobbit = session.active_fobbit
     scores = {
-        player: score_for_session(player, quiz)
-        for player in quiz.players.all()
+        player: score_for_session(player, session)
+        for player in session.players.all()
     }
     ranking = sorted(scores, key=scores.__getitem__, reverse=True)
     ranked_scores = [(player, scores[player]) for player in ranking]
     context = {
         'scores': ranked_scores,
-        'active_question': active_question,
-        'quiz': quiz,
+        'active_fobbit': active_fobbit,
+        'session': session,
     }
     return render(
         request, 'quizes/leaderboard.html', context)
@@ -265,9 +314,48 @@ class QuizList(ListView):
             return Quiz.objects.none()
 
 
+class SessionList(ListView):
+    mode = 'list'
+    template_name = 'quizes/session_list.html'
+    model = Session
+    queryset = Session.objects.all()
+
+    def get_context_data(self, **kwargs):
+        """add the mode"""
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        context['mode'] = "join"
+        return context
+
+
+class SessionJoin(SessionList):
+    pass
+
+
+class SessionContinue(SessionList):
+
+    def get_queryset(self):
+        return Session.objects.filter(
+            owner=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super().get_context_data(**kwargs)
+        context['mode'] = "continue"
+        return context
+
+
 class SessionCreateView(CreateView):
     model = Session
     form_class = SessionForm
+
+    def form_valid(self, form):
+        session = form.save(commit=False)
+        session.owner = self.request.user
+        session.save()
+        self.object = session
+
+        return HttpResponseRedirect(self.get_success_url())
 
     def get_success_url(self):
         return reverse_lazy('session', kwargs={'session_id': self.object.id})
