@@ -8,6 +8,12 @@ class SessionForm(forms.ModelForm):
         fields = ('quiz', 'name', 'players')
 
 
+class SessionUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Session
+        fields = ('active_fobbit', )
+
+
 class BluffForm(forms.ModelForm):
     text = forms.Textarea()
 

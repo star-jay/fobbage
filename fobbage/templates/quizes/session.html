@@ -44,6 +44,9 @@
         <a class="button" href="/session/{{ session.id }}/start_guessing">
           Start Guessing
         </a>
+        <a class="button" href="/fobbit/{{ fobbit.id }}/reset">
+          Reset question
+        </a>
       </div>
     {% elif session.modus == 1 %}
       {% if fobbit.status == 0 %}

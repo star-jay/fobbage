@@ -56,14 +56,6 @@ class QuizAdmin(ModelAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
-        if obj:
-            questions = Question.objects.filter(quiz=obj)
-        else:
-            questions = Question.objects.none()
-
-        form.base_fields['active_question'].queryset = questions
-        form.base_fields['active_question'].required = False
-
         return form
 
 

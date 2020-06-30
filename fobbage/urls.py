@@ -23,9 +23,11 @@ from fobbage.quizes.views import (
     quiz_view, index, session_play, scoreboard, new_quiz, collect_answers,
     hide_answers, next_question, prev_question, show_scores, session_join,
     QuizList, SessionList, start_guessing, start_bluffing, session_view,
+    SessionViewSet, FobbitViewSet,
     # API
     AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet,
-    GuessViewSet, SessionCreateView, SessionJoin, SessionContinue
+    GuessViewSet, SessionCreateView, SessionJoin, SessionContinue,
+    SessionUpdate, reset_fobbit,
 )
 from fobbage.accounts.api.views import CreateUserView
 from fobbage.accounts.views import signup
@@ -33,6 +35,9 @@ from fobbage.accounts.views import signup
 
 router = DefaultRouter()
 router.register(r'quizes', QuizViewSet, basename='quiz')
+router.register(r'fobbit', FobbitViewSet, basename='fobbit')
+router.register(r'session', SessionViewSet, basename='quiz')
+
 router.register(r'bluffs', BluffViewSet, basename='bluff')
 router.register(r'guesses', GuessViewSet, basename='guess')
 router.register(r'answers', AnswerViewSet, basename='answer')
@@ -56,6 +61,8 @@ urlpatterns = [
     path('session/<int:session_id>/join/', session_join, name='join'),
     path('session/<int:session_id>/play/', session_play, name='play'),
     path('session/<int:session_id>/scoreboard', scoreboard, name='scoreboard'),
+    path('session/<int:session_id>/update', SessionUpdate.as_view(), name='scoreboard'),
+
 
     path(
         'session/<int:session_id>/next_question', next_question,
@@ -84,6 +91,10 @@ urlpatterns = [
         'fobbit/<int:fobbit_id>/collect_answers/',
         collect_answers,
         name='collect_answers'),
+    path(
+        'fobbit/<int:fobbit_id>/reset/',
+        reset_fobbit,
+        name='reset'),
     path(
         'fobbit/<int:fobbit_id>/show_scores/',
         show_scores,

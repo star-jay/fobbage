@@ -13,14 +13,16 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 
 from .serializers import (
-    QuizSerializer, BluffSerializer, AnswerSerializer,
-    GuessSerializer, QuestionSerializer)
+    QuizSerializer, BluffSerializer, AnswerSerializer, SessionSerializer,
+    GuessSerializer, QuestionSerializer, FobbitSerializer,)
 from .services import (
     generate_answers, score_for_session, score_for_bluff, )
 from fobbage.quizes.models import (
     Quiz, Question, Answer, Bluff, Guess, Session, Fobbit)
 
-from .forms import NewQuizForm, SessionForm, BluffForm, GuessForm
+from .forms import (
+    NewQuizForm, SessionForm, BluffForm, GuessForm,
+    SessionUpdateForm, )
 
 from django.contrib.auth import get_user_model
 
@@ -171,7 +173,6 @@ def session_play(request, session_id):
             context['form'] = GuessForm(instance=guess)
             answers = Answer.objects.filter(
                 fobbit=session.active_fobbit,)
-            print(answers)
             context['form'].fields["answer"].queryset = answers
 
         return render(
@@ -189,12 +190,20 @@ def prev_question(self, session_id):
     session = Session.objects.get(id=session_id)
     session.prev_question()
     return HttpResponseRedirect(
-        reverse('quiz', args=(session.id,)))
+        reverse('session', args=(session.id,)))
 
 
 def collect_answers(request, fobbit_id):
     fobbit = Fobbit.objects.get(pk=fobbit_id)
     generate_answers(fobbit.id)
+
+    return HttpResponseRedirect(
+        reverse('session', args=(fobbit.session.id,)))
+
+
+def reset_fobbit(request, fobbit_id):
+    fobbit = Fobbit.objects.get(pk=fobbit_id)
+    fobbit.reset()
 
     return HttpResponseRedirect(
         reverse('session', args=(fobbit.session.id,)))
@@ -361,10 +370,37 @@ class SessionCreateView(CreateView):
         return reverse_lazy('session', kwargs={'session_id': self.object.id})
 
 
+class SessionUpdate(CreateView):
+    model = Session
+    form_class = SessionUpdateForm
+
+    # def form_valid(self, form):
+    #     session = form.save(commit=False)
+    #     session.owner = self.request.user
+    #     session.save()
+    #     self.object = session
+
+    #     return HttpResponseRedirect(self.get_success_url())
+
+    def get_success_url(self):
+        return reverse_lazy('session', kwargs={'session_id': self.object.id})
+
+
 # API
 class QuizViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
+
+
+class SessionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Session.objects.all()
+    serializer_class = SessionSerializer
+
+
+# API
+class FobbitViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Fobbit.objects.all()
+    serializer_class = FobbitSerializer
 
 
 class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
@@ -373,16 +409,16 @@ class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ActiveQuestionViewSet(viewsets.ModelViewSet):
-    serializer_class = QuestionSerializer
+    serializer_class = FobbitSerializer
 
     def get_queryset(self):
-        return Question.objects.filter(
-            id__in=Quiz.objects.values_list('active_question', flat=True))
+        return Fobbit.objects.filter(
+            session__in=Session.objects.values_list('active_fobbit', flat=True))
 
     def retrieve(self, request, pk=None):
-        question = get_object_or_404(Quiz, id=pk).active_question
-        Quiz.objects.get(id=pk).active_question
-        serializer = QuestionSerializer(question, context={'request': request})
+        fobbit = get_object_or_404(Session, id=pk).active_fobbit
+        Session.objects.get(id=pk).active_fobbit
+        serializer = FobbitSerializer(fobbit, context={'request': request})
         return Response(serializer.data)
 
 
@@ -394,6 +430,20 @@ class BluffViewSet(viewsets.ModelViewSet):
             return Bluff.objects.filter(player=self.request.user)
         else:
             return Bluff.objects.none()
+
+    def post(self, request, *args, **kwargs):
+        return self.create(
+            request, player=request.user, *args, **kwargs)
+
+
+class GuessViewSet(viewsets.ModelViewSet):
+    serializer_class = GuessSerializer
+
+    def get_queryset(self):
+        if self.request.user:
+            return Guess.objects.filter(player=self.request.user)
+        else:
+            return Guess.objects.none()
 
     def post(self, request, *args, **kwargs):
         return self.create(

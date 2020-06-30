@@ -3,7 +3,7 @@ from rest_framework import serializers
 # from rest_framework.reverse import reverse
 
 from fobbage.quizes.models import (
-    Quiz, Question, Bluff, Answer, Guess,
+    Quiz, Question, Bluff, Answer, Guess, Fobbit, Session,
 )
 
 
@@ -18,18 +18,18 @@ class BluffSerializer(serializers.ModelSerializer):
 
     # override create to save user
     def create(self, validated_data):
-        question = self.validated_data['question']
+        fobbit = self.validated_data['fobbit']
         user = self.context['request'].user
 
-        if user not in question.quiz.players.all():
+        if user not in fobbit.session.players.all():
             raise serializers.ValidationError(
-                'player is not playing this quiz')
+                'player is not playing this session')
 
         validated_data['player'] = user
 
         if Bluff.objects.filter(
             player=validated_data['player'],
-            question=validated_data['question'],
+            fobbit=validated_data['fobbit'],
         ).count() > 0:
             raise serializers.ValidationError(
                 'player already bluffed for this question')
@@ -50,7 +50,7 @@ class GuessSerializer(serializers.ModelSerializer):
         if answer:
             if Guess.objects.filter(
                 player=validated_data['player'],
-                answer__question=answer.question,
+                answer__fobbit=answer.fobbit,
             ).count() > 0:
                 raise serializers.ValidationError(
                     'you already made a guess for this question')
@@ -89,35 +89,46 @@ class FobbitSerializer(serializers.ModelSerializer):
     def get_have_bluffed(self, instance):
         player = self.context['request'].user
         return Bluff.objects.filter(
-            player=player, question=instance.id).count() > 0
+            player=player, fobbit=instance.id).count() > 0
 
     def get_have_guessed(self, instance):
         player = self.context['request'].user
         return Guess.objects.filter(
-            player=player, answer__question=instance.id).count() > 0
+            player=player, answer__fobbit=instance.id).count() > 0
 
     class Meta:
-        model = Question
+        model = Fobbit
         fields = (
             'id', 'text', 'status', 'answers', 'have_bluffed', 'have_guessed',
             'modus')
 
 
 class QuizSerializer(serializers.ModelSerializer):
-    websocket = serializers.SerializerMethodField()
-
-    def get_websocket(self, instance):
-        request = self.context.get('request', None)
-
-        return '{}/ws/quiz/{}/'.format(
-            request.get_host(),
-            instance.id,
-        )
-
     class Meta:
         model = Quiz
         fields = (
             'id',
             'title',
+        )
+
+
+class SessionSerializer(serializers.ModelSerializer):
+    websocket = serializers.SerializerMethodField()
+    # title = serializers.CharField(source='quiz.title')
+
+    def get_websocket(self, instance):
+        request = self.context.get('request', None)
+
+        return '{}/ws/session/{}/'.format(
+            request.get_host(),
+            instance.id,
+        )
+
+    class Meta:
+        model = Session
+        fields = (
+            'id',
+            # 'title',
+            'name',
             'websocket',
         )

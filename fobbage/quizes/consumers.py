@@ -8,8 +8,8 @@ from .models import Bluff, Quiz
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
-        self.quiz_id = self.scope['url_route']['kwargs']['quiz_id']
-        self.room_group_name = 'quiz_%s' % self.quiz_id
+        self.session_id = self.scope['url_route']['kwargs']['session_id']
+        self.room_group_name = 'session_%s' % self.session_id
 
         # Join room group
         async_to_sync(self.channel_layer.group_add)(
@@ -22,7 +22,7 @@ class ChatConsumer(WebsocketConsumer):
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
-                'type': 'quiz_message',
+                'type': 'session_message',
                 'message': 'user joined: {}'.format(self.get_username()),
                 'user': self.get_username(),
             }
@@ -37,7 +37,7 @@ class ChatConsumer(WebsocketConsumer):
 
     def get_username(self):
         self.user = self.scope["user"]
-        self.quiz = Quiz.objects.get(id=self.quiz_id)
+        self.session = Quiz.objects.get(id=self.session_id)
         if self.user.is_authenticated:
             return self.user.username
         else:
@@ -64,7 +64,7 @@ class ChatConsumer(WebsocketConsumer):
         elif 'answer' in text_data_json:
             answer = Bluff.objects.create(
                 player=self.user,
-                question=self.quiz.active_question,
+                question=self.session.active_fobbit,
                 text=text_data_json['answer']
             )
 

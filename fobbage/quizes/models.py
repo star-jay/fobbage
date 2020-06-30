@@ -105,13 +105,10 @@ class Session(models.Model):
     )
 
     def next_question(self):
-        if self.active_fobbit:
-            active = self.active_fobbit.question
-            next = self.quiz.questions.filter(
-                    order__gte=active.order,
-                ).exclude(id=active.id).first()
-        else:
-            next = self.quiz.questions.first()
+        questions = self.quiz.questions.exclude(
+            id__in=[self.fobbits.values_list('question', flat=True)]
+        )
+        next = questions.first()
 
         fobbit = Fobbit.objects.create(
             question=next,
@@ -124,12 +121,11 @@ class Session(models.Model):
     def prev_question(self):
         active = self.active_fobbit
         if active:
-            if active is not self.questions.first():
-                self.active_fobbit = self.fobbits.filter(
-                        question__order__lte=active.question.order,
-                    ).exclude(
-                        id=active.id,
-                    ).last()
+            order = active.question.order
+            fobbit = self.fobbits.filter(
+                question__order=order-1).first()
+            if fobbit:
+                self.active_fobbit = fobbit
                 self.save()
 
 
@@ -157,8 +153,15 @@ class Fobbit(models.Model):
         default=0
     )
 
+    def __str__(self):
+        return self.question.text
+
     @cached_property
     def multiplier(self):
+        if self.question.order > 8:
+            return 3
+        if self.question.order > 3:
+            return 2
         return 1
 
     def hide_answers(self):
@@ -189,9 +192,11 @@ class Fobbit(models.Model):
             return True
         return False
 
-    def reset(self, session):
+    def reset(self):
         self.status = Fobbit.BLUFF
         self.bluffs.all().delete()
+        self.answers.all().delete()
+
         self.save()
 
 
