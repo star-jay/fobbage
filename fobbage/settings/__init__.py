@@ -57,11 +57,8 @@ CORS_ORIGIN_WHITELIST += [
 # Application definition
 
 INSTALLED_APPS = [
-    # fobbage
-    'fobbage',
-    'fobbage.quizes',
-    'fobbage.accounts',
-    'channels',
+    # Disable runserver's static file serving
+    'whitenoise.runserver_nostatic',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -75,6 +72,12 @@ INSTALLED_APPS = [
     'rest_auth',
     'corsheaders',
     'bulma',
+    'channels',
+
+    # fobbage
+    'fobbage',
+    'fobbage.quizes',
+    'fobbage.accounts',
 ]
 
 MIDDLEWARE = [
@@ -82,6 +85,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'spa.middleware.SPAMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -176,7 +180,10 @@ STATICFILES_DIRS = (
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # noqa
+
+# Single page application https://github.com/metakermit/django-spa
+STATICFILES_STORAGE = 'spa.storage.SPAStaticFilesStorage'
 
 # for contrib .sites
 SITE_ID = 1

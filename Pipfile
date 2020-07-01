@@ -20,6 +20,7 @@ django-bulma = "*"
 channels = "*"
 channels-redis = "*"
 channels-rabbitmq = "*"
+django-spa = "*"
 
 [dev-packages]
 pytest = "*"
