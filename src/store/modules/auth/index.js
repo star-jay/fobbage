@@ -1,27 +1,17 @@
-import jwtDecode from 'jwt-decode';
-
 import actions from './actions';
 import mutations from './mutations';
 import getters from './getters';
 
-const getUser = () => {
-  const token = localStorage.getItem('fobbage-user') || null;
-  let user = null;
-  if (token) {
-    user = jwtDecode(token);
-  }
-  return user;
-};
-
+function initialState() {
+  return {
+    userInfo: {},
+    users: {},
+  };
+}
 
 export default {
-  state: {
-    status: '',
-    token: localStorage.getItem('fobbage-user') || '',
-    user: getUser(),
-    nextRefresh: undefined,
-  },
+  state: initialState,
+  actions,
   mutations,
   getters,
-  actions,
 };

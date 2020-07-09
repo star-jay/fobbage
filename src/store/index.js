@@ -6,7 +6,6 @@ import auth from './modules/auth';
 import quizes from './modules/quizes';
 import websocket from './modules/websocket';
 
-
 Vue.use(Vuex);
 Vue.use(vueMoment);
 
@@ -17,6 +16,6 @@ export default new Vuex.Store({
     websocket,
   },
   getters: {
-    isLoading: state => state.quizes.loading,
+    isLoading: (state) => state.quizes.loading,
   },
 });

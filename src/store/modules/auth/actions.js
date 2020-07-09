@@ -1,67 +1,68 @@
-import jwtDecode from 'jwt-decode';
-
-import authAPI from '@/services/api/auth';
+import Auth from '@/services/auth';
 
 import {
-  AUTH_REQUEST,
   AUTH_SUCCESS,
-  AUTH_LOGOUT,
   AUTH_ERROR,
-  AUTH_REFRESH,
-  AUTH_REGISTERED,
-} from '@/store/mutation-types';
-
+  USERINFO_SUCCESS,
+  USERINFO_ERROR,
+  USERS_SUCCESS,
+  USERS_ERROR,
+  USER_SUCCESS,
+} from './mutation-types';
 
 export default {
-  login({ commit }, credentials) {
-    commit(AUTH_REQUEST);
-    return new Promise((resolve, reject) => {
-      authAPI.login(credentials)
-        .then((response) => {
-          const { token } = response.data;
-          const authUser = jwtDecode(token);
-          commit(AUTH_SUCCESS, { token, user: authUser });
-          resolve(response);
-        })
-        .catch((error) => {
-          commit(AUTH_ERROR);
-          authAPI.logout();
-          reject(error);
-        });
-    });
-  },
-  logout: ({ commit }) => new Promise((resolve) => {
-    commit(AUTH_LOGOUT);
-    authAPI.logout();
-    resolve();
-  }),
-  refreshToken: ({ commit, state }) => new Promise((resolve, reject) => {
-    authAPI.refresh(state.token)
+  async login({ commit }, credentials) {
+    console.log(Auth.tokens);
+    return Auth.tokens.post(credentials)
       .then((response) => {
-        const { token } = response.data;
-        const authUser = jwtDecode(token);
-        commit(AUTH_REFRESH, { token, user: authUser });
-        resolve(response);
+        commit(AUTH_SUCCESS);
+        localStorage.setItem('accessToken', response.data.access);
+        localStorage.setItem('refreshToken', response.data.refresh);
+        return response.data;
       })
       .catch((error) => {
-        commit(AUTH_ERROR);
-        authAPI.logout();
-        reject(error);
+        commit(AUTH_ERROR, { error });
+        throw error;
       });
-  }),
-  register({ commit }, credentials) {
-    commit(AUTH_REQUEST);
-    return new Promise((resolve, reject) => {
-      authAPI.register(credentials)
-        .then((response) => {
-          commit(AUTH_REGISTERED);
-          resolve(response);
-        })
-        .catch((error) => {
-          commit(AUTH_ERROR);
-          authAPI.logout();
-          reject(error);
+  },
+  async getUserinfo({ commit }) {
+    Auth.userinfo.get()
+      .then((response) => {
+        commit(USERINFO_SUCCESS, response.data);
+      })
+      .catch((error) => {
+        commit(USERINFO_ERROR, { error });
+        throw error;
+      });
+  },
+  async listUsers({ commit }) {
+    return Auth.users.get()
+      .then((response) => {
+        const users = {};
+        response.data.forEach((user) => {
+          users[user.sub] = user;
         });
-    });
+        commit(USERS_SUCCESS, { users });
+        return response.data;
+      })
+      .catch((error) => {
+        commit(USERS_ERROR, { error });
+        throw error;
+      });
+  },
+  async retrieveUser({ commit }, id) {
+    Auth.users.get(id)
+      .then((response) => {
+        commit(USER_SUCCESS, { user: response.data });
+        return response.data;
+      })
+      .catch((error) => {
+        commit(USERS_ERROR, { error });
+        throw error;
+      });
+  },
+  async logout() {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
   },
 };

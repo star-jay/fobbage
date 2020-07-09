@@ -1,33 +1,21 @@
-import moment from 'moment';
-import * as types from '@/store/mutation-types';
+import Vue from 'vue';
+import * as types from './mutation-types';
 
 export default {
-  [types.AUTH_REQUEST]: (state) => {
-    state.status = 'loading';
+  [types.USERINFO_SUCCESS]: (state, userinfo) => {
+    state.userInfo = userinfo;
   },
-  [types.AUTH_SUCCESS]: (state, { token, user }) => {
-    state.status = 'success';
-    state.token = token;
-    state.user = user;
+  [types.USERINFO_ERROR]: (state) => {
+    state.userInfo = undefined;
   },
-  [types.AUTH_REGISTERED]: (state) => {
-    state.status = '';
-    state.token = '';
-    state.user = null;
+
+  [types.USER_SUCCESS]: (state, { user }) => {
+    Vue.set(state.users, user.sub, user);
   },
-  [types.AUTH_ERROR]: (state) => {
-    state.status = 'error';
-    state.token = undefined;
+  [types.USERS_ERROR]: (state, { error }) => {
+    state.lastError = error;
   },
-  [types.AUTH_LOGOUT]: (state) => {
-    state.status = '';
-    state.token = '';
-    state.user = null;
-  },
-  [types.AUTH_REFRESH]: (state, { token, user }) => {
-    state.status = 'success';
-    state.token = token;
-    state.user = user;
-    state.nextRefresh = moment().add(1500, 'minutes');
+  [types.USERS_SUCCESS]: (state, { users }) => {
+    state.users = users;
   },
 };

@@ -10,7 +10,6 @@ export const AUTH_LOGOUT = 'AUTH_LOGOUT';
 export const AUTH_REFRESH = 'AUTH_REFRESH';
 export const AUTH_REGISTERED = 'AUTH_REGISTERED';
 
-
 // Start loading QUIZES
 export const QUIZES_REQUEST = 'QUIZES_REQUEST';
 // QUIZES successfully loaded

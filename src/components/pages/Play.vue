@@ -33,7 +33,6 @@ import { mapGetters, mapState } from 'vuex';
 import Bluff from '@/components/quizes/Bluff.vue';
 import Guess from '@/components/quizes/Guess.vue';
 
-
 export default {
   name: 'Play',
   components: {
@@ -48,9 +47,9 @@ export default {
   computed: {
     ...mapGetters(['activeQuiz', 'questionStatus']),
     ...mapState({
-      messages: state => state.quizes.messages,
-      activeQuestion: state => state.quizes.activeQuestion,
-      activeQuizId: state => state.quizes.activeQuizId,
+      messages: (state) => state.quizes.messages,
+      activeQuestion: (state) => state.quizes.activeQuestion,
+      activeQuizId: (state) => state.quizes.activeQuizId,
     }),
   },
   methods: {

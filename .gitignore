@@ -1,5 +1,7 @@
 # IDE's
 .vscode/
+.editorconfig
+.editorconfig
 
 # database files
 *db.*

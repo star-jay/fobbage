@@ -23,7 +23,7 @@ export default {
   name: 'Quizlist',
   computed: {
     ...mapState({
-      quizlist: state => state.quizes.quizes,
+      quizlist: (state) => state.quizes.quizes,
     }),
   },
   methods: {

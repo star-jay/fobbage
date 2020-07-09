@@ -2,11 +2,10 @@
  * Resource class
  */
 
-import axios from '@/utils/axiosClient';
-
 class Resource {
-  constructor(base, otherActions) {
+  constructor(client, base, otherActions) {
     this.base = base;
+    this.client = client;
     Object.assign(this, otherActions);
   }
 
@@ -20,27 +19,31 @@ class Resource {
     } else if (id !== undefined) {
       url += `${id}/`;
     }
-    return axios.get(url, axiosOptions);
+    if (axiosOptions && axiosOptions.nextUrl !== undefined) {
+      // next = next page with same options using the cursor
+      return this.client.get(axiosOptions.nextUrl);
+    }
+    return this.client.get(url, axiosOptions);
   }
 
   delete(id, options) {
     const url = `/${this.base}/${id}/`;
-    return axios.delete(url, options);
+    return this.client.delete(url, options);
   }
 
   post(options) {
     const url = `/${this.base}/`;
-    return axios.post(url, options);
+    return this.client.post(url, options);
   }
 
   put(id, options) {
     const url = `/${this.base}/${id}/`;
-    return axios.put(url, options);
+    return this.client.put(url, options);
   }
 
   patch(id, options) {
     const url = `/${this.base}/${id}/`;
-    return axios.patch(url, options);
+    return this.client.patch(url, options);
   }
 }
 

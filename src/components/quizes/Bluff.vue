@@ -32,7 +32,7 @@ export default {
   },
   computed: {
     ...mapState({
-      activeQuestion: state => state.quizes.activeQuestion,
+      activeQuestion: (state) => state.quizes.activeQuestion,
     }),
   },
   methods: {
