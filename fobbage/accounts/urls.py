@@ -2,55 +2,11 @@ from django.conf.urls import url
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
-
+from rest_framework.authtoken.views import obtain_auth_token
 from . import views
 
 urlpatterns = [
-    # url(r'^userinfo/$',
-    #     views.UserInfoAPIView.as_view(),
-    #     name='profile'),
-
-    # url(r'^permissions/$',
-    #     views.PermissionAPIView.as_view(),
-    #     name='permission'),
-
-    url(r'^token/$',
-        views.TokenObtainPairView.as_view(),
-        name='token'),
-
-    url(r'^refreshtoken/$',
-        TokenRefreshView.as_view(),
-        name='refreshtoken'),
-
-    # url(r'^registration/$',
-    #     views.UserRegistrationAPIView.as_view(),
-    #     name='userregistration'),
-
-    # url(r'^emailverification/(?P<verification_key>.+)/$',
-    #     views.UserEmailVerificationAPIView.as_view(),
-    #     name='emailverification'),
-
-    # url(r'^passwordreset/$',
-    #     views.PasswordResetAPIView.as_view(),
-    #     name='passwordreset'),
-
-    # url(r'^passwordreset-confirmation/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',  # noqa: E501
-    #     views.PasswordResetConfirmView.as_view(),
-    #     name='passwordreset-confirmation'),
-
-    # url(r'^accept-terms/$',
-    #     views.AcceptTermsAPIView.as_view(),
-    #     name='accept-terms'),
-
-    # url(r'^settings/$',
-    #     views.SettingsView.as_view(),
-    #     name='settings'),
-
-    # url(r'^passwordchange/$',
-    #     views.PasswordChangeView.as_view(),
-    #     name='passwordchange'),
-
-    # url(r'^profilechange/$',
-    #     views.ProfileChangeView.as_view(),
-    #     name='profilechange'),
+    url(r'^simple_token/$',
+        obtain_auth_token,
+        name='simple-token'),
 ]

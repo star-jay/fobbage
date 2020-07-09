@@ -54,7 +54,6 @@ export default {
   },
   methods: {
     refresh() {
-      this.$store.dispatch('refreshToken');
       if (this.id) {
         this.$store.dispatch('joinQuiz', { id: this.id });
       }
