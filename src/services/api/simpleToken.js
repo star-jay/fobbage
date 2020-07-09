@@ -1,4 +1,4 @@
 import Resource from '@/services/resource';
-import { client } from './authClient';
+import client from './fobbageClient';
 
 export default new Resource(client, 'simple_token');

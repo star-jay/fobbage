@@ -30,15 +30,6 @@ def signup(request):
     return render(request, 'accounts/signup.html', {'form': form})
 
 
-class TokenObtainPairView(TokenObtainPairViewBase):
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        if response.status_code == status.HTTP_200_OK:
-            # Audit the token authentication
-            User.objects.get(username=request.data['username'])
-        return response
-
-
 def simple_token(request):
     if request.method == 'POST':
         user = authenticate(
