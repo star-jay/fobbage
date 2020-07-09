@@ -87,11 +87,13 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'spa.middleware.SPAMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CSRF_USE_SESSIONS = False
 
 ROOT_URLCONF = 'fobbage.urls'
 
@@ -191,6 +193,9 @@ LOGIN_REDIRECT_URL = 'index'
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = True
+
+# CSRF
+CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 
 # JWT
 JWT_AUTH = {
