@@ -19,7 +19,7 @@ django-rest-auth = "*"
 django-bulma = "*"
 channels = "*"
 channels-redis = "*"
-channels-rabbitmq = "*"
+django-spa = "*"
 
 [dev-packages]
 pytest = "*"
@@ -31,4 +31,4 @@ ipython = "*"
 "flake8" = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"

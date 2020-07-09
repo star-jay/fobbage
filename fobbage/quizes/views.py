@@ -14,11 +14,11 @@ from rest_framework.response import Response
 
 from .serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer, SessionSerializer,
-    GuessSerializer, QuestionSerializer, FobbitSerializer,)
+    GuessSerializer, FobbitSerializer,)
 from .services import (
     generate_answers, score_for_session, score_for_bluff, )
 from fobbage.quizes.models import (
-    Quiz, Question, Answer, Bluff, Guess, Session, Fobbit)
+    Quiz, Answer, Bluff, Guess, Session, Fobbit)
 
 from .forms import (
     NewQuizForm, SessionForm, BluffForm, GuessForm,
@@ -413,7 +413,8 @@ class ActiveQuestionViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Fobbit.objects.filter(
-            session__in=Session.objects.values_list('active_fobbit', flat=True))
+            session__in=Session.objects.values_list(
+                'active_fobbit', flat=True))
 
     def retrieve(self, request, pk=None):
         fobbit = get_object_or_404(Session, id=pk).active_fobbit
@@ -430,20 +431,6 @@ class BluffViewSet(viewsets.ModelViewSet):
             return Bluff.objects.filter(player=self.request.user)
         else:
             return Bluff.objects.none()
-
-    def post(self, request, *args, **kwargs):
-        return self.create(
-            request, player=request.user, *args, **kwargs)
-
-
-class GuessViewSet(viewsets.ModelViewSet):
-    serializer_class = GuessSerializer
-
-    def get_queryset(self):
-        if self.request.user:
-            return Guess.objects.filter(player=self.request.user)
-        else:
-            return Guess.objects.none()
 
     def post(self, request, *args, **kwargs):
         return self.create(

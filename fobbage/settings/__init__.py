@@ -57,11 +57,8 @@ CORS_ORIGIN_WHITELIST += [
 # Application definition
 
 INSTALLED_APPS = [
-    # fobbage
-    'fobbage',
-    'fobbage.quizes',
-    'fobbage.accounts',
-    'channels',
+    # Disable runserver's static file serving
+    'whitenoise.runserver_nostatic',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -75,6 +72,12 @@ INSTALLED_APPS = [
     'rest_auth',
     'corsheaders',
     'bulma',
+    'channels',
+
+    # fobbage
+    'fobbage',
+    'fobbage.quizes',
+    'fobbage.accounts',
 ]
 
 MIDDLEWARE = [
@@ -82,12 +85,15 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'spa.middleware.SPAMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CSRF_USE_SESSIONS = False
 
 ROOT_URLCONF = 'fobbage.urls'
 
@@ -159,8 +165,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Static files (CSS, JavaScript, Images)
@@ -170,13 +174,16 @@ STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'dist'),
 )
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # noqa
+
+# Single page application https://github.com/metakermit/django-spa
+STATICFILES_STORAGE = 'spa.storage.SPAStaticFilesStorage'
 
 # for contrib .sites
 SITE_ID = 1
@@ -186,6 +193,9 @@ LOGIN_REDIRECT_URL = 'index'
 
 # CORS
 CORS_ORIGIN_ALLOW_ALL = True
+
+# CSRF
+CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 
 # JWT
 JWT_AUTH = {

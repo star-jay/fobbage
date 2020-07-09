@@ -22,7 +22,7 @@ from rest_framework.routers import DefaultRouter
 from fobbage.quizes.views import (
     quiz_view, index, session_play, scoreboard, new_quiz, collect_answers,
     hide_answers, next_question, prev_question, show_scores, session_join,
-    QuizList, SessionList, start_guessing, start_bluffing, session_view,
+    QuizList, start_guessing, start_bluffing, session_view,
     SessionViewSet, FobbitViewSet,
     # API
     AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet,
@@ -61,7 +61,10 @@ urlpatterns = [
     path('session/<int:session_id>/join/', session_join, name='join'),
     path('session/<int:session_id>/play/', session_play, name='play'),
     path('session/<int:session_id>/scoreboard', scoreboard, name='scoreboard'),
-    path('session/<int:session_id>/update', SessionUpdate.as_view(), name='scoreboard'),
+    path(
+        'session/<int:session_id>/update',
+        SessionUpdate.as_view(),
+        name='scoreboard'),
 
 
     path(
