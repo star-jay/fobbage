@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Play from '@/views/Play.vue';
-import Home from '@/views/Home.vue';
-import Quizlist from '@/views/Quizlist.vue';
+import Play from '@/components/pages/Play.vue';
+import Home from '@/components/pages/Home.vue';
+import Quizlist from '@/components/pages/Quizlist.vue';
 
 Vue.use(VueRouter);
 
@@ -31,7 +31,7 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import(/* webpackChunkName: "login" */ './views/Login.vue'),
+    component: () => import(/* webpackChunkName: "login" */ '@/components/pages/Login.vue'),
     meta: {
       title: 'Fobbage - Login',
     },
@@ -40,7 +40,7 @@ const routes = [
   {
     path: '/logout',
     name: 'logout',
-    component: () => import(/* webpackChunkName: "login" */ './views/Logout.vue'),
+    component: () => import(/* webpackChunkName: "login" */ '@/components/pages/Logout.vue'),
     meta: {
       title: 'Fobbage - Logout',
     },
@@ -49,7 +49,7 @@ const routes = [
   {
     path: '/register',
     name: 'register',
-    component: () => import(/* webpackChunkName: "login" */ './views/Register.vue'),
+    component: () => import(/* webpackChunkName: "login" */ '@/components/pages/Register.vue'),
     meta: {
       title: 'Fobbage - Register',
     },

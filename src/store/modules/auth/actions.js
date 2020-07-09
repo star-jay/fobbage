@@ -12,6 +12,7 @@ import {
 
 export default {
   async login({ commit }, credentials) {
+    console.log(Auth.tokens);
     return Auth.tokens.post(credentials)
       .then((response) => {
         commit(AUTH_SUCCESS);
