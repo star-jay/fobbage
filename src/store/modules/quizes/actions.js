@@ -9,6 +9,7 @@ export default {
   getQuizList: ({ commit }) => {
     commit('QUIZES_REQUEST');
     return new Promise((resolve, reject) => {
+      console.log('quizesApi');
       quizesAPI.get()
         .then((response) => {
           const quizes = response.data;
