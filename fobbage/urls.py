@@ -29,7 +29,7 @@ from fobbage.quizes.views import (
     GuessViewSet, SessionCreateView, SessionJoin, SessionContinue,
     SessionUpdate, reset_fobbit,
 )
-from fobbage.accounts.api.views import CreateUserView
+# from fobbage.accounts.views import CreateUserView
 from fobbage.accounts.views import signup
 
 
@@ -48,6 +48,7 @@ router.register(
 urlpatterns = [
 
     path('', index, name='index'),
+    path('', include('fobbage.accounts.urls')),
     path('new_quiz/', new_quiz, name='new_quiz'),
     path('new_session/', SessionCreateView.as_view(), name='new_quiz'),
 
@@ -108,7 +109,7 @@ urlpatterns = [
     path('signup/', signup, name='signup'),
     # path('login/', auth_views.login, name='login'),
     path('api/', include(router.urls)),
-    path('api/register', CreateUserView.as_view(), name="create-user"),
-    path('api/', include('fobbage.accounts.api.urls')),
-    path('api-auth/', include('rest_framework.urls')),
+    # path('api/register', CreateUserView.as_view(), name="create-user"),
+    # path('api/', include('fobbage.accounts.urls')),
+    # path('api-auth/', include('rest_framework.urls')),
 ]
