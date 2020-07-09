@@ -36,7 +36,7 @@
 
 <script>
 
-import { mapGetters } from 'vuex';
+import { } from 'vuex';
 
 export default {
   name: 'NavigationBar',
