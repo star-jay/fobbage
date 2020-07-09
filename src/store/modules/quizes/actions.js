@@ -5,7 +5,6 @@ import {
   activeQuestionsAPI,
 } from '@/services/api';
 
-
 export default {
   getQuizList: ({ commit }) => {
     commit('QUIZES_REQUEST');

@@ -12,9 +12,8 @@ const axiosClient = axios.create({
   ...options,
 });
 
-
 export default {
-  login: credentials => new Promise((resolve, reject) => {
+  login: (credentials) => new Promise((resolve, reject) => {
     axiosClient.post('api/token/', credentials)
       .then((resp) => {
         const { token } = resp.data;
@@ -30,7 +29,7 @@ export default {
   logout: () => {
     localStorage.removeItem(tokenKey);
   },
-  refresh: token => new Promise((resolve, reject) => {
+  refresh: (token) => new Promise((resolve, reject) => {
     axiosClient.post('api/refreshtoken/', { token }, {
       refresh: true,
     })
@@ -44,7 +43,7 @@ export default {
         reject(err);
       });
   }),
-  register: credentials => new Promise((resolve, reject) => {
+  register: (credentials) => new Promise((resolve, reject) => {
     axiosClient.post('api/register', credentials)
       .then((resp) => {
         resolve(resp);

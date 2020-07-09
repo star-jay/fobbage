@@ -11,7 +11,6 @@ import {
   AUTH_REGISTERED,
 } from '@/store/mutation-types';
 
-
 export default {
   login({ commit }, credentials) {
     commit(AUTH_REQUEST);

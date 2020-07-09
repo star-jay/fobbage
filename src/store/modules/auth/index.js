@@ -13,7 +13,6 @@ const getUser = () => {
   return user;
 };
 
-
 export default {
   state: {
     status: '',

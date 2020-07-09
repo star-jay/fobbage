@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { } from 'vuex';
 import { setTimeout } from 'timers';
 
 export default {
@@ -30,7 +30,7 @@ export default {
       errors: {},
     };
   },
-  created(){
+  created() {
     this.logout();
   },
   methods: {
@@ -39,9 +39,9 @@ export default {
       this.$store.dispatch('logout')
         .then(() => {
           this.submitted = true;
-          setTimeout(3000, ()=>{
-            router.push({ name: 'login' });
-          })
+          setTimeout(3000, () => {
+            this.$router.push({ name: 'login' });
+          });
         })
         .catch((error) => {
           this.errors = error.response.data;

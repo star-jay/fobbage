@@ -3,7 +3,6 @@ import axios from 'axios';
 import store from '@/store';
 import router from '@/router';
 
-
 const options = {};
 
 const prevToken = localStorage.getItem('fobbage-token');
@@ -34,7 +33,7 @@ instance.interceptors.request.use((config) => {
   return config;
 });
 
-instance.interceptors.response.use(undefined, err => new Promise(() => {
+instance.interceptors.response.use(undefined, (err) => new Promise(() => {
   // eslint-disable-next-line
   if (err.response && err.response.status === 401 && err.config && !err.config.__isRetryRequest) {
     // if you ever get an unauthenticated, logout the user
@@ -45,6 +44,5 @@ instance.interceptors.response.use(undefined, err => new Promise(() => {
   }
   throw err;
 }));
-
 
 export default instance;

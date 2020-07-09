@@ -82,7 +82,8 @@
             <p>Thank you.</p>
             <p>
               Your account has been created.
-              Please wait while we redirect you to the  <router-link :to="{name: 'login'}">login</router-link> page.
+              Please wait while we redirect you to the
+              <router-link :to="{name: 'login'}">login</router-link> page.
             </p>
           </v-card-text>
         </v-card>
@@ -114,28 +115,28 @@ export default {
       },
       rules: {
         username: [
-          v => !!v || 'Username is required',
-          v => (v && v.length <= 150) || 'Username must be less than 150 characters',
+          (v) => !!v || 'Username is required',
+          (v) => (v && v.length <= 150) || 'Username must be less than 150 characters',
         ],
         email: [
-          v => !!v || 'Email is required',
+          (v) => !!v || 'Email is required',
         ],
         first_name: [
-          v => !!v || 'First Name is required',
-          v => (v && v.length <= 30) || 'First Name must be less than 30 characters',
+          (v) => !!v || 'First Name is required',
+          (v) => (v && v.length <= 30) || 'First Name must be less than 30 characters',
         ],
         last_name: [
-          v => !!v || 'Last Name is required',
-          v => (v && v.length <= 30) || 'Last Name must be less than 150 characters',
+          (v) => !!v || 'Last Name is required',
+          (v) => (v && v.length <= 30) || 'Last Name must be less than 150 characters',
         ],
         password: [
-          v => !!v || 'Password is required',
-          v => (v && v.length > 7) || 'Your password should be at least 8 characters',
-          v => (this.form.password2.length === 0) || (v && v === this.form.password2) || 'The passwords did not match',
+          (v) => !!v || 'Password is required',
+          (v) => (v && v.length > 7) || 'Your password should be at least 8 characters',
+          (v) => (this.form.password2.length === 0) || (v && v === this.form.password2) || 'The passwords did not match',
         ],
         password2: [
-          v => !!v || 'Please re-enter the password',
-          v => (v && v === this.form.password) || 'The passwords did not match',
+          (v) => !!v || 'Please re-enter the password',
+          (v) => (v && v === this.form.password) || 'The passwords did not match',
         ],
       },
     };
@@ -154,9 +155,9 @@ export default {
         this.$store.dispatch('register', this.form)
           .then(() => {
             this.submitted = true;
-            setTimeout(()=>{
-              router.push({ name: 'login' });
-            }, 3000)
+            setTimeout(() => {
+              this.$router.push({ name: 'login' });
+            }, 3000);
           })
           .catch((error) => {
             this.errors = error.response.data;

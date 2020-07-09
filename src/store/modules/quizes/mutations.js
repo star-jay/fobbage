@@ -1,7 +1,6 @@
 // import Vue from 'vue';
 import * as types from '@/store/mutation-types';
 
-
 export default {
   [types.QUIZES_REQUEST]: (state) => {
     state.loading = true;

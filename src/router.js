@@ -5,7 +5,6 @@ import Play from '@/views/Play.vue';
 import Home from '@/views/Home.vue';
 import Quizlist from '@/views/Quizlist.vue';
 
-
 Vue.use(Router);
 
 const ifNotAuthenticated = (to, from, next) => {
@@ -46,7 +45,7 @@ export default new Router({
           path: '/:id(\\d+)?',
           component: Play,
           beforeEnter: ifAuthenticated,
-          props: route => ({ id: Number(route.params.id) }),
+          props: (route) => ({ id: Number(route.params.id) }),
         },
       ],
     },
