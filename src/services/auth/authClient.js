@@ -1,7 +1,7 @@
 import axios from 'axios';
 import router from '@/router';
 
-const baseURL = process.env.VUE_APP_AUTH_API_URL || 'http://localhost:9000/api/';
+const baseURL = process.env.VUE_APP_API_BACKEND_URL || 'http://localhost:8000/';
 
 const client = axios.create({
   baseURL,
