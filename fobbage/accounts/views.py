@@ -8,6 +8,8 @@ from django.shortcuts import render, redirect
 
 from rest_framework import status
 from fobbage.accounts.forms import UserCreationForm
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
 
 
 User = get_user_model()
@@ -35,3 +37,13 @@ class TokenObtainPairView(TokenObtainPairViewBase):
             # Audit the token authentication
             User.objects.get(username=request.data['username'])
         return response
+
+
+def simple_token(request):
+    if request.method == 'POST':
+        user = authenticate(
+            username=request.data['username'],
+            password=request.data['password'])
+        token = Token.objects.create(user=user)
+        return Response(
+            data=dict(token=token), status=201)

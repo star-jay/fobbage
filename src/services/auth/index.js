@@ -1,9 +1,11 @@
 import { client, tokenErrorInterceptor } from './authClient';
 import tokens from './tokens';
+import simpleToken from './simpleToken';
 import userinfo from './userinfo';
 import users from './users';
 
 export default {
+  simpleToken,
   tokens,
   userinfo,
   users,

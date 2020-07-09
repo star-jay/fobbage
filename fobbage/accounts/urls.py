@@ -2,7 +2,7 @@ from django.conf.urls import url
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
 )
-
+from rest_framework.authtoken.views import obtain_auth_token
 from . import views
 
 urlpatterns = [
@@ -13,6 +13,10 @@ urlpatterns = [
     # url(r'^permissions/$',
     #     views.PermissionAPIView.as_view(),
     #     name='permission'),
+
+    url(r'^simple_token/$',
+        obtain_auth_token,
+        name='simple-token'),
 
     url(r'^token/$',
         views.TokenObtainPairView.as_view(),

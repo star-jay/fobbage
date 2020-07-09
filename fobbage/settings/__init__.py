@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django_extensions',
     'rest_framework',
-    'rest_auth',
+    'rest_framework.authtoken',
     'corsheaders',
     'bulma',
     'channels',
@@ -209,6 +209,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'django.contrib.auth.backends.ModelBackend',

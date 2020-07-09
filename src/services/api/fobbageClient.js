@@ -10,7 +10,7 @@ client.interceptors.request.use((config) => {
   const token = localStorage.getItem('accessToken');
   if (token) {
     // eslint-disable-next-line
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Token ${token}`;
   }
   return config;
 });

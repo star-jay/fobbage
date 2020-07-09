@@ -13,10 +13,10 @@ import {
 export default {
   async login({ commit }, credentials) {
     console.log(Auth.tokens);
-    return Auth.tokens.post(credentials)
+    return Auth.simpleToken.post(credentials)
       .then((response) => {
         commit(AUTH_SUCCESS);
-        localStorage.setItem('accessToken', response.data.access);
+        localStorage.setItem('accessToken', response.data.token);
         localStorage.setItem('refreshToken', response.data.refresh);
         return response.data;
       })
