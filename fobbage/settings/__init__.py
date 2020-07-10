@@ -42,7 +42,7 @@ MY_HOSTS = env.list('HOSTNAMES', default=[])
 for host in MY_HOSTS:
     ALLOWED_HOSTS.append(host)
 
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS_AND_PORTS = [
     f"{hostname}:{port}"
     for port in PORTS
     for hostname in ALLOWED_HOSTS
@@ -50,11 +50,11 @@ ALLOWED_HOSTS = [
 
 CORS_ORIGIN_WHITELIST = [
     'http://'+host
-    for host in ALLOWED_HOSTS
+    for host in ALLOWED_HOSTS_AND_PORTS
 ]
 CORS_ORIGIN_WHITELIST += [
     'https://'+host
-    for host in ALLOWED_HOSTS
+    for host in ALLOWED_HOSTS_AND_PORTS
 ]
 
 # Application definition
@@ -134,10 +134,6 @@ AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-
-]
 
 
 # Internationalization
