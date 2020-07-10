@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import environ
-import datetime
 
 env = environ.Env()
 environ.Env.read_env()
@@ -36,22 +35,26 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '192.168.0.141',
     '0.0.0.0',
-    "localhost:8080",
-    "127.0.0.1:8080",
-    "10.127.67.77",
 ]
+PORTS = ['8080', '8000', '80']
 
 MY_HOSTS = env.list('HOSTNAMES', default=[])
 for host in MY_HOSTS:
     ALLOWED_HOSTS.append(host)
 
+ALLOWED_HOSTS_AND_PORTS = [
+    f"{hostname}:{port}"
+    for port in PORTS
+    for hostname in ALLOWED_HOSTS
+]
+
 CORS_ORIGIN_WHITELIST = [
     'http://'+host
-    for host in ALLOWED_HOSTS
+    for host in ALLOWED_HOSTS_AND_PORTS
 ]
 CORS_ORIGIN_WHITELIST += [
     'https://'+host
-    for host in ALLOWED_HOSTS
+    for host in ALLOWED_HOSTS_AND_PORTS
 ]
 
 # Application definition
@@ -127,25 +130,10 @@ DATABASES = {
         default='postgres:///fobbage'),
 }
 
-# AUTHENTICATION_BACKENDS = (
-#     ...
-#     # Needed to login by username in Django admin, regardless of `allauth`
-#     'django.contrib.auth.backends.ModelBackend',
-
-#     # `allauth` specific authentication methods, such as login by e-mail
-#     'allauth.account.auth_backends.AuthenticationBackend',
-#     ...
-# )
-
-
 AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-
-]
 
 
 # Internationalization
@@ -185,24 +173,6 @@ STATICFILES_DIRS = (
 # Single page application https://github.com/metakermit/django-spa
 STATICFILES_STORAGE = 'spa.storage.SPAStaticFilesStorage'
 
-# for contrib .sites
-SITE_ID = 1
-
-# contrib auth
-LOGIN_REDIRECT_URL = 'index'
-
-# CORS
-CORS_ORIGIN_ALLOW_ALL = True
-
-# CSRF
-CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
-
-# JWT
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),
-    'JWT_ALLOW_REFRESH': True,
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
@@ -210,7 +180,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'django.contrib.auth.backends.ModelBackend',
     ),
@@ -231,17 +200,11 @@ CHANNEL_LAYERS = {
     },
 }
 
-# # RABBITMQ
-# AMQP_URL = os.environ.get('AMQP_URL', default=None)
-# EXCHANGE = os.environ.get('EXCHANGE', default="fobbage-groups")
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_rabbitmq.core.RabbitmqChannelLayer",
-#         "CONFIG": {
-#             "host": AMQP_URL,
-#             "groups_exchange": EXCHANGE,
-#             # "ssl_context": ... (optional)
-#         },
-#     },
-# }
+# CSRF
+# CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+
+# contrib auth
+# LOGIN_REDIRECT_URL = 'index'
+# for contrib .sites
+# SITE_ID = 1

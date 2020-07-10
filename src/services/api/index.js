@@ -1,13 +1,13 @@
-import quizes from './quizes';
-import bluffs from './bluffs';
-import guess from './guesses';
-import activeQuestions from './activeQuestions';
-import simpleToken from './simpleToken';
+import quizesAPI from './quizes';
+import bluffsAPI from './bluffs';
+import guessAPI from './guesses';
+import activeQuestionsAPI from './activeQuestions';
+import simpleTokenAPI from './simpleToken';
 
 export {
-  quizes,
-  bluffs,
-  guess,
-  activeQuestions,
-  simpleToken,
+  quizesAPI,
+  bluffsAPI,
+  guessAPI,
+  activeQuestionsAPI,
+  simpleTokenAPI,
 };

@@ -1,15 +1,15 @@
 import {
-  quizes,
-  bluffs,
-  guess,
-  activeQuestions,
+  quizesAPI,
+  bluffsAPI,
+  guessAPI,
+  activeQuestionsAPI,
 } from '@/services/api';
 
 export default {
   getQuizList: ({ commit }) => {
     commit('QUIZES_REQUEST');
     return new Promise((resolve, reject) => {
-      quizes.get()
+      quizesAPI.get()
         .then((response) => {
           const quizes = response.data;
           commit('QUIZES_SUCCESS', quizes);
@@ -27,7 +27,7 @@ export default {
   },
   newActiveQuestion: ({ state, commit }) => new Promise((resolve, reject) => {
     // set active question to zero
-    activeQuestions.get(state.activeQuizId)
+    activeQuestionsAPI.get(state.activeQuizId)
       .then((response) => {
         const activeQuestion = response.data;
         commit('ACTIVE_QUESTION_SUCCES', { activeQuestion });
@@ -40,7 +40,7 @@ export default {
   }),
   bluff: ({ state, commit, dispatch }, { text }) => new Promise(
     (resolve, reject) => {
-      bluffs.post({ fobbit: state.activeQuestion.id, text })
+      bluffsAPI.post({ fobbit: state.activeQuestion.id, text })
         .then((response) => {
           commit('BLUFF_SUCCESS', text);
           dispatch('newActiveQuestion');
@@ -66,8 +66,8 @@ export default {
       }));
     }
   },
-  guess: ({ commit, dispatch }, { id, guess }) => new Promise((resolve, reject) => {
-    guess.post({ question: id, answer: guess })
+  createGuess: ({ commit, dispatch }, { id, guess }) => new Promise((resolve, reject) => {
+    guessAPI.post({ question: id, answer: guess })
       .then((response) => {
         commit('GUESS_SUCCESS', guess);
         dispatch('newActiveQuestion');

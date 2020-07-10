@@ -18,7 +18,6 @@ django-bulma = "*"
 channels = "*"
 channels-redis = "*"
 django-spa = "*"
-djangorestframework-simplejwt = "*"
 
 [dev-packages]
 pytest = "*"

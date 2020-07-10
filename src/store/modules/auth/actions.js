@@ -1,4 +1,4 @@
-import { simpleToken } from '@/services/api';
+import { simpleTokenAPI } from '@/services/api';
 
 import {
   AUTH_SUCCESS,
@@ -7,7 +7,7 @@ import {
 
 export default {
   async login({ commit }, credentials) {
-    return simpleToken.post(credentials)
+    return simpleTokenAPI.post(credentials)
       .then((response) => {
         commit(AUTH_SUCCESS);
         localStorage.setItem('accessToken', response.data.token);

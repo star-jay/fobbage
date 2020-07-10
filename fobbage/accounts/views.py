@@ -1,15 +1,8 @@
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView as TokenObtainPairViewBase,
-)
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth import login, authenticate
 from django.shortcuts import render, redirect
 
-from rest_framework import status
 from fobbage.accounts.forms import UserCreationForm
-from rest_framework.authtoken.models import Token
-from rest_framework.response import Response
 
 
 User = get_user_model()
@@ -28,13 +21,3 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'accounts/signup.html', {'form': form})
-
-
-def simple_token(request):
-    if request.method == 'POST':
-        user = authenticate(
-            username=request.data['username'],
-            password=request.data['password'])
-        token = Token.objects.create(user=user)
-        return Response(
-            data=dict(token=token), status=201)
