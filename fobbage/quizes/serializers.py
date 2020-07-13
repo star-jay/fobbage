@@ -114,7 +114,6 @@ class QuizSerializer(serializers.ModelSerializer):
 
 class SessionSerializer(serializers.ModelSerializer):
     websocket = serializers.SerializerMethodField()
-    # title = serializers.CharField(source='quiz.title')
 
     def get_websocket(self, instance):
         request = self.context.get('request', None)
@@ -128,7 +127,9 @@ class SessionSerializer(serializers.ModelSerializer):
         model = Session
         fields = (
             'id',
-            # 'title',
             'name',
             'websocket',
+            'quiz',
+            'owner',
+            'url',
         )

@@ -387,23 +387,23 @@ class SessionUpdate(CreateView):
 
 
 # API
-class QuizViewSet(viewsets.ReadOnlyModelViewSet):
+class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
 
 
-class SessionViewSet(viewsets.ReadOnlyModelViewSet):
+class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
 
 
 # API
-class FobbitViewSet(viewsets.ReadOnlyModelViewSet):
+class FobbitViewSet(viewsets.ModelViewSet):
     queryset = Fobbit.objects.all()
     serializer_class = FobbitSerializer
 
 
-class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
+class AnswerViewSet(viewsets.ModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
 

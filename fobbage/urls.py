@@ -17,38 +17,23 @@ from django.contrib import admin
 # from django.contrib import auth as auth_views
 from django.urls import path, include
 # from django.conf.urls import url
-from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
     quiz_view, index, session_play, scoreboard, new_quiz, collect_answers,
     hide_answers, next_question, prev_question, show_scores, session_join,
     QuizList, start_guessing, start_bluffing, session_view,
-    SessionViewSet, FobbitViewSet,
-    # API
-    AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet,
-    GuessViewSet, SessionCreateView, SessionJoin, SessionContinue,
+    SessionCreateView, SessionJoin, SessionContinue,
     SessionUpdate, reset_fobbit,
 )
 # from fobbage.accounts.views import CreateUserView
 from fobbage.accounts.views import signup
 
 
-router = DefaultRouter()
-router.register(r'quizes', QuizViewSet, basename='quiz')
-router.register(r'fobbit', FobbitViewSet, basename='fobbit')
-router.register(r'session', SessionViewSet, basename='quiz')
-
-router.register(r'bluffs', BluffViewSet, basename='bluff')
-router.register(r'guesses', GuessViewSet, basename='guess')
-router.register(r'answers', AnswerViewSet, basename='answer')
-router.register(
-    r'active_questions', ActiveQuestionViewSet, basename='active_question')
-
-
 urlpatterns = [
-
     path('', index, name='index'),
-    path('', include('fobbage.accounts.urls')),
+    path('api/', include('fobbage.accounts.urls')),
+    path('api/', include('fobbage.quizes.urls')),
+
     path('new_quiz/', new_quiz, name='new_quiz'),
     path('new_session/', SessionCreateView.as_view(), name='new_quiz'),
 
@@ -103,13 +88,12 @@ urlpatterns = [
         'fobbit/<int:fobbit_id>/show_scores/',
         show_scores,
         name='show_scores'),
-    path('accounts/', include('django.contrib.auth.urls')),
+    path('api/accounts/', include('django.contrib.auth.urls')),
 
     path('admin/', admin.site.urls),
     path('signup/', signup, name='signup'),
     # path('login/', auth_views.login, name='login'),
-    path('api/', include(router.urls)),
     # path('api/register', CreateUserView.as_view(), name="create-user"),
     # path('api/', include('fobbage.accounts.urls')),
-    # path('api-auth/', include('rest_framework.urls')),
+    path('api-auth/', include('rest_framework.urls')),
 ]
