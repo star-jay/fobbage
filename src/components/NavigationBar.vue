@@ -18,7 +18,7 @@
           icon
           v-on="on"
         >
-          <v-icon>person</v-icon>
+          <v-icon>mdi-account</v-icon>
         </v-btn>
       </template>
 
