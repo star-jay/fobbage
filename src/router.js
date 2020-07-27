@@ -1,8 +1,10 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import Play from '@/components/pages/Play.vue';
+import Host from '@/components/pages/Host.vue';
 import Home from '@/components/pages/Home.vue';
-import Quizlist from '@/components/pages/Quizlist.vue';
+import SessionList from '@/components/pages/SessionList.vue';
+import QuizList from '@/components/pages/QuizList.vue';
 
 Vue.use(VueRouter);
 
@@ -15,15 +17,29 @@ const routes = [
       title: 'Fobbage',
     },
     children: [
-      // pick a quiz
+      // Play
       {
-        path: '',
-        component: Quizlist,
+        path: '/play',
+        component: SessionList,
+        children: [
+          {
+            path: '/:id(\\d+)?',
+            component: Play,
+            props: (route) => ({ id: Number(route.params.id) }),
+          },
+        ],
       },
+      // Host
       {
-        path: '/:id(\\d+)?',
-        component: Play,
-        props: (route) => ({ id: Number(route.params.id) }),
+        path: '/host',
+        component: QuizList,
+        children: [
+          {
+            path: '/:id(\\d+)?',
+            component: Host,
+            props: (route) => ({ id: Number(route.params.id) }),
+          },
+        ],
       },
     ],
   },

@@ -20,7 +20,7 @@
 import { mapState } from 'vuex';
 
 export default {
-  name: 'Quizlist',
+  name: 'QuizList',
   computed: {
     ...mapState({
       quizlist: (state) => state.quizes.quizes,
