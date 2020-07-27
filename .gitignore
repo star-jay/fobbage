@@ -46,3 +46,4 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
+src/services/api/dndSession.txt
