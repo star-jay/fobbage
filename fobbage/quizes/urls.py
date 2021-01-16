@@ -11,8 +11,8 @@ from fobbage.quizes.views import (
 
 router = DefaultRouter()
 router.register(r'quizes', QuizViewSet, basename='quiz')
-router.register(r'fobbit', FobbitViewSet, basename='fobbit')
-router.register(r'session', SessionViewSet, basename='session')
+router.register(r'fobbits', FobbitViewSet, basename='fobbit')
+router.register(r'sessions', SessionViewSet, basename='session')
 
 router.register(r'bluffs', BluffViewSet, basename='bluff')
 router.register(r'guesses', GuessViewSet, basename='guess')
