@@ -205,6 +205,6 @@ CHANNEL_LAYERS = {
 # CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 
 # contrib auth
-# LOGIN_REDIRECT_URL = 'index'
+LOGIN_REDIRECT_URL = 'index'
 # for contrib .sites
-# SITE_ID = 1
+SITE_ID = 1

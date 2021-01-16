@@ -36,6 +36,7 @@ class SessionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Session
     # Example sequence field
+    owner = factory.SubFactory(UserFactory)
     quiz = factory.SubFactory(QuizFactory)
     name = factory.Sequence(lambda n: 'Dummy Session: {}'.format(n))
 

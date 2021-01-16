@@ -176,10 +176,10 @@ class Command(BaseCommand):
                 'No superuser info found in the environment file...')
 
     def create_quiz(self):
-        user = User.objects.all().first()
         quiz = Quiz.objects.create(
             title=QUIZ['title'],
-            created_by=user)
+            created_by=User.objects.first(),
+            players=[User.objects.first(),])
         for r in QUIZ['rounds']:
             i = 0
             for q in r['questions']:
