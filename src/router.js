@@ -3,6 +3,8 @@ import VueRouter from 'vue-router';
 import Play from '@/components/pages/Play.vue';
 import Host from '@/components/pages/Host.vue';
 import Home from '@/components/pages/Home.vue';
+import BaseLayout from '@/components/layouts/BaseLayout.vue';
+
 import SessionList from '@/components/pages/SessionList.vue';
 import QuizList from '@/components/pages/QuizList.vue';
 
@@ -11,12 +13,16 @@ Vue.use(VueRouter);
 const routes = [
   // Home
   {
-    path: '/',
-    component: Home,
+    path: '',
+    component: BaseLayout,
     meta: {
       title: 'Fobbage',
     },
     children: [
+      {
+        path: '/',
+        component: Home,
+      },
       // Play
       {
         path: '/play',

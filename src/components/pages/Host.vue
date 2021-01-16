@@ -30,8 +30,8 @@
 
 <script>
 import { mapGetters, mapState } from 'vuex';
-import Bluff from '@/components/quizes/Bluff.vue';
-import Guess from '@/components/quizes/Guess.vue';
+import Bluff from '@/components/common/Bluff.vue';
+import Guess from '@/components/common/Guess.vue';
 
 export default {
   name: 'Play',

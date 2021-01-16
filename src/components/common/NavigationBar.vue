@@ -3,6 +3,7 @@
     dark
     app
     class="primary"
+    dense
   >
     <v-toolbar-title >Fobbage</v-toolbar-title>
     <v-spacer></v-spacer>
