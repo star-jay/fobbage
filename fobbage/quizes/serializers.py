@@ -18,7 +18,7 @@ class BluffSerializer(serializers.ModelSerializer):
             'player': {'read_only': True},
         }
 
-    # override create to save user
+    # Override create to save user
     def create(self, validated_data):
         fobbit = self.validated_data['fobbit']
         user = self.context['request'].user
@@ -116,11 +116,11 @@ class QuizSerializer(serializers.ModelSerializer):
 
 class SessionSerializer(serializers.ModelSerializer):
     websocket = serializers.SerializerMethodField()
-    questions = serializers.SerializerMethodField()
+    # questions = serializers.SerializerMethodField()
 
-    def get_questions(self, instance):
-        return QuestionSerializer(
-            Question.objects.filter(round__quiz=instance), many=True).data
+    # def get_questions(self, instance):
+    #     return QuestionSerializer(
+    #         Question.objects.filter(quiz=instance.quiz), many=True).data
 
     def get_websocket(self, instance):
         request = self.context.get('request', None)
@@ -139,5 +139,5 @@ class SessionSerializer(serializers.ModelSerializer):
             'quiz',
             'owner',
             'url',
-            'questions'
+            # 'questions'
         )
