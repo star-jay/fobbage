@@ -8,11 +8,13 @@ from fobbage.quizes.models import (
 
 
 class BluffSerializer(serializers.ModelSerializer):
+
+    username = serializers.CharField(source='player.username', read_only=True)
+
     class Meta:
         model = Bluff
-        fields = ('id', 'text', 'fobbit', 'player')
+        fields = ('id', 'question', 'player', 'username', 'text',)
         extra_kwargs = {
-            # 'text': {'write_only': True},
             'player': {'read_only': True},
         }
 
@@ -77,30 +79,30 @@ class FobbitSerializer(serializers.ModelSerializer):
 
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
-    text = serializers.SerializerMethodField()
-    modus = serializers.SerializerMethodField()
+    round_modus = serializers.SerializerMethodField()
 
-    def get_modus(self, instance):
-        return instance.session.modus
+    bluffs = BluffSerializer(many=True)
 
-    def get_text(self, instance):
-        return instance.question.text
+    def get_round_modus(self, instance):
+        return instance.round.modus
 
     def get_have_bluffed(self, instance):
-        player = self.context['request'].user
-        return Bluff.objects.filter(
-            player=player, fobbit=instance.id).count() > 0
+        if 'request' in self.context:
+            player = self.context['request'].user
+            return Bluff.objects.filter(
+                player=player, question=instance.id).count() > 0
 
     def get_have_guessed(self, instance):
-        player = self.context['request'].user
-        return Guess.objects.filter(
-            player=player, answer__fobbit=instance.id).count() > 0
+        if 'request' in self.context:
+            player = self.context['request'].user
+            return Guess.objects.filter(
+                player=player, answer__question=instance.id).count() > 0
 
     class Meta:
         model = Fobbit
         fields = (
             'id', 'text', 'status', 'answers', 'have_bluffed', 'have_guessed',
-            'modus')
+            'round_modus', 'bluffs')
 
 
 class QuizSerializer(serializers.ModelSerializer):
@@ -114,6 +116,11 @@ class QuizSerializer(serializers.ModelSerializer):
 
 class SessionSerializer(serializers.ModelSerializer):
     websocket = serializers.SerializerMethodField()
+    questions = serializers.SerializerMethodField()
+
+    def get_questions(self, instance):
+        return QuestionSerializer(
+            Question.objects.filter(round__quiz=instance), many=True).data
 
     def get_websocket(self, instance):
         request = self.context.get('request', None)
@@ -132,4 +139,5 @@ class SessionSerializer(serializers.ModelSerializer):
             'quiz',
             'owner',
             'url',
+            'questions'
         )

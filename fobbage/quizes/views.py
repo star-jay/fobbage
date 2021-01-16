@@ -14,11 +14,12 @@ from rest_framework.response import Response
 
 from .serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer, SessionSerializer,
-    GuessSerializer, FobbitSerializer,)
+    GuessSerializer, FobbitSerializer,
+    QuestionSerializer)
 from .services import (
     generate_answers, score_for_session, score_for_bluff, )
 from fobbage.quizes.models import (
-    Quiz, Answer, Bluff, Guess, Session, Fobbit)
+    Quiz, Answer, Bluff, Guess, Session, Fobbit, Question)
 
 from .forms import (
     NewQuizForm, SessionForm, BluffForm, GuessForm,
@@ -403,7 +404,12 @@ class FobbitViewSet(viewsets.ModelViewSet):
     serializer_class = FobbitSerializer
 
 
-class AnswerViewSet(viewsets.ModelViewSet):
+class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+
+class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
 
@@ -428,6 +434,8 @@ class BluffViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user:
+            if self.request.user.is_superuser:
+                return Bluff.objects.all()
             return Bluff.objects.filter(player=self.request.user)
         else:
             return Bluff.objects.none()
