@@ -1,8 +1,8 @@
 export default {
-  activeQuiz: (state) => state.quizes.find((quiz) => quiz.id === state.activeQuizId),
+  activeSession: (state) => state.quizes.find((quiz) => quiz.id === state.activeSessionId),
   questionStatus: (state, getters) => {
-    if (getters.activeQuiz && getters.activeQuiz.active_question) {
-      return getters.activeQuiz.active_question.status;
+    if (getters.activeSession && getters.activeSession.active_question) {
+      return getters.activeSession.active_question.status;
     }
     return -1;
   },

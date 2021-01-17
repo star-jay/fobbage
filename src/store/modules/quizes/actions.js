@@ -28,7 +28,7 @@ export default {
   },
   newActiveQuestion: ({ state, commit }) => new Promise((resolve, reject) => {
     // set active question to zero
-    activeQuestionsAPI.get(state.activeQuizId)
+    activeQuestionsAPI.get(state.activeSessionId)
       .then((response) => {
         const activeQuestion = response.data;
         commit('ACTIVE_QUESTION_SUCCES', { activeQuestion });

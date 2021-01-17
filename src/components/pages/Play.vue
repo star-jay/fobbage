@@ -1,9 +1,9 @@
 <template>
 <!-- class="xs10 offset-xs1" -->
     <v-layout class="xs10 offset-xs1">
-      <div v-if="activeQuiz">
+      <div v-if="activeSession">
         <h1>
-          Quiz : {{ activeQuiz.title }}
+          Quiz : {{ activeSession.title }}
         </h1>
         <div v-if="activeQuestion && activeQuestion.text">
           <h2>
@@ -45,11 +45,11 @@ export default {
     this.refresh();
   },
   computed: {
-    ...mapGetters(['activeQuiz', 'questionStatus']),
+    ...mapGetters(['activeSession', 'questionStatus']),
     ...mapState({
       messages: (state) => state.quizes.messages,
       activeQuestion: (state) => state.quizes.activeQuestion,
-      activeQuizId: (state) => state.quizes.activeQuizId,
+      activeSessionId: (state) => state.quizes.activeSessionId,
     }),
   },
   methods: {
@@ -59,15 +59,15 @@ export default {
       }
     },
     connectToWebSocket() {
-      if (this.activeQuizId) {
+      if (this.activeSessionId) {
         const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const uri = this.activeQuiz.websocket;
+        const uri = this.activeSession.websocket;
         this.$store.dispatch('connectToWebSocket', { scheme, uri });
       }
     },
   },
   watch: {
-    activeQuiz: 'connectToWebSocket',
+    activeSession: 'connectToWebSocket',
   },
 };
 </script>

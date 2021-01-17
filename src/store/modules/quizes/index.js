@@ -7,7 +7,7 @@ export default {
     loading: false,
     quizes: [],
     sessions: [],
-    activeQuizId: null,
+    activeSessionId: null,
     error: '',
     bluff: undefined,
     guess: undefined,

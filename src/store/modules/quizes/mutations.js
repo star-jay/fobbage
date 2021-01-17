@@ -14,7 +14,7 @@ export default {
     state.error = 'There was a problem!';
   },
   [types.QUIZES_JOIN]: (state, { id }) => {
-    state.activeQuizId = id;
+    state.activeSessionId = id;
     state.bluff = '';
   },
   [types.BLUFF_REQUEST]: (state) => {

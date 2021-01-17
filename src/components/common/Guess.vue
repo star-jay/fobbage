@@ -45,7 +45,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['activeQuiz']),
+    ...mapGetters(['activeSession']),
     ...mapState({
       activeQuestion: (state) => state.quizes.activeQuestion,
     }),
