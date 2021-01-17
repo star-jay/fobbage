@@ -88,8 +88,8 @@ urlpatterns = [
         'fobbit/<int:fobbit_id>/show_scores/',
         show_scores,
         name='show_scores'),
-    path('api/accounts/', include('django.contrib.auth.urls')),
 
+    path('api/accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
     path('signup/', signup, name='signup'),
     # path('login/', auth_views.login, name='login'),
