@@ -17,19 +17,24 @@ const routes = [
     component: BaseLayout,
     meta: {
       title: 'Fobbage',
+
     },
     children: [
       {
         path: '/',
         component: Home,
       },
-      // Play
+      // Select
       {
-        path: '/play',
-        component: SessionList,
+        path: 'play',
+        component: BaseLayout,
         children: [
           {
-            path: '/:id(\\d+)?',
+            path: 'select',
+            component: SessionList,
+          },
+          {
+            path: ':id(\\d+)?',
             component: Play,
             props: (route) => ({ id: Number(route.params.id) }),
           },
@@ -56,6 +61,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "login" */ '@/components/pages/Login.vue'),
     meta: {
       title: 'Fobbage - Login',
+      skipAuth: true,
     },
   },
   // login  pages
@@ -65,6 +71,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "login" */ '@/components/pages/Logout.vue'),
     meta: {
       title: 'Fobbage - Logout',
+      skipAuth: true,
     },
   },
   // register  pages
@@ -74,6 +81,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "login" */ '@/components/pages/Register.vue'),
     meta: {
       title: 'Fobbage - Register',
+      skipAuth: true,
     },
   },
 ];
@@ -87,7 +95,7 @@ const router = new VueRouter({
 const isAuthenticated = () => localStorage.getItem('accessToken');
 
 router.beforeEach(async (to, from, next) => {
-  if (to.matched.some((route) => route.meta.requiresAuth)) {
+  if (to.matched.some((route) => !route.meta.skipAuth)) {
     // Route is protected
     if (!isAuthenticated()) {
       // Not authenticated. Go to login page.

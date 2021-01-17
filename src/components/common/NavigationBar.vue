@@ -5,9 +5,9 @@
     class="primary"
     dense
   >
-    <v-toolbar-title >Fobbage</v-toolbar-title>
+    <v-toolbar-title>Fobbage</v-toolbar-title>
     <v-spacer></v-spacer>
-
+      {{ $store.state.auth.userInfo }}
      <v-menu
       transition="slide-y-transition"
       bottom

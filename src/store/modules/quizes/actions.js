@@ -3,6 +3,7 @@ import {
   bluffsAPI,
   guessAPI,
   activeQuestionsAPI,
+  sessionsAPI,
 } from '@/services/api';
 
 export default {
@@ -86,4 +87,18 @@ export default {
       }, 200);
     }
   },
+
+  listSessions: ({ commit }) => new Promise(
+    (resolve, reject) => {
+      sessionsAPI.get()
+        .then((response) => {
+          commit('SESSIONS_SUCCESS', response.data);
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('SESSIONS_ERROR');
+          reject(error);
+        });
+    },
+  ),
 };

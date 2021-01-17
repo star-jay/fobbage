@@ -43,4 +43,11 @@ export default {
     state.activeQuestion = activeQuestion;
     state.error = 'There was a problem!';
   },
+
+  [types.SESSIONS_SUCCESS]: (state, sessions) => {
+    state.sessions = sessions;
+  },
+  [types.SESSIONS_ERROR]: (state) => {
+    state.sessions = [];
+  },
 };

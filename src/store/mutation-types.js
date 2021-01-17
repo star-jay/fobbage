@@ -14,7 +14,6 @@ export const AUTH_REGISTERED = 'AUTH_REGISTERED';
 export const QUIZES_REQUEST = 'QUIZES_REQUEST';
 // QUIZES successfully loaded
 export const QUIZES_SUCCESS = 'QUIZES_SUCCESS';
-// Problem loading QUIZES
 export const QUIZES_ERROR = 'QUIZES_ERROR';
 
 export const QUIZES_JOIN = 'QUIZES_JOIN';
@@ -26,6 +25,8 @@ export const BLUFF_ERROR = 'BLUFF_ERROR';
 export const GUESS_REQUEST = 'GUESS_REQUEST';
 export const GUESS_SUCCESS = 'GUESS_SUCCESS';
 export const GUESS_ERROR = 'GUESS_ERROR';
+
+export const SESSIONS_SUCCESS = 'SESSIONS_SUCCESS';
 
 // Socket
 export const SOCKET_MESSAGE = 'SOCKET_MESSAGE';

@@ -6,6 +6,7 @@ export default {
   state: {
     loading: false,
     quizes: [],
+    sessions: [],
     activeQuizId: null,
     error: '',
     bluff: undefined,

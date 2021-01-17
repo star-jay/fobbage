@@ -1,18 +1,32 @@
 <template>
   <v-list flat>
-    <v-subheader>Quizes</v-subheader>
-    <v-list-item-group v-model="sessionlist" color="primary">
-      <v-list-item
+    <v-subheader>Todays Sessions</v-subheader>
+
+    <v-card
+        class="mx-auto"
+        max-width="344"
         v-for="session in sessionlist"
-        :key="session.name"
-        :to="'/'+session.id"
+        :key="session.id"
+        :to="''+session.id"
       >
-        <v-list-item-content>
-          <v-list-item-title v-text="session.title">
-          </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list-item-group>
+        <v-card-title class="display-1">
+          {{ session.name }}
+        </v-card-title>
+        <v-card-text>
+          <div class="text--primary">
+            {{ session }}
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            text
+            color="accent-4"
+          >
+            Play now
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+
   </v-list>
 </template>
 
@@ -32,7 +46,7 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('getSessionList');
+    this.$store.dispatch('listSessions');
   },
 };
 </script>

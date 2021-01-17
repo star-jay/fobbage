@@ -15,5 +15,15 @@ export default {
   components: {
     NavigationBar,
   },
+  created() {
+
+  },
+  methods: {
+    connect() {
+      if (!this.$store.getters.isAuthenticated) {
+        this.$store.dispatch('tryAndReconnect');
+      }
+    },
+  },
 };
 </script>
