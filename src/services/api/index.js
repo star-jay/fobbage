@@ -4,6 +4,7 @@ import bluffsAPI from './bluffs';
 import guessAPI from './guesses';
 import activeQuestionsAPI from './activeQuestions';
 import simpleTokenAPI from './simpleToken';
+import userInfoAPI from './userInfo';
 
 export {
   quizesAPI,
@@ -12,4 +13,5 @@ export {
   guessAPI,
   activeQuestionsAPI,
   simpleTokenAPI,
+  userInfoAPI,
 };

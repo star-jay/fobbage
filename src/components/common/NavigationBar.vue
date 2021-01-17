@@ -7,7 +7,7 @@
   >
     <v-toolbar-title>Fobbage</v-toolbar-title>
     <v-spacer></v-spacer>
-      {{ $store.state.auth.userInfo }}
+      {{ $store.state.auth.userInfo.username }}
      <v-menu
       transition="slide-y-transition"
       bottom

@@ -16,12 +16,15 @@ export default {
     NavigationBar,
   },
   created() {
-
+    this.connect();
+    this.$store.dispatch('retrieveUserInfo');
   },
   methods: {
     connect() {
       if (!this.$store.getters.isAuthenticated) {
-        this.$store.dispatch('tryAndReconnect');
+        //
+      } else {
+        this.$store.dispatch('retrieveUserInfo');
       }
     },
   },
