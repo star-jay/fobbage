@@ -101,7 +101,7 @@ class FobbitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Fobbit
         fields = (
-            'id', 'text', 'status', 'answers', 'have_bluffed', 'have_guessed',
+            'id', 'status', 'answers', 'have_bluffed', 'have_guessed',
             'round_modus', 'bluffs')
 
 

@@ -22,8 +22,9 @@
           </h2>
         </div>
       </div>
+
       <div v-else>
-        <h2>no active quiz</h2>
+        <h2>no active session</h2>
       </div>
     </v-layout>
 </template>

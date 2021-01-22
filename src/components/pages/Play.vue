@@ -3,7 +3,7 @@
     <v-layout class="xs10 offset-xs1">
       <div v-if="activeSession">
         <h1>
-          Quiz : {{ activeSession.title }}
+          Session : {{ activeSession.name }}
         </h1>
         <div v-if="activeQuestion && activeQuestion.text">
           <h2>
@@ -23,7 +23,7 @@
         </div>
       </div>
       <div v-else>
-        <h2>no active quiz</h2>
+        <h2>no active session</h2>
       </div>
     </v-layout>
 </template>
