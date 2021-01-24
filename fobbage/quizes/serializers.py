@@ -86,7 +86,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 class FobbitSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True, read_only=True)
     bluffs = BluffSerializer(many=True, read_only=True)
-
+    question = QuestionSerializer(read_only=True)
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
 
@@ -107,8 +107,8 @@ class FobbitSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'url',
-            'status', 'answers', 'have_bluffed', 'have_guessed',
-            'bluffs')
+            'status', 'have_bluffed', 'have_guessed',
+            'bluffs', 'question', 'answers')
 
 
 class QuizSerializer(serializers.ModelSerializer):

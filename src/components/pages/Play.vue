@@ -7,7 +7,7 @@
         </h1>
         <div v-if="session.active_fobbit">
           <h2>
-          {{ session.active_fobbit }}
+          {{ session.active_fobbit.question.text }}
           </h2>
 
           <Guess v-if="session.active_fobbit.status===1"/>
