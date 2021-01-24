@@ -111,3 +111,60 @@ def score_for_bluff(player, bluff):
         Bluff.objects.filter(answer=bluff.answer))
 
     return score
+
+
+# SESSION
+def next_question_for_session(session):
+    questions = session.quiz.questions.exclude(
+        id__in=[session.fobbits.values_list('question', flat=True)]
+    )
+    next = questions.first()
+
+    fobbit = Fobbit.objects.create(
+        question=next,
+        session=session,
+    )
+    session.active_fobbit = fobbit
+    session.save()
+    return fobbit
+
+
+def prev_question_for_session(session):
+    active = session.active_fobbit
+    if active:
+        order = active.question.order
+        fobbit = session.fobbits.filter(
+            question__order=order-1).first()
+        if fobbit:
+            session.active_fobbit = fobbit
+            session.save()
+
+
+# FOBBIT
+
+def finish_fobbit(fobbit):
+    """Finish the question if all players have guessed"""
+    # TODO: Check if all players have guessed
+    if len(fobbit.players_without_guess) == 0:
+        fobbit.status = Fobbit.FINISHED
+        fobbit.save()
+        return True
+    return False
+
+
+def reset_fobbit(fobbit):
+    fobbit.status = Fobbit.BLUFF
+    fobbit.bluffs.all().delete()
+    fobbit.answers.all().delete()
+
+    fobbit.save()
+
+
+def hide_answers_for_fobbit(fobbit):
+    if fobbit.status < Fobbit.FINISHED:
+        # fobbit.guesses.delete()
+        fobbit.answers.all().delete()
+
+        fobbit.status = Fobbit.BLUFF
+        fobbit.save()
+        return True

@@ -5,6 +5,15 @@ from rest_framework import serializers
 from fobbage.quizes.models import (
     Quiz, Question, Bluff, Answer, Guess, Fobbit, Session,
 )
+from fobbage.quizes.services import (
+    # generate_answers,
+    # score_for_session,
+    # score_for_bluff,
+    next_question_for_session,
+    # prev_question_for_session,
+    finish_fobbit,
+    reset_fobbit,
+)
 
 
 class BluffSerializer(serializers.ModelSerializer):
@@ -75,34 +84,31 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class FobbitSerializer(serializers.ModelSerializer):
-    answers = AnswerSerializer(many=True)
+    answers = AnswerSerializer(many=True, read_only=True)
+    bluffs = BluffSerializer(many=True, read_only=True)
 
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
-    round_modus = serializers.SerializerMethodField()
-
-    bluffs = BluffSerializer(many=True)
-
-    def get_round_modus(self, instance):
-        return instance.round.modus
 
     def get_have_bluffed(self, instance):
         if 'request' in self.context:
             player = self.context['request'].user
             return Bluff.objects.filter(
-                player=player, question=instance.id).count() > 0
+                player=player, fobbit=instance.id).count() > 0
 
     def get_have_guessed(self, instance):
         if 'request' in self.context:
             player = self.context['request'].user
             return Guess.objects.filter(
-                player=player, answer__question=instance.id).count() > 0
+                player=player, answer__fobbit=instance.id).count() > 0
 
     class Meta:
         model = Fobbit
         fields = (
-            'id', 'status', 'answers', 'have_bluffed', 'have_guessed',
-            'round_modus', 'bluffs')
+            'id',
+            'url',
+            'status', 'answers', 'have_bluffed', 'have_guessed',
+            'bluffs')
 
 
 class QuizSerializer(serializers.ModelSerializer):
@@ -116,6 +122,7 @@ class QuizSerializer(serializers.ModelSerializer):
 
 class SessionSerializer(serializers.ModelSerializer):
     websocket = serializers.SerializerMethodField()
+    active_fobbit = FobbitSerializer(read_only=True)
     # questions = serializers.SerializerMethodField()
 
     # def get_questions(self, instance):
@@ -134,10 +141,41 @@ class SessionSerializer(serializers.ModelSerializer):
         model = Session
         fields = (
             'id',
+            'url',
             'name',
             'websocket',
             'quiz',
             'owner',
-            'url',
+            'active_fobbit',
             # 'questions'
         )
+
+    # generate_answers, score_for_session, score_for_bluff,
+    # next_question_for_session, prev_question_for_session,
+
+
+class FinishFobbitSerializer(serializers.Serializer):
+    # fobbit = serializers.PrimaryKeyRelatedField(
+    #     queryset=Fobbit.objects.all(),
+    # )
+
+    def save(self):
+        finish_fobbit(self.instance)
+        return self.instance
+
+
+class ResetFobbitSerializer(serializers.Serializer):
+    # fobbit = serializers.PrimaryKeyRelatedField(
+    #     queryset=Fobbit.objects.all(),
+    # )
+
+    def save(self):
+        reset_fobbit(self.instance)
+        return self.instance
+
+
+class NextQuestionSerializer(serializers.Serializer):
+
+    def save(self):
+        next_question_for_session(self.instance)
+        return self.instance

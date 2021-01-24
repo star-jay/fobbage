@@ -104,30 +104,6 @@ class Session(models.Model):
         default=BLUFFING,
     )
 
-    def next_question(self):
-        questions = self.quiz.questions.exclude(
-            id__in=[self.fobbits.values_list('question', flat=True)]
-        )
-        next = questions.first()
-
-        fobbit = Fobbit.objects.create(
-            question=next,
-            session=self,
-        )
-        self.active_fobbit = fobbit
-        self.save()
-        return fobbit
-
-    def prev_question(self):
-        active = self.active_fobbit
-        if active:
-            order = active.question.order
-            fobbit = self.fobbits.filter(
-                question__order=order-1).first()
-            if fobbit:
-                self.active_fobbit = fobbit
-                self.save()
-
 
 class Fobbit(models.Model):
     """Combination of session and question"""
@@ -164,40 +140,17 @@ class Fobbit(models.Model):
             return 2
         return 1
 
-    def hide_answers(self):
-        if self.status < Fobbit.FINISHED:
-            # self.guesses.delete()
-            self.answers.all().delete()
-
-            self.status = Fobbit.BLUFF
-            self.save()
-            return True
-
+    @cached_property
     def players_without_guess(self):
         return [
             player for player in self.session.players.all()
             if len(player.guesses.filter(answer__fobbit=self)) == 0]
 
+    @cached_property
     def players_without_bluff(self):
         return [
             player for player in self.session.players.all()
             if len(player.bluffs.filter(fobbit=self)) == 0]
-
-    def finish(self):
-        """Finish the question if all players have guessed"""
-        # TODO: Check if all players have guessed
-        if len(self.players_without_guess()) == 0:
-            self.status = Fobbit.FINISHED
-            self.save()
-            return True
-        return False
-
-    def reset(self):
-        self.status = Fobbit.BLUFF
-        self.bluffs.all().delete()
-        self.answers.all().delete()
-
-        self.save()
 
 
 class Answer(models.Model):

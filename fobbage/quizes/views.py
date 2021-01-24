@@ -9,15 +9,18 @@ from django.views.generic import DetailView, ListView, CreateView
 # from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 
 from .serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer, SessionSerializer,
     GuessSerializer, FobbitSerializer,
-    QuestionSerializer)
+    QuestionSerializer, ResetFobbitSerializer, FinishFobbitSerializer,
+    NextQuestionSerializer)
 from .services import (
-    generate_answers, score_for_session, score_for_bluff, )
+    generate_answers, score_for_session, score_for_bluff,
+    next_question_for_session, prev_question_for_session, )
 from fobbage.quizes.models import (
     Quiz, Answer, Bluff, Guess, Session, Fobbit, Question)
 
@@ -182,14 +185,14 @@ def session_play(request, session_id):
 
 def next_question(self, session_id):
     session = Session.objects.get(id=session_id)
-    session.next_question()
+    next_question_for_session(session)
     return HttpResponseRedirect(
         reverse('session', args=(session.id,)))
 
 
 def prev_question(self, session_id):
     session = Session.objects.get(id=session_id)
-    session.prev_question()
+    prev_question_for_session(session)
     return HttpResponseRedirect(
         reverse('session', args=(session.id,)))
 
@@ -387,7 +390,11 @@ class SessionUpdate(CreateView):
         return reverse_lazy('session', kwargs={'session_id': self.object.id})
 
 
+# ===================================================
 # API
+# ===================================================
+
+
 class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
@@ -397,11 +404,43 @@ class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
 
+    @action(
+        detail=True, methods=['POST'], serializer_class=NextQuestionSerializer)
+    def next_question(self, request, pk=None):
+        session = self.get_object()
+        serializer = NextQuestionSerializer(instance=session)
+        session = serializer.save()
+        return Response(
+            SessionSerializer(
+                session,
+                context=self.get_serializer_context()).data)
 
-# API
+
 class FobbitViewSet(viewsets.ModelViewSet):
     queryset = Fobbit.objects.all()
     serializer_class = FobbitSerializer
+
+    @action(
+        detail=True, methods=['POST'],
+        serializer_class=FinishFobbitSerializer)
+    def finish(self, request, pk=None):
+        fobbit = self.get_object()
+        serializer = FinishFobbitSerializer(fobbit)
+        serializer.save()
+        return Response(FobbitSerializer(
+            fobbit,
+            context=self.get_serializer_context()).data)
+
+    @action(
+        detail=True, methods=['POST'],
+        serializer_class=FinishFobbitSerializer)
+    def reset(self, request, pk=None):
+        fobbit = self.get_object()
+        serializer = ResetFobbitSerializer(fobbit)
+        serializer.save()
+        return Response(FobbitSerializer(
+            fobbit,
+            context=self.get_serializer_context()).data)
 
 
 class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
