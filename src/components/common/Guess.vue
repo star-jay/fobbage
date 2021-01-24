@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-if="activeQuestion.answers">
-      <p v-if="activeQuestion.have_guessed">Your guess was submitted</p>
+    <div v-if="active_fobbit.answers">
+      <p v-if="active_fobbit.have_guessed">Your guess was submitted</p>
       <v-form v-else @submit.prevent="guess" id="guess">
         <v-list flat>
           <v-list-item-group v-model="answer" color="primary">
             <v-list-item
-              v-for="answer in activeQuestion.answers"
+              v-for="answer in active_fobbit.answers"
               :key="answer.id"
             >
               <template v-slot:default="{ active }">
@@ -45,9 +45,9 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['activeSession']),
+    ...mapGetters(['session']),
     ...mapState({
-      activeQuestion: (state) => state.quizes.activeQuestion,
+      active_fobbit: (state) => state.quizes.active_fobbit,
     }),
   },
   methods: {
@@ -55,8 +55,8 @@ export default {
       this.$store.dispatch(
         'guess',
         {
-          id: this.activeQuestion.id,
-          guess: this.activeQuestion.answers[this.answer].id,
+          id: this.active_fobbit.id,
+          guess: this.active_fobbit.answers[this.answer].id,
         },
       );
     },

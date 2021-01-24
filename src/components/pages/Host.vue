@@ -1,17 +1,17 @@
 <template>
 <!-- class="xs10 offset-xs1" -->
     <v-layout class="xs10 offset-xs1">
-      <div v-if="activeSession">
+      <div v-if="session">
         <h1>
-          Quiz : {{ activeSession.title }}
+          Quiz : {{ session.title }}
         </h1>
-        <div v-if="activeQuestion && activeQuestion.text">
+        <div v-if="active_fobbit && active_fobbit.text">
           <h2>
-          {{ activeQuestion.text }}
+          {{ active_fobbit.text }}
           </h2>
 
-          <Guess v-if="activeQuestion.status===1"/>
-          <Bluff v-else-if="activeQuestion.status===0"/>
+          <Guess v-if="active_fobbit.status===1"/>
+          <Bluff v-else-if="active_fobbit.status===0"/>
           <p v-else>
             No action required.
           </p>
@@ -46,11 +46,11 @@ export default {
     this.refresh();
   },
   computed: {
-    ...mapGetters(['activeSession', 'questionStatus']),
+    ...mapGetters(['session', 'questionStatus']),
     ...mapState({
       messages: (state) => state.quizes.messages,
-      activeQuestion: (state) => state.quizes.activeQuestion,
-      activeSessionId: (state) => state.quizes.activeSessionId,
+      active_fobbit: (state) => state.quizes.active_fobbit,
+      sessionId: (state) => state.quizes.sessionId,
     }),
   },
   methods: {
@@ -60,15 +60,15 @@ export default {
       }
     },
     connectToWebSocket() {
-      if (this.activeSessionId) {
+      if (this.sessionId) {
         const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const uri = this.activeSession.websocket;
+        const uri = this.session.websocket;
         this.$store.dispatch('connectToWebSocket', { scheme, uri });
       }
     },
   },
   watch: {
-    activeSession: 'connectToWebSocket',
+    session: 'connectToWebSocket',
   },
 };
 </script>

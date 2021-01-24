@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="activeQuestion.have_bluffed">
+    <div v-if="active_fobbit.have_bluffed">
       <p>Your bluff was submitted</p>
     </div>
     <div v-else>
@@ -32,7 +32,7 @@ export default {
   },
   computed: {
     ...mapState({
-      activeQuestion: (state) => state.quizes.activeQuestion,
+      active_fobbit: (state) => state.quizes.active_fobbit,
     }),
   },
   methods: {

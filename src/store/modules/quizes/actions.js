@@ -2,7 +2,7 @@ import {
   quizesAPI,
   bluffsAPI,
   guessAPI,
-  activeQuestionsAPI,
+  // active_fobbitsAPI,
   sessionsAPI,
 } from '@/services/api';
 
@@ -24,27 +24,27 @@ export default {
   },
   joinQuiz: ({ commit, dispatch }, { id }) => {
     commit('QUIZES_JOIN', { id });
-    dispatch('newActiveQuestion', { id });
+    dispatch('retrieveSession', { id });
   },
-  newActiveQuestion: ({ state, commit }) => new Promise((resolve, reject) => {
-    // set active question to zero
-    activeQuestionsAPI.get(state.activeSessionId)
-      .then((response) => {
-        const activeQuestion = response.data;
-        commit('ACTIVE_QUESTION_SUCCES', { activeQuestion });
-        resolve(response);
-      })
-      .catch((error) => {
-        commit('QUIZES_ERROR');
-        reject(error);
-      });
-  }),
+  // newactive_fobbit: ({ state, commit }) => new Promise((resolve, reject) => {
+  //   // set active question to zero
+  //   active_fobbitsAPI.get(state.sessionId)
+  //     .then((response) => {
+  //       const active_fobbit = response.data;
+  //       commit('ACTIVE_QUESTION_SUCCES', { active_fobbit });
+  //       resolve(response);
+  //     })
+  //     .catch((error) => {
+  //       commit('QUIZES_ERROR');
+  //       reject(error);
+  //     });
+  // }),
   bluff: ({ state, commit, dispatch }, { text }) => new Promise(
     (resolve, reject) => {
-      bluffsAPI.post({ fobbit: state.activeQuestion.id, text })
+      bluffsAPI.post({ fobbit: state.active_fobbit.id, text })
         .then((response) => {
           commit('BLUFF_SUCCESS', text);
-          dispatch('newActiveQuestion');
+          dispatch('newactive_fobbit');
           resolve(response);
         })
         .catch((error) => {
@@ -71,7 +71,7 @@ export default {
     guessAPI.post({ question: id, answer: guess })
       .then((response) => {
         commit('GUESS_SUCCESS', guess);
-        dispatch('newActiveQuestion');
+        dispatch('newactive_fobbit');
         resolve(response);
       })
       .catch((error) => {
@@ -83,7 +83,7 @@ export default {
     // toodo: get quiz id from message and query new active question
     if ('quiz_id' in message) {
       setTimeout(() => {
-        dispatch('newActiveQuestion');
+        dispatch('newactive_fobbit');
       }, 200);
     }
   },
@@ -93,6 +93,21 @@ export default {
       sessionsAPI.get()
         .then((response) => {
           commit('SESSIONS_SUCCESS', response.data);
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('SESSIONS_ERROR');
+          reject(error);
+        });
+    },
+  ),
+
+  retrieveSession: ({ commit }, { id }) => new Promise(
+    (resolve, reject) => {
+      console.log(id);
+      sessionsAPI.get(id)
+        .then((response) => {
+          commit('SESSIONS_SUCCESS', [response.data]);
           resolve(response);
         })
         .catch((error) => {

@@ -1,9 +1,9 @@
 export default {
-  activeSession: (state) => state.sessions.find((session) => session.id === state.activeSessionId),
-  questionStatus: (state, getters) => {
-    if (getters.activeSession && getters.activeSession.active_question) {
-      return getters.activeSession.active_question.status;
-    }
-    return -1;
-  },
+  // session: (state) => state.sessions.find((session) => session.id === state.sessionId),
+  // questionStatus: (state, getters) => {
+  //   if (getters.session && getters.session.active_question) {
+  //     return getters.session.active_question.status;
+  //   }
+  //   return -1;
+  // },
 };
