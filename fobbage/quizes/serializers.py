@@ -77,7 +77,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-
+    """Do not serialize the answer"""
     class Meta:
         model = Question
         fields = ('id', 'text', 'quiz')

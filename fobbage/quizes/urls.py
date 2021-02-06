@@ -3,7 +3,6 @@ from rest_framework.routers import DefaultRouter
 
 from fobbage.quizes.views import (
     SessionViewSet, FobbitViewSet,
-    # API
     AnswerViewSet, QuizViewSet, ActiveQuestionViewSet, BluffViewSet,
     GuessViewSet,
 )
