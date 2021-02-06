@@ -116,4 +116,18 @@ export default {
         });
     },
   ),
+
+  nextQuestion: ({ commit }, { sessionId }) => new Promise(
+    (resolve, reject) => {
+      sessionsAPI.nextQuestion(sessionId)
+        .then((response) => {
+          commit('SESSIONS_SUCCESS', [response.data]);
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('SESSIONS_ERROR');
+          reject(error);
+        });
+    },
+  ),
 };

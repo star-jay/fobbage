@@ -1,12 +1,13 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import Play from '@/components/pages/Play.vue';
-import Host from '@/components/pages/Host.vue';
 import Home from '@/components/pages/Home.vue';
 import BaseLayout from '@/components/layouts/BaseLayout.vue';
 
-import SessionList from '@/components/pages/SessionList.vue';
-import QuizList from '@/components/pages/QuizList.vue';
+import Host from '@/components/pages/host/Host.vue';
+import SessionDetail from '@/components/pages/host/SessionDetail.vue';
+
+import Play from '@/components/pages/play/Play.vue';
+import SelectSession from '@/components/pages/play/SelectSession.vue';
 
 Vue.use(VueRouter);
 
@@ -31,7 +32,7 @@ const routes = [
         children: [
           {
             path: 'select',
-            component: SessionList,
+            component: SelectSession,
           },
           {
             path: ':id(\\d+)?',
@@ -42,14 +43,17 @@ const routes = [
       },
       // Host
       {
-        path: '/host',
-        component: QuizList,
-        children: [
-          {
-            path: '/:id(\\d+)?',
-            component: Host,
-            props: (route) => ({ id: Number(route.params.id) }),
-          },
+        path: 'host',
+        component: Host,
+        name: 'host',
+      },
+      {
+        path: 'host/:sessionId',
+        component: SessionDetail,
+        props: (route) => ({ sessionId: Number(route.params.sessionId) }),
+        name: 'host-session',
+        children:
+        [
         ],
       },
     ],

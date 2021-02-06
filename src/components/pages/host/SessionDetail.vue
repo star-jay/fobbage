@@ -1,26 +1,24 @@
 <template>
 <!-- class="xs10 offset-xs1" -->
     <v-layout class="xs10 offset-xs1">
+      SessionDetail
       <div v-if="session">
         <h1>
-          Quiz : {{ session.title }}
+          Session : {{ session.name }}
         </h1>
-        <div v-if="active_fobbit && active_fobbit.text">
+        <div v-if="session.active_fobbit">
           <h2>
-          {{ active_fobbit.text }}
+          {{ session.active_fobbit.question.text }}
           </h2>
-
-          <Guess v-if="active_fobbit.status===1"/>
-          <Bluff v-else-if="active_fobbit.status===0"/>
-          <p v-else>
-            No action required.
-          </p>
         </div>
         <div v-else>
           <h2>
             no active question
           </h2>
         </div>
+        <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
+          Next question
+        </v-btn>
       </div>
 
       <div v-else>
@@ -30,33 +28,28 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex';
-import Bluff from '@/components/common/Bluff.vue';
-import Guess from '@/components/common/Guess.vue';
+import { mapState } from 'vuex';
 
 export default {
-  name: 'Play',
-  components: {
-    Bluff, Guess,
-  },
+  name: 'SessionDetail',
   props: {
-    id: Number,
+    sessionId: Number,
   },
   created() {
     this.refresh();
   },
   computed: {
-    ...mapGetters(['session', 'questionStatus']),
     ...mapState({
       messages: (state) => state.quizes.messages,
-      active_fobbit: (state) => state.quizes.active_fobbit,
-      sessionId: (state) => state.quizes.sessionId,
     }),
+    session() {
+      return this.$store.getters.session(this.sessionId);
+    },
   },
   methods: {
     refresh() {
-      if (this.id) {
-        this.$store.dispatch('joinQuiz', { id: this.id });
+      if (this.sessionId) {
+        this.$store.dispatch('retrieveSession', { id: this.sessionId });
       }
     },
     connectToWebSocket() {
