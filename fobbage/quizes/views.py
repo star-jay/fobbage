@@ -1,16 +1,16 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
 from .serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer, SessionSerializer,
-    GuessSerializer, FobbitSerializer,
+    GuessSerializer, FobbitSerializer, ActiveFobbitSerializer,
     QuestionSerializer, ResetFobbitSerializer, FinishFobbitSerializer,
     NextQuestionSerializer)
 # from .services import (
 #     generate_answers, score_for_session, score_for_bluff,
-#     next_question_for_session, prev_question_for_session, )
+#     next_question, prev_question_for_session, )
 from fobbage.quizes.models import (
     Quiz, Answer, Bluff, Guess, Session, Fobbit, Question)
 
@@ -44,6 +44,23 @@ class SessionViewSet(viewsets.ModelViewSet):
                 session,
                 context=self.get_serializer_context()).data)
 
+    @action(
+        detail=True, methods=['POST'], serializer_class=ActiveFobbitSerializer)
+    def set_active_fobbit(self, request, pk=None):
+        session = self.get_object()
+        serializer = ActiveFobbitSerializer(
+            instance=session, data=request.data)
+        if serializer.is_valid():
+            session = serializer.save()
+            return Response(
+                SessionSerializer(
+                    session,
+                    context=self.get_serializer_context()).data)
+        else:
+            return Response(
+                serializer.errors, status=status.HTTP_400_BAD_REQUEST
+            )
+
 
 class FobbitViewSet(viewsets.ModelViewSet):
     queryset = Fobbit.objects.all()
@@ -56,9 +73,10 @@ class FobbitViewSet(viewsets.ModelViewSet):
         fobbit = self.get_object()
         serializer = FinishFobbitSerializer(fobbit)
         serializer.save()
-        return Response(FobbitSerializer(
-            fobbit,
-            context=self.get_serializer_context()).data)
+        return Response(
+            FobbitSerializer(
+                fobbit, context=self.get_serializer_context()
+            ).data)
 
     @action(
         detail=True, methods=['POST'],

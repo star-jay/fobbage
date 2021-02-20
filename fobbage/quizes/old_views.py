@@ -20,7 +20,7 @@ from .serializers import (
     NextQuestionSerializer)
 from .services import (
     generate_answers, score_for_session, score_for_bluff,
-    next_question_for_session, prev_question_for_session, )
+    next_question, )
 from fobbage.quizes.models import (
     Quiz, Answer, Bluff, Guess, Session, Fobbit, Question)
 
@@ -183,18 +183,18 @@ def session_play(request, session_id):
             request, 'quizes/guess.html', context)
 
 
-def next_question(self, session_id):
-    session = Session.objects.get(id=session_id)
-    next_question_for_session(session)
-    return HttpResponseRedirect(
-        reverse('session', args=(session.id,)))
+# def next_question(self, session_id):
+#     session = Session.objects.get(id=session_id)
+#     next_question(session)
+#     return HttpResponseRedirect(
+#         reverse('session', args=(session.id,)))
 
 
-def prev_question(self, session_id):
-    session = Session.objects.get(id=session_id)
-    prev_question_for_session(session)
-    return HttpResponseRedirect(
-        reverse('session', args=(session.id,)))
+# def prev_question(self, session_id):
+#     session = Session.objects.get(id=session_id)
+#     prev_question_for_session(session)
+#     return HttpResponseRedirect(
+#         reverse('session', args=(session.id,)))
 
 
 def collect_answers(request, fobbit_id):

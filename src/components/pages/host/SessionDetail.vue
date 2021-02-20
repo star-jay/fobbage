@@ -19,6 +19,9 @@
         <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
           Next question
         </v-btn>
+        <v-btn @click="$store.dispatch('prevQuestion', ({ sessionId }))">
+          Prev question
+        </v-btn>
       </div>
 
       <div v-else>
@@ -53,11 +56,11 @@ export default {
       }
     },
     connectToWebSocket() {
-      if (this.sessionId) {
-        const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const uri = this.session.websocket;
-        this.$store.dispatch('connectToWebSocket', { scheme, uri });
-      }
+    //   if (this.sessionId) {
+    //     const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    //     const uri = this.session.websocket;
+    //     this.$store.dispatch('connectToWebSocket', { scheme, uri });
+    //   }
     },
   },
   watch: {

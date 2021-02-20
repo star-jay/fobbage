@@ -9,8 +9,7 @@ from fobbage.quizes.services import (
     # generate_answers,
     # score_for_session,
     # score_for_bluff,
-    next_question_for_session,
-    # prev_question_for_session,
+    next_question,
     finish_fobbit,
     reset_fobbit,
 )
@@ -123,11 +122,18 @@ class QuizSerializer(serializers.ModelSerializer):
 class SessionSerializer(serializers.ModelSerializer):
     websocket = serializers.SerializerMethodField()
     active_fobbit = FobbitSerializer(read_only=True)
-    # questions = serializers.SerializerMethodField()
 
-    # def get_questions(self, instance):
-    #     return QuestionSerializer(
-    #         Question.objects.filter(quiz=instance.quiz), many=True).data
+
+    def get_fields(self):
+        fields = super().get_fields()
+        fields['active_fobbit'].queryset = Fobbit.objects.filter(
+            session=self.instance)
+        return fields
+
+    def create(self, validated_data):
+        if 'owner' not in validated_data:
+            validated_data['owner'] = self.context['request'].user
+            return super().create(validated_data)
 
     def get_websocket(self, instance):
         request = self.context.get('request', None)
@@ -138,6 +144,7 @@ class SessionSerializer(serializers.ModelSerializer):
         )
 
     class Meta:
+        read_only_fields = ['owner', ]
         model = Session
         fields = (
             'id',
@@ -150,8 +157,22 @@ class SessionSerializer(serializers.ModelSerializer):
             # 'questions'
         )
 
-    # generate_answers, score_for_session, score_for_bluff,
-    # next_question_for_session, prev_question_for_session,
+
+class ActiveFobbitSerializer(serializers.ModelSerializer):
+    active_fobbit = serializers.PrimaryKeyRelatedField(
+        queryset=Fobbit.objects.all()
+    )
+
+    def get_fields(self):
+        fields = super().get_fields()
+        print(self.instance)
+        fields['active_fobbit'].queryset = Fobbit.objects.filter(
+            session=self.instance)
+        return fields
+
+    class Meta:
+        model = Session
+        fields = ('active_fobbit',)
 
 
 class FinishFobbitSerializer(serializers.Serializer):
@@ -177,5 +198,5 @@ class ResetFobbitSerializer(serializers.Serializer):
 class NextQuestionSerializer(serializers.Serializer):
 
     def save(self):
-        next_question_for_session(self.instance)
+        next_question(self.instance)
         return self.instance

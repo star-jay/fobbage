@@ -120,8 +120,9 @@ export default {
     (resolve, reject) => {
       sessionsAPI.post({ name, quiz })
         .then((response) => {
-          commit('SESSIONS_SUCCESS', [response.data]);
-          resolve(response);
+          const session = response.data;
+          commit('SESSIONS_SUCCESS', [session]);
+          resolve(session);
         })
         .catch((error) => {
           commit('SESSIONS_ERROR');
@@ -133,6 +134,19 @@ export default {
   nextQuestion: ({ commit }, { sessionId }) => new Promise(
     (resolve, reject) => {
       sessionsAPI.nextQuestion(sessionId)
+        .then((response) => {
+          commit('SESSIONS_SUCCESS', [response.data]);
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('SESSIONS_ERROR');
+          reject(error);
+        });
+    },
+  ),
+  setActiveFobbit: ({ commit }, { session, fobbit }) => new Promise(
+    (resolve, reject) => {
+      sessionsAPI.setActiveFobbit(session.id, fobbit.id)
         .then((response) => {
           commit('SESSIONS_SUCCESS', [response.data]);
           resolve(response);

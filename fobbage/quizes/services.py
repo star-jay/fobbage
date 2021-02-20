@@ -114,7 +114,7 @@ def score_for_bluff(player, bluff):
 
 
 # SESSION
-def next_question_for_session(session):
+def next_question(session):
     questions = session.quiz.questions.exclude(
         id__in=[session.fobbits.values_list('question', flat=True)]
     )
@@ -129,19 +129,18 @@ def next_question_for_session(session):
     return fobbit
 
 
-def prev_question_for_session(session):
-    active = session.active_fobbit
-    if active:
-        order = active.question.order
-        fobbit = session.fobbits.filter(
-            question__order=order-1).first()
-        if fobbit:
-            session.active_fobbit = fobbit
-            session.save()
+# def prev_question_for_session(session):
+#     active = session.active_fobbit
+#     if active:
+#         order = active.question.order
+#         fobbit = session.fobbits.filter(
+#             question__order=order-1).first()
+#         if fobbit:
+#             session.active_fobbit = fobbit
+#             session.save()
 
 
 # FOBBIT
-
 def finish_fobbit(fobbit):
     """Finish the question if all players have guessed"""
     # TODO: Check if all players have guessed

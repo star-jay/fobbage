@@ -61,7 +61,7 @@ export default {
     return {
       dialog: false,
       form: {
-        name: '',
+        name: this.quiz.title,
       },
       nameRules: [
         (v) => !!v || 'Name is required',
@@ -75,6 +75,7 @@ export default {
       if (this.$refs.createNewSessionForm.validate()) {
         this.$store.dispatch('createSession', { ...this.form, quiz: this.quiz.id })
           .then((session) => {
+            console.log(session);
             this.$router.push({
               name: 'host-session',
               params: { sessionId: session.id },
