@@ -22,7 +22,7 @@
       </div>
 
       <div v-else>
-        <h2>no active session</h2>
+        <h2>no session</h2>
       </div>
     </v-layout>
 </template>

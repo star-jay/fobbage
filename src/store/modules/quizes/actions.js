@@ -7,7 +7,7 @@ import {
 } from '@/services/api';
 
 export default {
-  getQuizList: ({ commit }) => {
+  listQuizes: ({ commit }) => {
     commit('QUIZES_REQUEST');
     return new Promise((resolve, reject) => {
       quizesAPI.get()
@@ -104,8 +104,21 @@ export default {
 
   retrieveSession: ({ commit }, { id }) => new Promise(
     (resolve, reject) => {
-      console.log(id);
       sessionsAPI.get(id)
+        .then((response) => {
+          commit('SESSIONS_SUCCESS', [response.data]);
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('SESSIONS_ERROR');
+          reject(error);
+        });
+    },
+  ),
+
+  createSession: ({ commit }, { name, quiz }) => new Promise(
+    (resolve, reject) => {
+      sessionsAPI.post({ name, quiz })
         .then((response) => {
           commit('SESSIONS_SUCCESS', [response.data]);
           resolve(response);

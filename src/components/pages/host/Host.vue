@@ -1,39 +1,35 @@
 <template>
-  <v-list flat>
-    <v-subheader>Pick a session</v-subheader>
-    <v-list-item-group v-model="sessionlist" color="primary">
-      <v-list-item
-        v-for="session in sessionlist"
-        :key="session.id"
-        :to="{
-          name: 'host-session',
-          params: { id: session.id },
-        }"
+  <div>
+    <v-row class="ma-2">
+      <v-card
+        class="mx-auto"
+        max-width="344"
       >
-        <v-list-item-content>
-          <v-list-item-title v-text="session.name">
-          </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list-item-group>
-  </v-list>
+        <v-card-title>
+          Continue with session:
+        </v-card-title>
+        <SessionList />
+      </v-card>
+      <v-card
+        class="mx-auto"
+        max-width="344"
+      >
+        <v-card-title>
+          Start a new session
+        </v-card-title>
+        <QuizList />
+      </v-card>
+    </v-row>
+  </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import SessionList from './SessionList.vue';
+import QuizList from './QuizList.vue';
 
 export default {
-  name: 'SessionList',
-  computed: {
-    ...mapState({
-      sessionlist: (state) => state.quizes.sessions,
-    }),
-  },
-  methods: {
-
-  },
-  created() {
-    this.$store.dispatch('listSessions');
-  },
+  name: 'Host',
+  components: { SessionList, QuizList },
+  methods: {},
 };
 </script>
