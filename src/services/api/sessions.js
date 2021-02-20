@@ -7,8 +7,12 @@ export default new Resource(client, 'api/sessions',
       const url = `/${this.base}/${id}/next_question/`;
       return this.client.post(url);
     },
-    setActiveFobbit(session, fobbit) {
-      const url = `/${this.base}/${session.id}/set_active_fobbit/`;
+    setActiveFobbit(id, fobbit) {
+      const url = `/${this.base}/${id}/set_active_fobbit/`;
       return this.client.post(url, { active_fobbit: fobbit.id });
+    },
+    join(id) {
+      const url = `/${this.base}/${id}/join/`;
+      return this.client.post(url);
     },
   });

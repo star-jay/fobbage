@@ -41,7 +41,7 @@ export default {
     }),
   },
   methods: {
-    joinQuiz(id) {
+    joinSession(id) {
       this.$store.dispatch('joinSession', { id });
     },
   },

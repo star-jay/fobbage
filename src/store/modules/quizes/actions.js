@@ -22,9 +22,9 @@ export default {
         });
     });
   },
-  joinQuiz: ({ commit, dispatch }, { id }) => {
+  joinSession: ({ commit }, { id }) => {
+    sessionsAPI.join(id);
     commit('QUIZES_JOIN', { id });
-    dispatch('retrieveSession', { id });
   },
   // newactive_fobbit: ({ state, commit }) => new Promise((resolve, reject) => {
   //   // set active question to zero
@@ -39,12 +39,11 @@ export default {
   //       reject(error);
   //     });
   // }),
-  bluff: ({ state, commit, dispatch }, { text }) => new Promise(
+  bluff: ({ commit }, { fobbit, text }) => new Promise(
     (resolve, reject) => {
-      bluffsAPI.post({ fobbit: state.active_fobbit.id, text })
+      bluffsAPI.post({ fobbit, text })
         .then((response) => {
           commit('BLUFF_SUCCESS', text);
-          dispatch('newactive_fobbit');
           resolve(response);
         })
         .catch((error) => {

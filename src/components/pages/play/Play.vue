@@ -10,8 +10,12 @@
           {{ session.active_fobbit.question.text }}
           </h2>
 
-          <Guess v-if="session.active_fobbit.status===1"/>
-          <Bluff v-else-if="session.active_fobbit.status===0"/>
+          <Guess v-if="session.active_fobbit.status===1"
+            :fobbit='session.active_fobbit'
+          />
+          <Bluff v-else-if="session.active_fobbit.status===0"
+            :fobbit='session.active_fobbit'
+          />
           <p v-else>
             No action required.
           </p>
@@ -55,9 +59,8 @@ export default {
   methods: {
     refresh() {
       if (this.id) {
-        console.log(this.id);
         // this.$store.dispatch('retrieve?Session', { id: this.id });
-        this.$store.dispatch('joinQuiz', { id: this.id });
+        this.$store.dispatch('joinSession', { id: this.id });
       }
     },
     connectToWebSocket() {

@@ -9,6 +9,8 @@ def generate_answers(fobbit_id):
     use a combination of bluffs and the correct answer
     """
     fobbit = Fobbit.objects.get(id=fobbit_id)
+    if len(fobbit.session.players.all()) == 0:
+        return False
 
     # Check if all players have bluffed
     if len(fobbit.bluffs.all()) != len(fobbit.session.players.all()):

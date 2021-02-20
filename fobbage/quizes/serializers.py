@@ -21,7 +21,7 @@ class BluffSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Bluff
-        fields = ('id', 'question', 'player', 'username', 'text',)
+        fields = ('id', 'fobbit', 'player', 'username', 'text',)
         extra_kwargs = {
             'player': {'read_only': True},
         }
@@ -122,7 +122,6 @@ class QuizSerializer(serializers.ModelSerializer):
 class SessionSerializer(serializers.ModelSerializer):
     websocket = serializers.SerializerMethodField()
     active_fobbit = FobbitSerializer(read_only=True)
-
 
     def get_fields(self):
         fields = super().get_fields()

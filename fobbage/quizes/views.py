@@ -8,9 +8,11 @@ from .serializers import (
     GuessSerializer, FobbitSerializer, ActiveFobbitSerializer,
     QuestionSerializer, ResetFobbitSerializer, FinishFobbitSerializer,
     NextQuestionSerializer)
-# from .services import (
-#     generate_answers, score_for_session, score_for_bluff,
-#     next_question, prev_question_for_session, )
+from .services import (
+    generate_answers,
+    # score_for_session, score_for_bluff,
+    # next_question, prev_question_for_session,
+)
 from fobbage.quizes.models import (
     Quiz, Answer, Bluff, Guess, Session, Fobbit, Question)
 
@@ -32,6 +34,17 @@ class QuizViewSet(viewsets.ModelViewSet):
 class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
+
+    @action(
+        detail=True, methods=['POST'])
+    def join(self, request, pk=None):
+        session = self.get_object()
+        user = request.user
+        session.players.add(user)
+        return Response(
+            SessionSerializer(
+                session,
+                context=self.get_serializer_context()).data)
 
     @action(
         detail=True, methods=['POST'], serializer_class=NextQuestionSerializer)
@@ -65,6 +78,18 @@ class SessionViewSet(viewsets.ModelViewSet):
 class FobbitViewSet(viewsets.ModelViewSet):
     queryset = Fobbit.objects.all()
     serializer_class = FobbitSerializer
+
+    @action(
+        detail=True, methods=['POST'],)
+    def generate_answers(self, request, pk=None):
+        fobbit = self.get_object()
+        if generate_answers(fobbit.id):
+            return Response(
+                FobbitSerializer(
+                    fobbit, context=self.get_serializer_context()
+                ).data)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=True, methods=['POST'],
