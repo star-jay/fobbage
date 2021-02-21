@@ -121,6 +121,14 @@ class FobbitSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True, read_only=True)
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
+    players_without_bluff = serializers.SlugRelatedField(
+        many=True, read_only=True,
+        slug_field='username'
+    )
+    players_without_guess = serializers.SlugRelatedField(
+        many=True, read_only=True,
+        slug_field='username'
+    )
 
     def get_have_bluffed(self, instance):
         if 'request' in self.context:
@@ -140,7 +148,8 @@ class FobbitSerializer(serializers.ModelSerializer):
             'id',
             'url',
             'status', 'have_bluffed', 'have_guessed',
-            'bluffs', 'question', 'answers', 'score_sheets')
+            'bluffs', 'question', 'answers', 'score_sheets',
+            'players_without_bluff', 'players_without_guess',)
 
 
 class QuizSerializer(serializers.ModelSerializer):

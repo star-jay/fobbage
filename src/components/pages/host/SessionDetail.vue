@@ -6,11 +6,10 @@
         <h1>
           Session : {{ session.name }}
         </h1>
-        <div v-if="session.active_fobbit">
-          <h2>
-          {{ session.active_fobbit.question.text }}
-          </h2>
-        </div>
+        <FobbitDetail
+          v-if="session.active_fobbit"
+          :fobbit="session.active_fobbit"
+        />
         <div v-else>
           <h2>
             no active question
@@ -32,9 +31,13 @@
 
 <script>
 import { mapState } from 'vuex';
+import FobbitDetail from './FobbitDetail.vue';
 
 export default {
   name: 'SessionDetail',
+  components: {
+    FobbitDetail,
+  },
   props: {
     sessionId: Number,
   },
