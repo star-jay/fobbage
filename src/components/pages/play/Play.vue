@@ -1,35 +1,36 @@
 <template>
-<!-- class="xs10 offset-xs1" -->
-    <v-layout class="xs10 offset-xs1">
-      <div v-if="session">
-        <h1>
-          Session : {{ session.name }}
-        </h1>
-        <div v-if="session.active_fobbit">
-          <h2>
-          {{ session.active_fobbit.question.text }}
-          </h2>
+  <v-layout class="xs10 offset-xs1">
+    <div v-if="session">
+      <h1>
+        Session : {{ session.name }}
+      </h1>
+      <div v-if="session.active_fobbit">
+        <h2>
+        {{ session.active_fobbit.question.text }}
+        </h2>
 
-          <Guess v-if="session.active_fobbit.status===1"
-            :fobbit='session.active_fobbit'
-          />
-          <Bluff v-else-if="session.active_fobbit.status===0"
-            :fobbit='session.active_fobbit'
-          />
-          <p v-else>
-            No action required.
-          </p>
-        </div>
-        <div v-else>
-          <h2>
-            no active question
-          </h2>
-        </div>
+        <Bluff v-if="session.active_fobbit.status===0"
+          :fobbit='session.active_fobbit'
+        />
+
+        <Guess v-else-if="session.active_fobbit.status===1"
+          :fobbit='session.active_fobbit'
+        />
+
+        <p v-else>
+          No action required.
+        </p>
       </div>
       <div v-else>
-        <h2>no active session</h2>
+        <h2>
+          no active question
+        </h2>
       </div>
-    </v-layout>
+    </div>
+    <div v-else>
+      <h2>no active session</h2>
+    </div>
+  </v-layout>
 </template>
 
 <script>
@@ -59,7 +60,7 @@ export default {
   methods: {
     refresh() {
       if (this.id) {
-        // this.$store.dispatch('retrieve?Session', { id: this.id });
+        this.$store.dispatch('retrieveSession', { id: this.id });
         this.$store.dispatch('joinSession', { id: this.id });
       }
     },

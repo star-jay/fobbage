@@ -104,6 +104,9 @@ class Session(models.Model):
         default=BLUFFING,
     )
 
+    def __str__(self):
+        return self.name
+
 
 class Fobbit(models.Model):
     """Combination of session and question"""
@@ -151,6 +154,15 @@ class Fobbit(models.Model):
         return [
             player for player in self.session.players.all()
             if len(player.bluffs.filter(fobbit=self)) == 0]
+
+    @property
+    def scored_answers(self):
+        if self.status == self.FINISHED:
+            return self.answers.annotate(
+                num_guesses=models.Count('guesses')
+            ).order_by('is_correct', 'num_guesses')
+        else:
+            return self.answers.empty()
 
 
 class Answer(models.Model):

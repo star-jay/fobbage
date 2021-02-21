@@ -52,6 +52,19 @@ export default {
         });
     },
   ),
+  guess: ({ commit }, { fobbit, answer }) => new Promise(
+    (resolve, reject) => {
+      guessAPI.post({ fobbit, answer })
+        .then((response) => {
+          commit('GUESS_SUCCESS');
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('GUESS_ERROR');
+          reject(error);
+        });
+    },
+  ),
   sendMessage({ state }, { message }) {
     if (state.websocket) {
       state.websocket.send(JSON.stringify({

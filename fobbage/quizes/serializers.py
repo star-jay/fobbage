@@ -8,7 +8,7 @@ from fobbage.quizes.models import (
 from fobbage.quizes.services import (
     # generate_answers,
     # score_for_session,
-    # score_for_bluff,
+    score_for_bluff,
     next_question,
     finish_fobbit,
     reset_fobbit,
@@ -47,9 +47,12 @@ class BluffSerializer(serializers.ModelSerializer):
 
 
 class GuessSerializer(serializers.ModelSerializer):
+    player = serializers.SlugRelatedField(
+        'username', read_only=True)
+
     class Meta:
         model = Guess
-        fields = ('answer', )
+        fields = ('answer', 'player')
 
     # overide create to save user
     def create(self, validated_data):
@@ -69,10 +72,36 @@ class GuessSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError
 
 
+class ScoreSerializer(serializers.ModelSerializer):
+    score = serializers.SerializerMethodField()
+    player = serializers.SlugRelatedField(
+        'username', read_only=True)
+
+    def get_score(self, instance):
+        return score_for_bluff(instance.player, instance)
+
+    class Meta:
+        model = Bluff
+        fields = ('id', 'score', 'player')
+
+
 class AnswerSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Answer
-        fields = ('id', 'text', 'fobbit', 'order')
+        fields = ('id', 'text', 'fobbit',)
+
+
+class ScoreSheetSerializer(serializers.ModelSerializer):
+    scores = ScoreSerializer(many=True, source='bluffs', read_only=True)
+    guesses = GuessSerializer(many=True,)
+
+    class Meta:
+        model = Answer
+        fields = (
+            'id', 'text', 'fobbit', 'order',
+            'scores', 'guesses', 'is_correct',
+        )
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -84,8 +113,12 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class FobbitSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True, read_only=True)
+    score_sheets = ScoreSheetSerializer(
+        many=True, read_only=True, source='scored_answers')
+
     bluffs = BluffSerializer(many=True, read_only=True)
     question = QuestionSerializer(read_only=True)
+    answers = AnswerSerializer(many=True, read_only=True)
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
 
@@ -107,7 +140,7 @@ class FobbitSerializer(serializers.ModelSerializer):
             'id',
             'url',
             'status', 'have_bluffed', 'have_guessed',
-            'bluffs', 'question', 'answers')
+            'bluffs', 'question', 'answers', 'score_sheets')
 
 
 class QuizSerializer(serializers.ModelSerializer):
