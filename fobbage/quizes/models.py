@@ -110,6 +110,10 @@ class Session(models.Model):
 
 class Fobbit(models.Model):
     """Combination of session and question"""
+
+    class Meta:
+        ordering = ['question__order', 'id']
+
     session = models.ForeignKey(
         Session,
         related_name='fobbits',

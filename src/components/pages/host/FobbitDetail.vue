@@ -23,7 +23,7 @@
 export default {
   name: 'FobbitDetail',
   props: {
-    fobbit: Number,
+    fobbit: undefined,
   },
   created() {
   },

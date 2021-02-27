@@ -21,6 +21,11 @@
         <v-btn @click="$store.dispatch('prevQuestion', ({ sessionId }))">
           Prev question
         </v-btn>
+        <v-pagination
+          v-model="fobbitIndex"
+          :length="session.fobbits.length"
+          @click="setFobbit"
+        ></v-pagination>
       </div>
 
       <div v-else>
@@ -44,6 +49,11 @@ export default {
   created() {
     this.refresh();
   },
+  data() {
+    return {
+      fobbitIndex: 0,
+    };
+  },
   computed: {
     ...mapState({
       messages: (state) => state.quizes.messages,
@@ -58,6 +68,12 @@ export default {
         this.$store.dispatch('retrieveSession', { id: this.sessionId });
       }
     },
+    setFobbit() {
+      this.$store.dispatch(
+        'setActiveFobbit',
+        { session: this.session, fobbitId: this.session.fobbits[this.fobbitIndex] },
+      );
+    },
     connectToWebSocket() {
     //   if (this.sessionId) {
     //     const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -68,6 +84,7 @@ export default {
   },
   watch: {
     session: 'connectToWebSocket',
+    fobbitIndex: 'setFobbit',
   },
 };
 </script>

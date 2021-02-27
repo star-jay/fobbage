@@ -156,9 +156,9 @@ export default {
         });
     },
   ),
-  setActiveFobbit: ({ commit }, { session, fobbit }) => new Promise(
+  setActiveFobbit: ({ commit }, { session, fobbitId }) => new Promise(
     (resolve, reject) => {
-      sessionsAPI.setActiveFobbit(session.id, fobbit.id)
+      sessionsAPI.setActiveFobbit(session.id, { active_fobbit: fobbitId })
         .then((response) => {
           commit('SESSIONS_SUCCESS', [response.data]);
           resolve(response);

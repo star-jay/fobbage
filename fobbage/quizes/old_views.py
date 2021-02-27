@@ -453,7 +453,7 @@ class AnswerViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AnswerSerializer
 
 
-class ActiveQuestionViewSet(viewsets.ModelViewSet):
+class ActiveFobbitViewSet(viewsets.ModelViewSet):
     serializer_class = FobbitSerializer
 
     def get_queryset(self):

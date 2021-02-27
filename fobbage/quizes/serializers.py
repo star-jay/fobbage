@@ -164,6 +164,8 @@ class QuizSerializer(serializers.ModelSerializer):
 class SessionSerializer(serializers.ModelSerializer):
     websocket = serializers.SerializerMethodField()
     active_fobbit = FobbitSerializer(read_only=True)
+    fobbits = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True)
 
     def get_fields(self):
         fields = super().get_fields()
@@ -195,7 +197,7 @@ class SessionSerializer(serializers.ModelSerializer):
             'quiz',
             'owner',
             'active_fobbit',
-            # 'questions'
+            'fobbits',
         )
 
 
