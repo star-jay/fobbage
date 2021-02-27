@@ -88,9 +88,9 @@ def session_view(request, session_id):
     if fobbit:
         players = None
         if fobbit.status == Fobbit.BLUFF:
-            players = fobbit.players_without_bluff()
+            players = fobbit.players_without_bluff
         elif fobbit.status == Fobbit.GUESS:
-            players = fobbit.players_without_guess()
+            players = fobbit.players_without_guess
 
         if players:
             context['players'] = players

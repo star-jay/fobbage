@@ -143,13 +143,13 @@ class Fobbit(models.Model):
             return 2
         return 1
 
-    @cached_property
+    @property
     def players_without_guess(self):
         return [
             player for player in self.session.players.all()
             if len(player.guesses.filter(answer__fobbit=self)) == 0]
 
-    @cached_property
+    @property
     def players_without_bluff(self):
         return [
             player for player in self.session.players.all()
