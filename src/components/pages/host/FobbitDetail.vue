@@ -15,6 +15,15 @@
       </h3>
       {{ fobbit.players_without_guess }}
     </div>
+     <v-btn @click="$store.dispatch('resetFobbit', { fobbit })">
+      Reset
+    </v-btn>
+     <v-btn @click="$store.dispatch('generateAnswersForFobbit', { fobbit })">
+      Generate Answers
+    </v-btn>
+    <v-btn @click="$store.dispatch('finishFobbit', { fobbit })">
+      Finish
+    </v-btn>
   </div>
 </template>
 

@@ -4,6 +4,7 @@ import {
   guessAPI,
   // active_fobbitsAPI,
   sessionsAPI,
+  fobbitsAPI,
 } from '@/services/api';
 
 export default {
@@ -157,6 +158,7 @@ export default {
         });
     },
   ),
+
   setActiveFobbit: ({ commit }, { session, fobbitId }) => new Promise(
     (resolve, reject) => {
       sessionsAPI.setActiveFobbit(session.id, { active_fobbit: fobbitId })
@@ -166,6 +168,48 @@ export default {
         })
         .catch((error) => {
           commit('SESSIONS_ERROR');
+          reject(error);
+        });
+    },
+  ),
+
+  finishFobbit: ({ commit }, { fobbit }) => new Promise(
+    (resolve, reject) => {
+      fobbitsAPI.finish(fobbit.id)
+        .then((response) => {
+          commit('FOBBIT_SUCCESS', [response.data]);
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('FOBBIT_ERROR');
+          reject(error);
+        });
+    },
+  ),
+
+  resetFobbit: ({ commit }, { fobbit }) => new Promise(
+    (resolve, reject) => {
+      fobbitsAPI.reset(fobbit.id)
+        .then((response) => {
+          commit('FOBBIT_SUCCESS', [response.data]);
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('FOBBIT_ERROR');
+          reject(error);
+        });
+    },
+  ),
+
+  generateAnswersForFobbit: ({ commit }, { fobbit }) => new Promise(
+    (resolve, reject) => {
+      fobbitsAPI.generateAnswers(fobbit.id)
+        .then((response) => {
+          commit('FOBBIT_SUCCESS', [response.data]);
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('FOBBIT_ERROR');
           reject(error);
         });
     },

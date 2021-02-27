@@ -2,7 +2,7 @@
   <div v-if="score">
     <h1>{{ score.text }}</h1>
       <div v-if="score.is_correct">
-        <h2 >Was the correct answer!</h2>
+        <h2>Was the correct answer! </h2>
       </div>
       <div v-else>
         <h2 >Was a bluff from: </h2>
