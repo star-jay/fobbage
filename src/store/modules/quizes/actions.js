@@ -93,10 +93,12 @@ export default {
   }),
   newMessage({ dispatch }, { message }) {
     // toodo: get quiz id from message and query new active question
-    if ('quiz_id' in message) {
-      setTimeout(() => {
-        dispatch('newactive_fobbit');
-      }, 200);
+    if ('session_id' in message) {
+      console.log(message);
+      dispatch('retrieveSession', { id: message.session_id });
+      // setTimeout(() => {
+      //   dispatch('newactive_fobbit');
+      // }, 200);
     }
   },
 

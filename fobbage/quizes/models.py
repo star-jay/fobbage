@@ -7,7 +7,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.functional import cached_property
 
-from .messages import quiz_updated
+from .messages import session_updated
 
 
 User = get_user_model()
@@ -238,17 +238,17 @@ class Guess(models.Model):
     )
 
 
-@receiver(post_save, sender=Quiz)
-def quiz_update_signal(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Session)
+def session_update_signal(sender, instance, created, **kwargs):
     if created:
-        quiz_updated(instance.id)
+        session_updated(instance.id)
     else:
-        quiz_updated(instance.id)
+        session_updated(instance.id)
 
 
-@receiver(post_save, sender=Question)
-def question_updated_signal(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Fobbit)
+def session_updated_signal(sender, instance, created, **kwargs):
     if created:
-        quiz_updated(instance.quiz.id)
+        session_updated(instance.session.id)
     else:
-        quiz_updated(instance.quiz.id)
+        session_updated(instance.session.id)

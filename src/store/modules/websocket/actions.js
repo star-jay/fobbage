@@ -13,6 +13,7 @@ export default {
     websocket.onmessage = (event) => {
       const message = JSON.parse(event.data);
       state.messages.push(message);
+      console.log(message);
       dispatch('newMessage', { message });
     };
     commit('SOCKET_SET', { websocket });

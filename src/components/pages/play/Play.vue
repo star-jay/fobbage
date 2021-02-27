@@ -54,7 +54,7 @@ export default {
       messages: (state) => state.quizes.messages,
     }),
     session() {
-      return this.$store.state.quizes.sessions[this.id];
+      return this.$store.getters.session(this.id);
     },
   },
   methods: {
@@ -65,11 +65,11 @@ export default {
       }
     },
     connectToWebSocket() {
-      // if (this.sessionId) {
-      //   const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-      //   const uri = this.session.websocket;
-      //   this.$store.dispatch('connectToWebSocket', { scheme, uri });
-      // }
+      if (this.id) {
+        const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const uri = this.session.websocket;
+        this.$store.dispatch('connectToWebSocket', { scheme, uri });
+      }
     },
   },
   watch: {

@@ -208,7 +208,6 @@ class ActiveFobbitSerializer(serializers.ModelSerializer):
 
     def get_fields(self):
         fields = super().get_fields()
-        print(self.instance)
         fields['active_fobbit'].queryset = Fobbit.objects.filter(
             session=self.instance)
         return fields
