@@ -185,7 +185,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-ASGI_APPLICATION = 'fobbage.routing.application'
+ASGI_APPLICATION = 'fobbage.asgi.application'
 
 # if you have a redis url(heroku) connect to that, else use a local redis
 # $ sudo docker run -p 6379:6379 -d redis:2.8

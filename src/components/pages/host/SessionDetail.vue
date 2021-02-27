@@ -75,11 +75,11 @@ export default {
       );
     },
     connectToWebSocket() {
-    //   if (this.sessionId) {
-    //     const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    //     const uri = this.session.websocket;
-    //     this.$store.dispatch('connectToWebSocket', { scheme, uri });
-    //   }
+      if (this.sessionId) {
+        const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const uri = this.session.websocket;
+        this.$store.dispatch('connectToWebSocket', { scheme, uri });
+      }
     },
   },
   watch: {
