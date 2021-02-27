@@ -24,11 +24,6 @@
         <v-btn type="submit" color="primary" form="guess">Guess</v-btn>
       </v-form>
     </div>
-    <div v-else>
-      <p>
-        No action required.
-      </p>
-    </div>
   </div>
 </template>
 

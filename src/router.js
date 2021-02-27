@@ -5,6 +5,8 @@ import BaseLayout from '@/components/layouts/BaseLayout.vue';
 
 import Host from '@/components/pages/host/Host.vue';
 import SessionDetail from '@/components/pages/host/SessionDetail.vue';
+import FobbitDetail from '@/components/pages/host/FobbitDetail.vue';
+import Scores from '@/components/pages/host/Scores.vue';
 
 import Play from '@/components/pages/play/Play.vue';
 import SelectSession from '@/components/pages/play/SelectSession.vue';
@@ -37,7 +39,7 @@ const routes = [
           {
             path: ':id(\\d+)?',
             component: Play,
-            props: (route) => ({ id: Number(route.params.id) }),
+            props: (route) => ({ sessionId: Number(route.params.id) }),
           },
         ],
       },
@@ -51,9 +53,18 @@ const routes = [
         path: 'host/:sessionId',
         component: SessionDetail,
         props: (route) => ({ sessionId: Number(route.params.sessionId) }),
-        name: 'host-session',
         children:
         [
+          {
+            path: '',
+            component: FobbitDetail,
+            name: 'fobbit-detail',
+          },
+          {
+            path: 'scores',
+            component: Scores,
+            name: 'scores',
+          },
         ],
       },
     ],

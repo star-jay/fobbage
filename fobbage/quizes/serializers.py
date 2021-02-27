@@ -6,12 +6,7 @@ from fobbage.quizes.models import (
     Quiz, Question, Bluff, Answer, Guess, Fobbit, Session,
 )
 from fobbage.quizes.services import (
-    # generate_answers,
-    # score_for_session,
     score_for_bluff,
-    next_question,
-    finish_fobbit,
-    reset_fobbit,
 )
 
 
@@ -89,7 +84,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Answer
-        fields = ('id', 'text', 'fobbit',)
+        fields = ('id', 'text', 'fobbit', 'order')
 
 
 class ScoreSheetSerializer(serializers.ModelSerializer):
@@ -215,30 +210,3 @@ class ActiveFobbitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
         fields = ('active_fobbit',)
-
-
-class FinishFobbitSerializer(serializers.Serializer):
-    # fobbit = serializers.PrimaryKeyRelatedField(
-    #     queryset=Fobbit.objects.all(),
-    # )
-
-    def save(self):
-        finish_fobbit(self.instance)
-        return self.instance
-
-
-class ResetFobbitSerializer(serializers.Serializer):
-    # fobbit = serializers.PrimaryKeyRelatedField(
-    #     queryset=Fobbit.objects.all(),
-    # )
-
-    def save(self):
-        reset_fobbit(self.instance)
-        return self.instance
-
-
-class NextQuestionSerializer(serializers.Serializer):
-
-    def save(self):
-        next_question(self.instance)
-        return self.instance

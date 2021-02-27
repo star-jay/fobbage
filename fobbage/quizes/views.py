@@ -6,10 +6,13 @@ from rest_framework.decorators import action
 from .serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer, SessionSerializer,
     GuessSerializer, FobbitSerializer, ActiveFobbitSerializer,
-    QuestionSerializer, ResetFobbitSerializer, FinishFobbitSerializer,
-    NextQuestionSerializer)
+    QuestionSerializer,
+)
 from .services import (
     generate_answers,
+    finish_fobbit,
+    next_question,
+    reset_fobbit,
     # score_for_session, score_for_bluff,
     # next_question, prev_question_for_session,
 )
@@ -46,15 +49,12 @@ class SessionViewSet(viewsets.ModelViewSet):
                 session,
                 context=self.get_serializer_context()).data)
 
-    @action(
-        detail=True, methods=['POST'], serializer_class=NextQuestionSerializer)
+    @action(detail=True, methods=['POST'],)
     def next_question(self, request, pk=None):
-        session = self.get_object()
-        serializer = NextQuestionSerializer(instance=session)
-        session = serializer.save()
+        next_question(self.get_object())
         return Response(
             SessionSerializer(
-                session,
+                self.get_object(),
                 context=self.get_serializer_context()).data)
 
     @action(
@@ -93,26 +93,23 @@ class FobbitViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True, methods=['POST'],
-        serializer_class=FinishFobbitSerializer)
-    def finish(self, request, pk=None):
-        fobbit = self.get_object()
-        serializer = FinishFobbitSerializer(fobbit)
-        serializer.save()
+    )
+    def finish(self, request, pk=None, serializer_class=None):
+        finish_fobbit(self.get_object())
         return Response(
             FobbitSerializer(
-                fobbit, context=self.get_serializer_context()
+                self.get_object(), context=self.get_serializer_context()
             ).data)
 
     @action(
         detail=True, methods=['POST'],
-        serializer_class=FinishFobbitSerializer)
+    )
     def reset(self, request, pk=None):
-        fobbit = self.get_object()
-        serializer = ResetFobbitSerializer(fobbit)
-        serializer.save()
-        return Response(FobbitSerializer(
-            fobbit,
-            context=self.get_serializer_context()).data)
+        reset_fobbit(self.get_object())
+        return Response(
+            FobbitSerializer(
+                self.get_object(), context=self.get_serializer_context()
+            ).data)
 
 
 class QuestionViewSet(viewsets.ReadOnlyModelViewSet):

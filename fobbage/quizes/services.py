@@ -149,8 +149,8 @@ def finish_fobbit(fobbit):
     if len(fobbit.players_without_guess) == 0:
         fobbit.status = Fobbit.FINISHED
         fobbit.save()
-        return True
-    return False
+    else:
+        raise Guess.DoesNotExist("Not all players have guessed")
 
 
 def reset_fobbit(fobbit):

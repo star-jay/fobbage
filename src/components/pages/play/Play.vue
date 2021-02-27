@@ -1,6 +1,7 @@
 <template>
   <v-layout class="xs10 offset-xs1">
     <div v-if="session">
+      <web-socket :session="session"/>
       <h1>
         Session : {{ session.name }}
       </h1>
@@ -16,9 +17,8 @@
         <Guess v-else-if="session.active_fobbit.status===1"
           :fobbit='session.active_fobbit'
         />
-
         <p v-else>
-          No action required.
+          Look at the screen to see your score.
         </p>
       </div>
       <div v-else>
@@ -37,14 +37,15 @@
 import { mapState } from 'vuex';
 import Bluff from '@/components/common/Bluff.vue';
 import Guess from '@/components/common/Guess.vue';
+import WebSocket from '@/components/common/WebSocket.vue';
 
 export default {
   name: 'Play',
   components: {
-    Bluff, Guess,
+    Bluff, Guess, WebSocket,
   },
   props: {
-    id: Number,
+    sessionId: Number,
   },
   created() {
     this.refresh();
@@ -54,26 +55,18 @@ export default {
       messages: (state) => state.quizes.messages,
     }),
     session() {
-      return this.$store.getters.session(this.id);
+      return this.$store.getters.session(this.sessionId);
     },
   },
   methods: {
     refresh() {
-      if (this.id) {
-        this.$store.dispatch('retrieveSession', { id: this.id });
-        this.$store.dispatch('joinSession', { id: this.id });
-      }
-    },
-    connectToWebSocket() {
-      if (this.id) {
-        const scheme = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const uri = this.session.websocket;
-        this.$store.dispatch('connectToWebSocket', { scheme, uri });
+      if (this.sessionId) {
+        this.$store.dispatch('retrieveSession', { id: this.sessionId });
+        this.$store.dispatch('joinSession', { id: this.sessionId });
       }
     },
   },
   watch: {
-    session: 'connectToWebSocket',
   },
 };
 </script>
