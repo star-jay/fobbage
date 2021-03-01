@@ -5,7 +5,7 @@
         v-for="session in sessionlist"
         :key="session.id"
         :to="{
-          name: 'host-session',
+          name: 'session-detail',
           params: { sessionId: session.id },
         }"
       >

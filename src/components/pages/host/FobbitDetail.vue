@@ -15,7 +15,10 @@
       </h3>
       {{ fobbit.players_without_guess }}
     </div>
-     <v-btn @click="$store.dispatch('resetFobbit', { fobbit })">
+
+    <router-view :fobbit="fobbit"/>
+
+    <v-btn @click="$store.dispatch('resetFobbit', { fobbit })">
       Reset
     </v-btn>
      <v-btn @click="$store.dispatch('generateAnswersForFobbit', { fobbit })">
@@ -24,6 +27,10 @@
     <v-btn @click="$store.dispatch('finishFobbit', { fobbit })">
       Finish
     </v-btn>
+    <v-btn :to="{ name: 'scores' }">
+      Scores
+    </v-btn>
+
   </div>
 </template>
 

@@ -1,11 +1,19 @@
 <template>
-  <div v-if="fobbit.score_sheets">
-    <Score :score="fobbit.score_sheets[scoreIndex-1]"/>
-    <v-pagination
-      small
-      v-model="scoreIndex"
-      :length="fobbit.score_sheets.length"
-    ></v-pagination>
+  <div>
+    <div v-if="fobbit.score_sheets">
+      <Score :score="fobbit.score_sheets[scoreIndex-1]"/>
+      <v-pagination
+        small
+        v-model="scoreIndex"
+        :length="fobbit.score_sheets.length"
+      ></v-pagination>
+    </div>
+    <div v-else>
+      This question has no scores.
+    </div>
+    <v-btn :to="{ name: 'session-detail' }">
+        Go back
+      </v-btn>
   </div>
 </template>
 

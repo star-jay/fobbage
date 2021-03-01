@@ -28,9 +28,6 @@
             Next question
           </v-btn>
         </v-row>
-        <v-btn :to="{ name: 'scores' }">
-          Scores
-        </v-btn>
       </div>
       <div v-else>
         <h2>no session</h2>

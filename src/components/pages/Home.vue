@@ -5,7 +5,7 @@
       <v-card
         class="mx-auto"
         max-width="344"
-        to="play/select"
+        :to="{name: 'play'}"
       >
         <v-card-title class="display-1">
           Play
@@ -29,7 +29,7 @@
       <v-card
         class="mx-auto"
         max-width="344"
-        href="host"
+        :to="{name: 'host'}"
       >
         <v-card-title class="display-1">
           Host

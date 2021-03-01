@@ -26,6 +26,7 @@ const routes = [
       {
         path: '/',
         component: Home,
+        name: 'home',
       },
       // Select
       {
@@ -58,12 +59,15 @@ const routes = [
           {
             path: '',
             component: FobbitDetail,
-            name: 'fobbit-detail',
-          },
-          {
-            path: 'scores',
-            component: Scores,
-            name: 'scores',
+            name: 'session-detail',
+            children:
+            [
+              {
+                path: 'scores',
+                component: Scores,
+                name: 'scores',
+              },
+            ],
           },
         ],
       },

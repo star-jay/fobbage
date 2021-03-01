@@ -76,7 +76,7 @@ export default {
         this.$store.dispatch('createSession', { ...this.form, quiz: this.quiz.id })
           .then((session) => {
             this.$router.push({
-              name: 'host-session',
+              name: 'session-detail',
               params: { sessionId: session.id },
             });
             this.$refs.createNewSessionForm.reset();
