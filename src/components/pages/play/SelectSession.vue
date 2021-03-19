@@ -1,6 +1,6 @@
 <template>
   <v-list flat>
-    <v-subheader>Todays Sessions</v-subheader>
+    <v-subheader>Selet a session to join it!</v-subheader>
 
     <v-card
         class="mx-auto"
@@ -14,7 +14,7 @@
         </v-card-title>
         <v-card-text>
           <div class="text--primary">
-            {{ session }}
+            {{ session.owner.username }}
           </div>
         </v-card-text>
         <v-card-actions>

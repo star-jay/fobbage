@@ -5,7 +5,7 @@
       <v-card
         class="mx-auto"
         max-width="344"
-        :to="{name: 'play'}"
+        :to="{name: 'join-session'}"
       >
         <v-card-title class="display-1">
           Play

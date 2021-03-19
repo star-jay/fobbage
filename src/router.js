@@ -36,6 +36,7 @@ const routes = [
           {
             path: 'select',
             component: SelectSession,
+            name: 'join-session',
           },
           {
             path: ':id(\\d+)?',

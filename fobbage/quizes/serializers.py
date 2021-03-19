@@ -2,6 +2,7 @@ from rest_framework import serializers
 # from django.urls import reverse as django_reverse
 # from rest_framework.reverse import reverse
 
+from fobbage.accounts.serializers import UserSerializer
 from fobbage.quizes.models import (
     Quiz, Question, Bluff, Answer, Guess, Fobbit, Session,
 )
@@ -11,12 +12,11 @@ from fobbage.quizes.services import (
 
 
 class BluffSerializer(serializers.ModelSerializer):
-
-    username = serializers.CharField(source='player.username', read_only=True)
+    player = UserSerializer()
 
     class Meta:
         model = Bluff
-        fields = ('id', 'fobbit', 'player', 'username', 'text',)
+        fields = ('id', 'fobbit', 'player', 'text',)
         extra_kwargs = {
             'player': {'read_only': True},
         }
@@ -42,8 +42,7 @@ class BluffSerializer(serializers.ModelSerializer):
 
 
 class GuessSerializer(serializers.ModelSerializer):
-    player = serializers.SlugRelatedField(
-        'username', read_only=True)
+    player = UserSerializer()
 
     class Meta:
         model = Guess
@@ -69,8 +68,7 @@ class GuessSerializer(serializers.ModelSerializer):
 
 class ScoreSerializer(serializers.ModelSerializer):
     score = serializers.SerializerMethodField()
-    player = serializers.SlugRelatedField(
-        'username', read_only=True)
+    player = UserSerializer()
 
     def get_score(self, instance):
         return score_for_bluff(instance.player, instance)
@@ -116,13 +114,11 @@ class FobbitSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True, read_only=True)
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
-    players_without_bluff = serializers.SlugRelatedField(
+    players_without_bluff = UserSerializer(
         many=True, read_only=True,
-        slug_field='username'
     )
-    players_without_guess = serializers.SlugRelatedField(
+    players_without_guess = UserSerializer(
         many=True, read_only=True,
-        slug_field='username'
     )
 
     def get_have_bluffed(self, instance):
@@ -161,6 +157,7 @@ class SessionSerializer(serializers.ModelSerializer):
     active_fobbit = FobbitSerializer(read_only=True)
     fobbits = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
+    owner = UserSerializer()
 
     def get_fields(self):
         fields = super().get_fields()
