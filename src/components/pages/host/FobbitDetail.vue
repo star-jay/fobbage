@@ -7,13 +7,13 @@
       <h3>
         People who need to bluff:
       </h3>
-      {{ fobbit.players_without_bluff }}
+      {{ fobbit.players_without_bluff.map(player => player.username) }}
     </div>
     <div v-if="fobbit.status == 1">
       <h3>
         People who need to guess:
       </h3>
-      {{ fobbit.players_without_guess }}
+      {{ fobbit.players_without_guess.map(player => player.username) }}
     </div>
 
     <router-view :fobbit="fobbit"/>

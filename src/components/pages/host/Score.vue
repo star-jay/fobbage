@@ -7,7 +7,7 @@
       <div v-else>
         <h2 >Was a bluff from: </h2>
         <span v-for="score in score.scores" :key="score.player">
-          {{ score.player }}: +{{ score.score }}
+          {{ score.player.username }}: +{{ score.score }}
         </span>
       </div>
       <br/>
@@ -15,7 +15,7 @@
 
       <h2 >Players who guessed this answer:</h2>
         <span v-for="guess in score.guesses" :key="guess.id">
-          {{ guess.player }}
+          {{ guess.player.username }}
         </span>
       <br/>
     </div>
