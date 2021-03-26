@@ -66,6 +66,12 @@ class GuessSerializer(serializers.ModelSerializer):
         raise serializers.ValidationError
 
 
+class AnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ('id', 'text', 'fobbit', 'order')
+
+
 class ScoreSerializer(serializers.ModelSerializer):
     score = serializers.SerializerMethodField()
     player = UserSerializer()
@@ -78,16 +84,20 @@ class ScoreSerializer(serializers.ModelSerializer):
         fields = ('id', 'score', 'player')
 
 
-class AnswerSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Answer
-        fields = ('id', 'text', 'fobbit', 'order')
-
-
 class ScoreSheetSerializer(serializers.ModelSerializer):
     scores = ScoreSerializer(many=True, source='bluffs', read_only=True)
     guesses = GuessSerializer(many=True,)
+
+    class Meta:
+        model = Answer
+        fields = (
+            'id', 'text', 'fobbit', 'order',
+            'scores', 'guesses', 'is_correct',
+        )
+
+
+class ScoreBoardSerializer(serializers.ModelSerializer):
+    scores = ScoreSerializer(many=True)
 
     class Meta:
         model = Answer

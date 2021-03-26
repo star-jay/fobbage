@@ -12,8 +12,8 @@
       This question has no scores.
     </div>
     <v-btn :to="{ name: 'session-detail' }">
-        Go back
-      </v-btn>
+      Go back
+    </v-btn>
   </div>
 </template>
 
@@ -32,6 +32,14 @@ export default {
     return {
       scoreIndex: 1,
     };
+  },
+  methods: {
+    resetIndex() {
+      this.scoreIndex = 1;
+    },
+  },
+  watch: {
+    fobbit: 'resetIndex',
   },
 
 };

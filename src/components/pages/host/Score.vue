@@ -6,8 +6,8 @@
       </div>
       <div v-else>
         <h2 >Was a bluff from: </h2>
-        <span v-for="score in score.scores" :key="score.player">
-          {{ score.player.username }}: +{{ score.score }}
+        <span v-for="score in score.scores" :key="score.player.id">
+          {{ score.player.username }}: + {{ score.score }}
         </span>
       </div>
       <br/>
@@ -28,7 +28,7 @@ export default {
   name: 'Score',
 
   props: {
-    score: undefined,
+    score: null,
   },
 };
 </script>
