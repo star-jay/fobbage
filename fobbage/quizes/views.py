@@ -6,14 +6,15 @@ from rest_framework.decorators import action
 from .serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer, SessionSerializer,
     GuessSerializer, FobbitSerializer, ActiveFobbitSerializer,
-    QuestionSerializer,
+    QuestionSerializer, ScoreSerializer,
 )
 from .services import (
     generate_answers,
     finish_fobbit,
     next_question,
     reset_fobbit,
-    # score_for_session, score_for_bluff,
+    score_for_session,
+    # score_for_bluff,
     # next_question, prev_question_for_session,
 )
 from fobbage.quizes.models import (
@@ -73,6 +74,21 @@ class SessionViewSet(viewsets.ModelViewSet):
             return Response(
                 serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
+
+    @action(detail=True, methods=['GET'])
+    def score_board(self, request, pk=None):
+        instance = self.get_object()
+        return Response(
+            ScoreSerializer(
+                [
+                    {
+                        'score': score_for_session(player, instance),
+                        'player': player
+                    }
+                    for player in instance.players.all()
+                ],
+                many=True
+            ).data)
 
 
 class FobbitViewSet(viewsets.ModelViewSet):

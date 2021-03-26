@@ -82,35 +82,12 @@ def score_for_fobbit(player, fobbit):
         if player_guess.answer == player_bluff.answer:
             return 0
 
-        score += score_for_bluff(player, player_bluff)
+        score += player_bluff.score
 
     # score voor juist antwoord
     if player_guess:
         if player_guess.answer.text == fobbit.question.correct_answer:
             score += fobbit.multiplier * 1000
-
-    return score
-
-
-def score_for_bluff(player, bluff):
-    score = 0
-
-    player_guess = Guess.objects.filter(
-        answer__fobbit=bluff.fobbit,
-        player=player).first()
-
-    # 0 plunten als jouw bluff = correct antwoord
-    if bluff.answer and bluff.answer.is_correct is True:
-        return 0
-    # 0 punten als je op je eigen antwoord stemtgit
-    if player_guess.answer == bluff.answer:
-        return 0
-
-    # score voor anders spelers kiezen jouw bluff
-    aantal_gepakt = len(Guess.objects.filter(answer=bluff.answer))
-
-    score += (aantal_gepakt * bluff.fobbit.multiplier * 500) / len(
-        Bluff.objects.filter(answer=bluff.answer))
 
     return score
 

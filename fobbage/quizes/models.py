@@ -219,6 +219,29 @@ class Bluff(models.Model):
     class Meta:
         unique_together = ("fobbit", "player"),
 
+    @property
+    def score(self):
+        score = 0
+
+        player_guess = Guess.objects.filter(
+            answer__fobbit=self.fobbit,
+            player=self.player).first()
+
+        # 0 plunten als jouw bluff = correct antwoord
+        if self.answer and self.answer.is_correct is True:
+            return 0
+        # 0 punten als je op je eigen antwoord stemtgit
+        if player_guess.answer == self.answer:
+            return 0
+
+        # score voor anders spelers kiezen jouw bluff
+        aantal_gepakt = len(Guess.objects.filter(answer=self.answer))
+
+        score += (aantal_gepakt * self.fobbit.multiplier * 500) / len(
+            Bluff.objects.filter(answer=self.answer))
+
+        return score
+
     def __str__(self):
         """ string representation """
         return "{}: {}".format(self.player.first_name, self.text)

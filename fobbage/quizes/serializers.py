@@ -6,8 +6,9 @@ from fobbage.accounts.serializers import UserSerializer
 from fobbage.quizes.models import (
     Quiz, Question, Bluff, Answer, Guess, Fobbit, Session,
 )
+
 from fobbage.quizes.services import (
-    score_for_bluff,
+    score_for_session
 )
 
 
@@ -72,32 +73,24 @@ class AnswerSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'fobbit', 'order')
 
 
-class ScoreSerializer(serializers.ModelSerializer):
-    score = serializers.SerializerMethodField()
+class ScoreSerializer(serializers.Serializer):
+    # Serialize a single score for each bluff in an answer
+    score = serializers.IntegerField()
     player = UserSerializer()
 
-    def get_score(self, instance):
-        return score_for_bluff(instance.player, instance)
 
-    class Meta:
-        model = Bluff
-        fields = ('id', 'score', 'player')
-
-
-class ScoreSheetSerializer(serializers.ModelSerializer):
-    scores = ScoreSerializer(many=True, source='bluffs', read_only=True)
+class AnswerScoreSheetSerializer(serializers.ModelSerializer):
+    scores = serializers.SerializerMethodField()
     guesses = GuessSerializer(many=True,)
 
-    class Meta:
-        model = Answer
-        fields = (
-            'id', 'text', 'fobbit', 'order',
-            'scores', 'guesses', 'is_correct',
-        )
-
-
-class ScoreBoardSerializer(serializers.ModelSerializer):
-    scores = ScoreSerializer(many=True)
+    def get_scores(self, instance):
+        return ScoreSerializer(
+            [
+                {'score': bluff.score, 'player': bluff.player}
+                for bluff in instance.bluffs.all()
+            ],
+            many=True
+        ).data
 
     class Meta:
         model = Answer
@@ -116,7 +109,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 class FobbitSerializer(serializers.ModelSerializer):
     answers = AnswerSerializer(many=True, read_only=True)
-    score_sheets = ScoreSheetSerializer(
+    score_sheets = AnswerScoreSheetSerializer(
         many=True, read_only=True, source='scored_answers')
 
     bluffs = BluffSerializer(many=True, read_only=True)
