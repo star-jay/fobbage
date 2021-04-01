@@ -1,11 +1,11 @@
 <template>
   <div v-if="score">
-    <h1>{{ score.text }}</h1>
+    <h3>{{ score.text }}</h3>
       <div v-if="score.is_correct">
-        <h2>Was the correct answer! </h2>
+        <h4>Was the correct answer!</h4>
       </div>
       <div v-else>
-        <h2 >Was a bluff from: </h2>
+        <h4>Was a bluff from:</h4>
         <span v-for="score in score.scores" :key="score.player.id">
           {{ score.player.username }}: + {{ score.score }}
         </span>
@@ -13,7 +13,7 @@
       <br/>
       <div>
 
-      <h2 >Players who guessed this answer:</h2>
+      <h3>Players who guessed this answer:</h3>
         <span v-for="guess in score.guesses" :key="guess.id">
           {{ guess.player.username }}
         </span>

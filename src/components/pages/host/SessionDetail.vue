@@ -9,7 +9,8 @@
 
         <router-view
           v-if="session.active_fobbit"
-          :fobbit="session.active_fobbit">
+          :fobbit="session.active_fobbit"
+          :session="session">
         </router-view >
          <div v-else>
           <h2>
@@ -22,7 +23,7 @@
             total-visible="10"
             v-model="fobbitIndex"
             :length="session.fobbits.length"
-            @click="setFobbit"
+            @input="setFobbit"
           ></v-pagination>
           <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
             Next question
@@ -52,7 +53,7 @@ export default {
   },
   data() {
     return {
-      fobbitIndex: 0,
+      fobbitIndex: 1,
     };
   },
   computed: {
@@ -62,6 +63,12 @@ export default {
     session() {
       return this.$store.getters.session(this.sessionId);
     },
+    calculatedIndex() {
+      if (this.session && this.session.fobbits) {
+        return this.session.fobbits.findIndex((id) => id === this.session.active_fobbit.id) + 1;
+      }
+      return 1;
+    },
   },
   methods: {
     refresh() {
@@ -69,15 +76,18 @@ export default {
         this.$store.dispatch('retrieveSession', { id: this.sessionId });
       }
     },
-    setFobbit() {
+    setFobbit(index) {
       this.$store.dispatch(
         'setActiveFobbit',
-        { session: this.session, fobbitId: this.session.fobbits[this.fobbitIndex] },
+        { session: this.session, fobbitId: this.session.fobbits[index - 1] },
       );
+    },
+    updateFobbitIndex() {
+      this.fobbitIndex = this.calculatedIndex;
     },
   },
   watch: {
-    fobbitIndex: 'setFobbit',
+    calculatedIndex: 'updateFobbitIndex',
   },
 };
 </script>

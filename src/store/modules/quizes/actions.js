@@ -121,7 +121,7 @@ export default {
       sessionsAPI.get(id)
         .then((response) => {
           commit('SESSIONS_SUCCESS', [response.data]);
-          resolve(response);
+          resolve(response.data);
         })
         .catch((error) => {
           commit('SESSIONS_ERROR');
@@ -210,6 +210,20 @@ export default {
         })
         .catch((error) => {
           commit('FOBBIT_ERROR');
+          reject(error);
+        });
+    },
+  ),
+
+  retrieveScoreBoard: ({ commit }, { id }) => new Promise(
+    (resolve, reject) => {
+      sessionsAPI.getScoreBoard(id)
+        .then((response) => {
+          commit('SCOREBOARD_SUCCESS', response.data);
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('SCOREBOARD_ERROR');
           reject(error);
         });
     },

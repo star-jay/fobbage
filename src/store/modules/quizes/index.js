@@ -10,6 +10,7 @@ export default {
     error: '',
     bluff: undefined,
     guess: undefined,
+    scoreBoard: undefined,
   },
   mutations,
   getters,

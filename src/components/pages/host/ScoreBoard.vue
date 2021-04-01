@@ -1,8 +1,19 @@
 <template>
   <div>
     Scoreboard
-    <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
-      Next question
+    <v-list flat>
+      <v-list-item
+        v-for="score in $store.state.quizes.scoreBoard"
+        :key="score.player.id"
+      >
+        <v-list-item-content>
+          <v-col>{{ score.player.username }}</v-col>
+          <v-col> {{ score.score }} </v-col>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+    <v-btn @click="nextQuestion">
+      Back
     </v-btn>
   </div>
 
@@ -15,7 +26,6 @@ export default {
   components: {
   },
   props: {
-    fobbit: undefined,
     session: undefined,
   },
   data() {
@@ -23,10 +33,14 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch('getScoreBoard', { session: this.session });
+    this.$store.dispatch('retrieveScoreBoard', { id: this.session.id });
   },
   methods: {
-
+    nextQuestion() {
+      // this.$store.dispatch('nextQuestion', ({ sessionId: this.session.id })).then(() => {
+      this.$router.push({ name: 'session-detail' });
+      // });
+    },
   },
   watch: {
     // fobbit: 'resetIndex',

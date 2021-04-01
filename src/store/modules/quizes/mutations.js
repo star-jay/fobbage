@@ -48,4 +48,10 @@ export default {
   [types.SESSIONS_ERROR]: (state) => {
     state.sessions = [];
   },
+  [types.SCOREBOARD_SUCCESS]: (state, scoreBoard) => {
+    Vue.set(state, 'scoreBoard', scoreBoard);
+  },
+  [types.SCOREBOARD_ERROR]: (state) => {
+    state.sessions = [];
+  },
 };
