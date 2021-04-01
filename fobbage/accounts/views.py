@@ -1,20 +1,22 @@
 from django.contrib.auth import get_user_model
 from rest_framework.decorators import action
 
-from rest_framework import permissions, viewsets
+from rest_framework import permissions, viewsets, generics, response
+from rest_framework.generics import mixins
+
 from fobbage.accounts.serializers import UserSerializer
 
 
 User = get_user_model()
 
 
-class UserViewSet(viewsets.ModelViewSet):
+class UserAPIView(generics.GenericAPIView, mixins.CreateModelMixin):
+    http_method_names = ['get', 'post', 'head', 'options']
     permission_classes = [permissions.AllowAny]
-    queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def get_queryset(self):
-        return User.objects.for_user(self.request.user)
+    def get(self, request, *args, **kwargs):
+        return response.Response(UserSerializer(request.user).data)
 
     @action(detail=True, methods=['post'], url_path="new_password")
     def set_password(self, request, pk=None):
