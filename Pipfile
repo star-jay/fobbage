@@ -18,6 +18,7 @@ django-bulma = "*"
 channels = "*"
 channels-redis = "*"
 django-spa = "*"
+idna = "*"
 
 [dev-packages]
 pytest = "*"
