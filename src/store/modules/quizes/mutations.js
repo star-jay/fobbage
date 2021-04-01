@@ -1,4 +1,4 @@
-// import Vue from 'vue';
+import Vue from 'vue';
 import * as types from '@/store/mutation-types';
 
 export default {
@@ -14,7 +14,7 @@ export default {
     state.error = 'There was a problem!';
   },
   [types.QUIZES_JOIN]: (state, { id }) => {
-    state.activeQuizId = id;
+    state.sessionId = id;
     state.bluff = '';
   },
   [types.BLUFF_REQUEST]: (state) => {
@@ -39,8 +39,19 @@ export default {
     state.loading = false;
     state.error = 'There was a problem!';
   },
-  [types.ACTIVE_QUESTION_SUCCES]: (state, { activeQuestion }) => {
-    state.activeQuestion = activeQuestion;
-    state.error = 'There was a problem!';
+
+  [types.SESSIONS_SUCCESS]: (state, sessions) => {
+    sessions.forEach((s) => {
+      Vue.set(state.sessions, s.id, s);
+    });
+  },
+  [types.SESSIONS_ERROR]: (state) => {
+    state.sessions = [];
+  },
+  [types.SCOREBOARD_SUCCESS]: (state, scoreBoard) => {
+    Vue.set(state, 'scoreBoard', scoreBoard);
+  },
+  [types.SCOREBOARD_ERROR]: (state) => {
+    state.sessions = [];
   },
 };

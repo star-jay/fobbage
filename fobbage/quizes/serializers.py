@@ -2,23 +2,27 @@ from rest_framework import serializers
 # from django.urls import reverse as django_reverse
 # from rest_framework.reverse import reverse
 
+from fobbage.accounts.serializers import UserSerializer
 from fobbage.quizes.models import (
     Quiz, Question, Bluff, Answer, Guess, Fobbit, Session,
 )
 
+from fobbage.quizes.services import (
+    score_for_session
+)
+
 
 class BluffSerializer(serializers.ModelSerializer):
-
-    username = serializers.CharField(source='player.username', read_only=True)
+    player = UserSerializer(read_only=True)
 
     class Meta:
         model = Bluff
-        fields = ('id', 'question', 'player', 'username', 'text',)
+        fields = ('id', 'fobbit', 'player', 'text',)
         extra_kwargs = {
             'player': {'read_only': True},
         }
 
-    # override create to save user
+    # Override create to save user
     def create(self, validated_data):
         fobbit = self.validated_data['fobbit']
         user = self.context['request'].user
@@ -39,9 +43,11 @@ class BluffSerializer(serializers.ModelSerializer):
 
 
 class GuessSerializer(serializers.ModelSerializer):
+    player = UserSerializer(read_only=True)
+
     class Meta:
         model = Guess
-        fields = ('answer', )
+        fields = ('answer', 'player')
 
     # overide create to save user
     def create(self, validated_data):
@@ -67,42 +73,79 @@ class AnswerSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'fobbit', 'order')
 
 
-class QuestionSerializer(serializers.ModelSerializer):
+class ScoreSerializer(serializers.Serializer):
+    # Serialize a single score for each bluff in an answer
+    score = serializers.IntegerField()
+    player = UserSerializer()
 
+
+class AnswerScoreSheetSerializer(serializers.ModelSerializer):
+    scores = serializers.SerializerMethodField()
+    guesses = GuessSerializer(many=True,)
+
+    def get_scores(self, instance):
+        return ScoreSerializer(
+            [
+                {'score': bluff.score, 'player': bluff.player}
+                for bluff in instance.bluffs.all()
+            ],
+            many=True
+        ).data
+
+    class Meta:
+        model = Answer
+        fields = (
+            'id', 'text', 'fobbit', 'order',
+            'scores', 'guesses', 'is_correct',
+        )
+
+
+class QuestionSerializer(serializers.ModelSerializer):
+    """Do not serialize the answer"""
     class Meta:
         model = Question
         fields = ('id', 'text', 'quiz')
 
 
 class FobbitSerializer(serializers.ModelSerializer):
-    answers = AnswerSerializer(many=True)
+    answers = AnswerSerializer(many=True, read_only=True)
+    score_sheets = AnswerScoreSheetSerializer(
+        many=True, read_only=True, source='scored_answers')
 
+    bluffs = BluffSerializer(many=True, read_only=True)
+    question = QuestionSerializer(read_only=True)
+    answers = AnswerSerializer(many=True, read_only=True)
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
-    round_modus = serializers.SerializerMethodField()
-
-    bluffs = BluffSerializer(many=True)
-
-    def get_round_modus(self, instance):
-        return instance.round.modus
+    players_without_bluff = UserSerializer(
+        many=True, read_only=True,
+    )
+    players_without_guess = UserSerializer(
+        many=True, read_only=True,
+    )
 
     def get_have_bluffed(self, instance):
         if 'request' in self.context:
             player = self.context['request'].user
             return Bluff.objects.filter(
-                player=player, question=instance.id).count() > 0
+                player=player, fobbit=instance.id).count() > 0
 
     def get_have_guessed(self, instance):
         if 'request' in self.context:
             player = self.context['request'].user
             return Guess.objects.filter(
-                player=player, answer__question=instance.id).count() > 0
+                player=player, answer__fobbit=instance.id).count() > 0
 
     class Meta:
         model = Fobbit
         fields = (
-            'id', 'text', 'status', 'answers', 'have_bluffed', 'have_guessed',
-            'round_modus', 'bluffs')
+            'id',
+            'url',
+            'status', 'have_bluffed', 'have_guessed',
+            'bluffs', 'question', 'answers', 'score_sheets',
+            'players_without_bluff', 'players_without_guess',
+            'session',
+        )
 
 
 class QuizSerializer(serializers.ModelSerializer):
@@ -116,11 +159,20 @@ class QuizSerializer(serializers.ModelSerializer):
 
 class SessionSerializer(serializers.ModelSerializer):
     websocket = serializers.SerializerMethodField()
-    questions = serializers.SerializerMethodField()
+    active_fobbit = FobbitSerializer(read_only=True)
+    fobbits = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True)
+    owner = UserSerializer(read_only=True)
 
-    def get_questions(self, instance):
-        return QuestionSerializer(
-            Question.objects.filter(round__quiz=instance), many=True).data
+    def get_fields(self):
+        fields = super().get_fields()
+        fields['active_fobbit'].queryset = Fobbit.objects.filter(
+            session=self.instance)
+        return fields
+
+    def create(self, validated_data):
+        validated_data['owner'] = self.context['request'].user
+        return super().create(validated_data)
 
     def get_websocket(self, instance):
         request = self.context.get('request', None)
@@ -131,13 +183,31 @@ class SessionSerializer(serializers.ModelSerializer):
         )
 
     class Meta:
+        read_only_fields = ['owner', ]
         model = Session
         fields = (
             'id',
+            'url',
             'name',
             'websocket',
             'quiz',
             'owner',
-            'url',
-            'questions'
+            'active_fobbit',
+            'fobbits',
         )
+
+
+class ActiveFobbitSerializer(serializers.ModelSerializer):
+    active_fobbit = serializers.PrimaryKeyRelatedField(
+        queryset=Fobbit.objects.all()
+    )
+
+    def get_fields(self):
+        fields = super().get_fields()
+        fields['active_fobbit'].queryset = Fobbit.objects.filter(
+            session=self.instance)
+        return fields
+
+    class Meta:
+        model = Session
+        fields = ('active_fobbit',)

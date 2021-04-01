@@ -15,5 +15,18 @@ export default {
   components: {
     NavigationBar,
   },
+  created() {
+    this.connect();
+    this.$store.dispatch('retrieveUserInfo');
+  },
+  methods: {
+    connect() {
+      if (!this.$store.getters.isAuthenticated) {
+        //
+      } else {
+        this.$store.dispatch('retrieveUserInfo');
+      }
+    },
+  },
 };
 </script>

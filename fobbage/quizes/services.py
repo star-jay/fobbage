@@ -9,6 +9,8 @@ def generate_answers(fobbit_id):
     use a combination of bluffs and the correct answer
     """
     fobbit = Fobbit.objects.get(id=fobbit_id)
+    if len(fobbit.session.players.all()) == 0:
+        return False
 
     # Check if all players have bluffed
     if len(fobbit.bluffs.all()) != len(fobbit.session.players.all()):
@@ -80,7 +82,7 @@ def score_for_fobbit(player, fobbit):
         if player_guess.answer == player_bluff.answer:
             return 0
 
-        score += score_for_bluff(player, player_bluff)
+        score += player_bluff.score
 
     # score voor juist antwoord
     if player_guess:
@@ -90,24 +92,57 @@ def score_for_fobbit(player, fobbit):
     return score
 
 
-def score_for_bluff(player, bluff):
-    score = 0
+# SESSION
+def next_question(session):
+    questions = session.quiz.questions.exclude(
+        id__in=[session.fobbits.values_list('question', flat=True)]
+    )
+    next = questions.first()
 
-    player_guess = Guess.objects.filter(
-        answer__fobbit=bluff.fobbit,
-        player=player).first()
+    fobbit = Fobbit.objects.create(
+        question=next,
+        session=session,
+    )
+    session.active_fobbit = fobbit
+    session.save()
+    return fobbit
 
-    # 0 plunten als jouw bluff = correct antwoord
-    if bluff.answer and bluff.answer.is_correct is True:
-        return 0
-    # 0 punten als je op je eigen antwoord stemtgit
-    if player_guess.answer == bluff.answer:
-        return 0
 
-    # score voor anders spelers kiezen jouw bluff
-    aantal_gepakt = len(Guess.objects.filter(answer=bluff.answer))
+# def prev_question_for_session(session):
+#     active = session.active_fobbit
+#     if active:
+#         order = active.question.order
+#         fobbit = session.fobbits.filter(
+#             question__order=order-1).first()
+#         if fobbit:
+#             session.active_fobbit = fobbit
+#             session.save()
 
-    score += (aantal_gepakt * bluff.fobbit.multiplier * 500) / len(
-        Bluff.objects.filter(answer=bluff.answer))
 
-    return score
+# FOBBIT
+def finish_fobbit(fobbit):
+    """Finish the question if all players have guessed"""
+    # TODO: Check if all players have guessed
+    if len(fobbit.players_without_guess) == 0:
+        fobbit.status = Fobbit.FINISHED
+        fobbit.save()
+    else:
+        raise Guess.DoesNotExist("Not all players have guessed")
+
+
+def reset_fobbit(fobbit):
+    fobbit.status = Fobbit.BLUFF
+    fobbit.bluffs.all().delete()
+    fobbit.answers.all().delete()
+
+    fobbit.save()
+
+
+def hide_answers_for_fobbit(fobbit):
+    if fobbit.status < Fobbit.FINISHED:
+        # fobbit.guesses.delete()
+        fobbit.answers.all().delete()
+
+        fobbit.status = Fobbit.BLUFF
+        fobbit.save()
+        return True

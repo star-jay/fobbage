@@ -5,7 +5,7 @@
       <v-card
         class="mx-auto"
         max-width="344"
-        href="play"
+        :to="{name: 'join-session'}"
       >
         <v-card-title class="display-1">
           Play
@@ -25,30 +25,55 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-          <v-card
+
+      <v-card
         class="mx-auto"
         max-width="344"
+        :to="{name: 'host'}"
       >
+        <v-card-title class="display-1">
+          Host
+        </v-card-title>
+
         <v-card-text>
-          <div>Word of the Day</div>
-          <p class="display-1 text--primary">
-            be•nev•o•lent
-          </p>
-          <p>adjective</p>
           <div class="text--primary">
-            well meaning and kindly.<br>
-            "a benevolent smile"
+            Host an existing quiz for your friends!
           </div>
         </v-card-text>
         <v-card-actions>
           <v-btn
             text
-            color="deep-purple accent-4"
+            color="accent-4"
           >
-            Learn More
+            Host
           </v-btn>
         </v-card-actions>
       </v-card>
+
+      <v-card
+        class="mx-auto"
+        max-width="344"
+        href="create"
+      >
+        <v-card-title class="display-1">
+          Create a new quiz
+        </v-card-title>
+
+        <v-card-text>
+          <div class="text--primary">
+            Create a brand new quiz using existing questions or your own.
+          </div>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+            text
+            color="accent-4"
+          >
+            Create
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+
     </v-row>
   </v-container>
 </template>

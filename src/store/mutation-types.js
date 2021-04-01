@@ -14,7 +14,6 @@ export const AUTH_REGISTERED = 'AUTH_REGISTERED';
 export const QUIZES_REQUEST = 'QUIZES_REQUEST';
 // QUIZES successfully loaded
 export const QUIZES_SUCCESS = 'QUIZES_SUCCESS';
-// Problem loading QUIZES
 export const QUIZES_ERROR = 'QUIZES_ERROR';
 
 export const QUIZES_JOIN = 'QUIZES_JOIN';
@@ -27,6 +26,11 @@ export const GUESS_REQUEST = 'GUESS_REQUEST';
 export const GUESS_SUCCESS = 'GUESS_SUCCESS';
 export const GUESS_ERROR = 'GUESS_ERROR';
 
+export const SESSIONS_SUCCESS = 'SESSIONS_SUCCESS';
+export const SESSIONS_ERROR = 'SESSIONS_ERROR';
+
+export const SCOREBOARD_SUCCESS = 'SCOREBOARD_SUCCESS';
+export const SCOREBOARD_ERROR = 'SCOREBOARD_ERROR';
 // Socket
 export const SOCKET_MESSAGE = 'SOCKET_MESSAGE';
 export const SOCKET_ERROR = 'SOCKET_ERROR';
@@ -35,3 +39,6 @@ export const SOCKET_CLOSE = 'SOCKET_CLOSE';
 export const SOCKET_SET = 'SOCKET_SET';
 
 export const ACTIVE_QUESTION_SUCCES = 'ACTIVE_QUESTION_SUCCES';
+
+export const FOBBIT_SUCCESS = 'FOBBIT_SUCCESS';
+export const FOBBIT_ERROR = 'FOBBIT_ERROR';

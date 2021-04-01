@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="activeQuestion.have_bluffed">
+    <div v-if="fobbit.have_bluffed">
       <p>Your bluff was submitted</p>
     </div>
     <div v-else>
@@ -22,6 +22,9 @@ import { mapState } from 'vuex';
 
 export default {
   name: 'bluff',
+  props: {
+    fobbit: undefined,
+  },
   data() {
     return {
       errors: [],
@@ -32,12 +35,14 @@ export default {
   },
   computed: {
     ...mapState({
-      activeQuestion: (state) => state.quizes.activeQuestion,
     }),
   },
   methods: {
     bluff() {
-      this.$store.dispatch('bluff', { text: this.form.bluff });
+      this.$store.dispatch(
+        'bluff',
+        { fobbit: this.fobbit.id, text: this.form.bluff },
+      );
     },
   },
 };

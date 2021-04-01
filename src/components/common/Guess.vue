@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div v-if="activeQuestion.answers">
-      <p v-if="activeQuestion.have_guessed">Your guess was submitted</p>
+    <div v-if="fobbit.answers">
+      <p v-if="fobbit.have_guessed">Your guess was submitted</p>
       <v-form v-else @submit.prevent="guess" id="guess">
         <v-list flat>
           <v-list-item-group v-model="answer" color="primary">
             <v-list-item
-              v-for="answer in activeQuestion.answers"
+              v-for="answer in fobbit.answers"
               :key="answer.id"
             >
               <template v-slot:default="{ active }">
@@ -24,11 +24,6 @@
         <v-btn type="submit" color="primary" form="guess">Guess</v-btn>
       </v-form>
     </div>
-    <div v-else>
-      <p>
-        No action required.
-      </p>
-    </div>
   </div>
 </template>
 
@@ -37,6 +32,9 @@ import { mapGetters, mapState } from 'vuex';
 
 export default {
   name: 'Guess',
+  props: {
+    fobbit: undefined,
+  },
   data() {
     return {
       errors: [],
@@ -45,9 +43,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['activeQuiz']),
+    ...mapGetters(['session']),
     ...mapState({
-      activeQuestion: (state) => state.quizes.activeQuestion,
     }),
   },
   methods: {
@@ -55,8 +52,8 @@ export default {
       this.$store.dispatch(
         'guess',
         {
-          id: this.activeQuestion.id,
-          guess: this.activeQuestion.answers[this.answer].id,
+          id: this.fobbit.id,
+          answer: this.fobbit.answers[this.answer].id,
         },
       );
     },

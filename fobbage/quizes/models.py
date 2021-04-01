@@ -7,7 +7,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.functional import cached_property
 
-from .messages import quiz_updated
+from .messages import session_updated
 
 
 User = get_user_model()
@@ -104,33 +104,16 @@ class Session(models.Model):
         default=BLUFFING,
     )
 
-    def next_question(self):
-        questions = self.quiz.questions.exclude(
-            id__in=[self.fobbits.values_list('question', flat=True)]
-        )
-        next = questions.first()
-
-        fobbit = Fobbit.objects.create(
-            question=next,
-            session=self,
-        )
-        self.active_fobbit = fobbit
-        self.save()
-        return fobbit
-
-    def prev_question(self):
-        active = self.active_fobbit
-        if active:
-            order = active.question.order
-            fobbit = self.fobbits.filter(
-                question__order=order-1).first()
-            if fobbit:
-                self.active_fobbit = fobbit
-                self.save()
+    def __str__(self):
+        return self.name
 
 
 class Fobbit(models.Model):
     """Combination of session and question"""
+
+    class Meta:
+        ordering = ['question__order', 'id']
+
     session = models.ForeignKey(
         Session,
         related_name='fobbits',
@@ -164,40 +147,26 @@ class Fobbit(models.Model):
             return 2
         return 1
 
-    def hide_answers(self):
-        if self.status < Fobbit.FINISHED:
-            # self.guesses.delete()
-            self.answers.all().delete()
-
-            self.status = Fobbit.BLUFF
-            self.save()
-            return True
-
+    @property
     def players_without_guess(self):
         return [
             player for player in self.session.players.all()
             if len(player.guesses.filter(answer__fobbit=self)) == 0]
 
+    @property
     def players_without_bluff(self):
         return [
             player for player in self.session.players.all()
             if len(player.bluffs.filter(fobbit=self)) == 0]
 
-    def finish(self):
-        """Finish the question if all players have guessed"""
-        # TODO: Check if all players have guessed
-        if len(self.players_without_guess()) == 0:
-            self.status = Fobbit.FINISHED
-            self.save()
-            return True
-        return False
-
-    def reset(self):
-        self.status = Fobbit.BLUFF
-        self.bluffs.all().delete()
-        self.answers.all().delete()
-
-        self.save()
+    @property
+    def scored_answers(self):
+        if self.status == self.FINISHED:
+            return self.answers.annotate(
+                num_guesses=models.Count('guesses')
+            ).order_by('is_correct', 'num_guesses')
+        else:
+            return self.answers.empty()
 
 
 class Answer(models.Model):
@@ -250,6 +219,29 @@ class Bluff(models.Model):
     class Meta:
         unique_together = ("fobbit", "player"),
 
+    @property
+    def score(self):
+        score = 0
+
+        player_guess = Guess.objects.filter(
+            answer__fobbit=self.fobbit,
+            player=self.player).first()
+
+        # 0 plunten als jouw bluff = correct antwoord
+        if self.answer and self.answer.is_correct is True:
+            return 0
+        # 0 punten als je op je eigen antwoord stemtgit
+        if player_guess.answer == self.answer:
+            return 0
+
+        # score voor anders spelers kiezen jouw bluff
+        aantal_gepakt = len(Guess.objects.filter(answer=self.answer))
+
+        score += (aantal_gepakt * self.fobbit.multiplier * 500) / len(
+            Bluff.objects.filter(answer=self.answer))
+
+        return score
+
     def __str__(self):
         """ string representation """
         return "{}: {}".format(self.player.first_name, self.text)
@@ -269,17 +261,17 @@ class Guess(models.Model):
     )
 
 
-@receiver(post_save, sender=Quiz)
-def quiz_update_signal(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Session)
+def session_update_signal(sender, instance, created, **kwargs):
     if created:
-        quiz_updated(instance.id)
+        session_updated(instance.id)
     else:
-        quiz_updated(instance.id)
+        session_updated(instance.id)
 
 
-@receiver(post_save, sender=Question)
-def question_updated_signal(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Fobbit)
+def session_updated_signal(sender, instance, created, **kwargs):
     if created:
-        quiz_updated(instance.quiz.id)
+        session_updated(instance.session.id)
     else:
-        quiz_updated(instance.quiz.id)
+        session_updated(instance.session.id)
