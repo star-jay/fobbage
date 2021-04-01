@@ -12,14 +12,14 @@
     <div v-if="fobbit.status == 1">
       <div>
         <v-list flat>
-            <v-list-item
-              v-for="answer in fobbit.answers"
-              :key="answer.id"
-            >
-              <v-list-item-content>
-                {{ answer.text}}
-              </v-list-item-content>
-            </v-list-item>
+          <v-list-item
+            v-for="answer in fobbit.answers"
+            :key="answer.id"
+          >
+            <v-list-item-content>
+              {{ answer.text}}
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </div>
       <h3>

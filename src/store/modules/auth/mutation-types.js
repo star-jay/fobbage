@@ -6,3 +6,6 @@ export const USERINFO_ERROR = 'Userinfo failed';
 export const USER_SUCCESS = 'USER_SUCCESS';
 export const USERS_ERROR = 'USERS_ERROR';
 export const USERS_SUCCESS = 'USERS_SUCCESS';
+
+export const AUTH_REQUEST_SUCCESS = 'Registration Success';
+export const AUTH_REQUEST_ERROR = 'Registration Failed';

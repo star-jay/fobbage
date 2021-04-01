@@ -1,6 +1,6 @@
 <template>
   <v-list flat>
-    <v-subheader>Selet a session to join it!</v-subheader>
+    <v-subheader>Select a session to join it!</v-subheader>
 
     <v-card
         class="mx-auto"

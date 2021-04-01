@@ -31,29 +31,8 @@
                   name="username"
                   label="Username"
                   :rules="rules.username"
+                  :error-messages="errors.username"
                   type="text"></v-text-field>
-                <v-text-field
-                  v-model="form.first_name"
-                  prepend-icon="person"
-                  name="first_name"
-                  label="First Name"
-                  :rules="rules.first_name"
-                  type="text"></v-text-field>
-                <v-text-field
-                  v-model="form.last_name"
-                  prepend-icon="person"
-                  name="last_name"
-                  label="Last Name"
-                  :rules="rules.last_name"
-                  type="text"></v-text-field>
-                <v-text-field
-                  v-model="form.email"
-                  prepend-icon="email"
-                  name="email"
-                  label="Email"
-                  :error-messages="errors.email"
-                  :rules="rules.email"
-                  type="email"></v-text-field>
                 <v-text-field
                   v-model="form.password"
                   prepend-icon="lock"
@@ -107,9 +86,6 @@ export default {
       submitted: false,
       form: {
         username: '',
-        email: '',
-        first_name: '',
-        last_name: '',
         password: '',
         password2: '',
       },
@@ -117,17 +93,6 @@ export default {
         username: [
           (v) => !!v || 'Username is required',
           (v) => (v && v.length <= 150) || 'Username must be less than 150 characters',
-        ],
-        email: [
-          (v) => !!v || 'Email is required',
-        ],
-        first_name: [
-          (v) => !!v || 'First Name is required',
-          (v) => (v && v.length <= 30) || 'First Name must be less than 30 characters',
-        ],
-        last_name: [
-          (v) => !!v || 'Last Name is required',
-          (v) => (v && v.length <= 30) || 'Last Name must be less than 150 characters',
         ],
         password: [
           (v) => !!v || 'Password is required',

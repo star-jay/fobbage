@@ -18,12 +18,9 @@ from django.urls import path, include
 
 
 urlpatterns = [
-    path('api/', include('fobbage.accounts.urls')),
+    # path('api/',),
     path('api/', include('fobbage.quizes.urls')),
-    path('api/accounts/', include('django.contrib.auth.urls')),
+    path('api/',  include('fobbage.accounts.urls')),
     path('admin/', admin.site.urls),
-    # path('login/', auth_views.login, name='login'),
-    # path('api/register', CreateUserView.as_view(), name="create-user"),
-    # path('api/', include('fobbage.accounts.urls')),
     path('api-auth/', include('rest_framework.urls')),
 ]
