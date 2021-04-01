@@ -162,8 +162,9 @@ STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'dist'),
+    os.path.join(BASE_DIR, 'fobbage/dist'),
 )
+print(STATICFILES_DIRS)
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
