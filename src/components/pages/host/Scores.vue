@@ -2,6 +2,9 @@
   <div>
     <div v-if="fobbit.score_sheets">
       <Score :score="fobbit.score_sheets[scoreIndex-1]"/>
+      <v-btn :to="{ name: 'scoreboard' }">
+        Scoreboard
+      </v-btn>
       <v-pagination
         small
         v-model="scoreIndex"

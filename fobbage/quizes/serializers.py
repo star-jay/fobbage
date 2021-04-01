@@ -13,7 +13,7 @@ from fobbage.quizes.services import (
 
 
 class BluffSerializer(serializers.ModelSerializer):
-    player = UserSerializer()
+    player = UserSerializer(read_only=True)
 
     class Meta:
         model = Bluff
@@ -43,7 +43,7 @@ class BluffSerializer(serializers.ModelSerializer):
 
 
 class GuessSerializer(serializers.ModelSerializer):
-    player = UserSerializer()
+    player = UserSerializer(read_only=True)
 
     class Meta:
         model = Guess
@@ -143,7 +143,9 @@ class FobbitSerializer(serializers.ModelSerializer):
             'url',
             'status', 'have_bluffed', 'have_guessed',
             'bluffs', 'question', 'answers', 'score_sheets',
-            'players_without_bluff', 'players_without_guess',)
+            'players_without_bluff', 'players_without_guess',
+            'session',
+        )
 
 
 class QuizSerializer(serializers.ModelSerializer):
@@ -160,7 +162,7 @@ class SessionSerializer(serializers.ModelSerializer):
     active_fobbit = FobbitSerializer(read_only=True)
     fobbits = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
-    owner = UserSerializer()
+    owner = UserSerializer(read_only=True)
 
     def get_fields(self):
         fields = super().get_fields()
@@ -169,9 +171,8 @@ class SessionSerializer(serializers.ModelSerializer):
         return fields
 
     def create(self, validated_data):
-        if 'owner' not in validated_data:
-            validated_data['owner'] = self.context['request'].user
-            return super().create(validated_data)
+        validated_data['owner'] = self.context['request'].user
+        return super().create(validated_data)
 
     def get_websocket(self, instance):
         request = self.context.get('request', None)

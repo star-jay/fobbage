@@ -15,4 +15,8 @@ export default new Resource(client, 'api/sessions',
       const url = `/${this.base}/${id}/join/`;
       return this.client.post(url);
     },
+    getScoreBoard(id) {
+      const url = `/${this.base}/${id}/score_board/`;
+      return this.client.get(url);
+    },
   });

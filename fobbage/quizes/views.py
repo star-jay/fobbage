@@ -105,7 +105,9 @@ class FobbitViewSet(viewsets.ModelViewSet):
                     fobbit, context=self.get_serializer_context()
                 ).data)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                "Could not generate ansers",
+                status=status.HTTP_400_BAD_REQUEST, )
 
     @action(
         detail=True, methods=['POST'],

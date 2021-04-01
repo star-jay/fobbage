@@ -1,9 +1,9 @@
 <template>
   <div>
     Scoreboard
-      <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
-        Next question
-      </v-btn>
+    <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
+      Next question
+    </v-btn>
   </div>
 
 </template>
@@ -22,9 +22,11 @@ export default {
     return {
     };
   },
+  created() {
+    this.$store.dispatch('getScoreBoard', { session: this.session });
+  },
   methods: {
-    resetIndex() {
-    },
+
   },
   watch: {
     // fobbit: 'resetIndex',

@@ -7,6 +7,7 @@ import Host from '@/components/pages/host/Host.vue';
 import SessionDetail from '@/components/pages/host/SessionDetail.vue';
 import FobbitDetail from '@/components/pages/host/FobbitDetail.vue';
 import Scores from '@/components/pages/host/Scores.vue';
+import ScoreBoard from '@/components/pages/host/ScoreBoard.vue';
 
 import Play from '@/components/pages/play/Play.vue';
 import SelectSession from '@/components/pages/play/SelectSession.vue';
@@ -69,6 +70,11 @@ const routes = [
                 name: 'scores',
               },
             ],
+          },
+          {
+            path: 'scoreboard',
+            component: ScoreBoard,
+            name: 'scoreboard',
           },
         ],
       },

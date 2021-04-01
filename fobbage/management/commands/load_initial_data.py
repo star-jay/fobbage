@@ -179,7 +179,7 @@ class Command(BaseCommand):
         quiz = Quiz.objects.create(
             title=QUIZ['title'],
             created_by=User.objects.first(),
-            players=[User.objects.first(),])
+        )
         for r in QUIZ['rounds']:
             i = 0
             for q in r['questions']:
@@ -188,7 +188,7 @@ class Command(BaseCommand):
                     quiz=quiz,
                     text=q['text'],
                     correct_answer=q['correct_answer'],
-                    player=user,
+                    player=User.objects.first(),
                     order=i,
                 )
 
