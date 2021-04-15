@@ -49,7 +49,7 @@ class Question(models.Model):
     )
 
     order = models.IntegerField()
-    url = models.CharField(
+    image_url = models.CharField(
         max_length=255,
         null=True,
         blank=True,

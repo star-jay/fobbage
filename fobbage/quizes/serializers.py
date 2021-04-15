@@ -99,9 +99,11 @@ class AnswerScoreSheetSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     """Do not serialize the answer"""
+    image_url = serializers.CharField()
+
     class Meta:
         model = Question
-        fields = ('id', 'text', 'quiz')
+        fields = ('id', 'text', 'url', 'quiz', 'image_url')
 
 
 class FobbitSerializer(serializers.ModelSerializer):

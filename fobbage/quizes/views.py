@@ -114,7 +114,7 @@ class FobbitViewSet(viewsets.ModelViewSet):
             ).data)
 
 
-class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
+class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 

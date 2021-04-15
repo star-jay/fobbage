@@ -1,9 +1,11 @@
 <template>
   <div>
     <h2>
-    {{ fobbit.question.text }}
+      {{ fobbit.question.text }}
     </h2>
+
     <div v-if="fobbit.status == 0">
+      <v-img v-if="fobbit.question.image_url" :src="fobbit.question.image_url" />
       <h3>
         People who need to bluff:
       </h3>

@@ -4,15 +4,15 @@ from rest_framework.routers import DefaultRouter
 from fobbage.quizes.views import (
     SessionViewSet, FobbitViewSet,
     AnswerViewSet, QuizViewSet, ActiveFobbitViewSet, BluffViewSet,
-    GuessViewSet,
+    GuessViewSet, QuestionViewSet,
 )
 
 
 router = DefaultRouter()
 router.register(r'quizes', QuizViewSet, basename='quiz')
+router.register(r'questions', QuestionViewSet, basename='question')
 router.register(r'fobbits', FobbitViewSet, basename='fobbit')
 router.register(r'sessions', SessionViewSet, basename='session')
-
 router.register(r'bluffs', BluffViewSet, basename='bluff')
 router.register(r'guesses', GuessViewSet, basename='guess')
 router.register(r'answers', AnswerViewSet, basename='answer')
