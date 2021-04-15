@@ -3,7 +3,7 @@
 from django.contrib.admin import register, TabularInline, ModelAdmin, site
 
 
-from .models import Quiz, Question, Bluff, Guess, Session, Question
+from .models import Quiz, Question, Bluff, Guess, Session
 
 
 class QuestionInline(TabularInline):

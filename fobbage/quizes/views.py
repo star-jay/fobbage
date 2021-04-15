@@ -87,7 +87,7 @@ class FobbitViewSet(viewsets.ModelViewSet):
         detail=True, methods=['POST'],)
     def generate_answers(self, request, pk=None):
         fobbit = self.get_object()
-        if fobbit.generate_answers:
+        if fobbit.generate_answers():
             return Response(
                 FobbitSerializer(
                     fobbit, context=self.get_serializer_context()
@@ -99,7 +99,7 @@ class FobbitViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['POST'])
     def finish(self, request, pk=None, serializer_class=None):
-        self.get_object().finish_fobbit()
+        self.get_object().finish()
         return Response(
             FobbitSerializer(
                 self.get_object(), context=self.get_serializer_context()
@@ -107,7 +107,7 @@ class FobbitViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['POST'])
     def reset(self, request, pk=None):
-        self.get_object().reset_fobbit()
+        self.get_object().reset()
         return Response(
             FobbitSerializer(
                 self.get_object(), context=self.get_serializer_context()

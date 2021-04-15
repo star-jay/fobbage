@@ -111,7 +111,7 @@ class FobbitSerializer(serializers.ModelSerializer):
     score_sheets = AnswerScoreSheetSerializer(
         many=True, read_only=True, source='scored_answers')
 
-    bluffs = BluffSerializer(many=True, read_only=True)
+    # bluffs = BluffSerializer(many=True, read_only=True)
     question = QuestionSerializer(read_only=True)
     answers = AnswerSerializer(many=True, read_only=True)
     have_bluffed = serializers.SerializerMethodField()
@@ -141,7 +141,7 @@ class FobbitSerializer(serializers.ModelSerializer):
             'id',
             'url',
             'status', 'have_bluffed', 'have_guessed',
-            'bluffs', 'question', 'answers', 'score_sheets',
+            'question', 'answers', 'score_sheets',
             'players_without_bluff', 'players_without_guess',
             'session',
         )

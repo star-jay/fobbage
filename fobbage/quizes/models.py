@@ -214,12 +214,10 @@ class Fobbit(models.Model):
         )
 
         for bluff in self.bluffs.all():
-            answer = Answer.objects.filter(
-                self=self,
-                text__iexact=bluff.text).first()
+            answer = self.answers.filter(text__iexact=bluff.text).first()
             if answer is None:
                 answer = Answer.objects.create(
-                    self=self,
+                    fobbit=self,
                     text=bluff.text)
 
             bluff.answer = answer
