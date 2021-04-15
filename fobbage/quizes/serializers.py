@@ -7,10 +7,6 @@ from fobbage.quizes.models import (
     Quiz, Question, Bluff, Answer, Guess, Fobbit, Session,
 )
 
-from fobbage.quizes.services import (
-    score_for_session
-)
-
 
 class BluffSerializer(serializers.ModelSerializer):
     player = UserSerializer(read_only=True)
@@ -44,10 +40,7 @@ class BluffSerializer(serializers.ModelSerializer):
 
 class GuessSerializer(serializers.ModelSerializer):
     player = UserSerializer(read_only=True)
-
-    class Meta:
-        model = Guess
-        fields = ('answer', 'player')
+    score = serializers.IntegerField()
 
     # overide create to save user
     def create(self, validated_data):
@@ -65,6 +58,10 @@ class GuessSerializer(serializers.ModelSerializer):
             return Guess.objects.create(**validated_data)
 
         raise serializers.ValidationError
+
+    class Meta:
+        model = Guess
+        fields = ('answer', 'player', 'score')
 
 
 class AnswerSerializer(serializers.ModelSerializer):

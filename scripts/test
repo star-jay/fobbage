@@ -20,4 +20,4 @@ else
 fi
 
 cd "$(dirname "$0")/.."
-npm run test:unit
+# npm run test:unit

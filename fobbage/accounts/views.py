@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
 from rest_framework.decorators import action
 
-from rest_framework import permissions, viewsets, generics, response
+from rest_framework import permissions, generics, response
 from rest_framework.generics import mixins
-
 from fobbage.accounts.serializers import UserSerializer
 
 
