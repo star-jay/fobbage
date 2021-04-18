@@ -16,6 +16,9 @@
           <h2>
             no active question
           </h2>
+          <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
+            Next question
+          </v-btn>
         </div>
 
         <v-row>
@@ -24,10 +27,8 @@
             v-model="fobbitIndex"
             :length="session.fobbits.length"
             @input="setFobbit"
-          ></v-pagination>
-          <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
-            Next question
-          </v-btn>
+          />
+
         </v-row>
       </div>
       <div v-else>

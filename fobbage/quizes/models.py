@@ -1,6 +1,8 @@
 """
 The different models that together make out a quiz
 """
+import random
+
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
@@ -8,7 +10,6 @@ from django.dispatch import receiver
 from django.utils.functional import cached_property
 
 from .messages import session_updated
-
 
 User = get_user_model()
 
@@ -48,7 +49,7 @@ class Question(models.Model):
     )
 
     order = models.IntegerField()
-    url = models.CharField(
+    image_url = models.CharField(
         max_length=255,
         null=True,
         blank=True,
@@ -106,6 +107,26 @@ class Session(models.Model):
 
     def __str__(self):
         return self.name
+
+    def next_question(self):
+        questions = self.quiz.questions.exclude(
+            id__in=[self.fobbits.values_list('question', flat=True)]
+        )
+        next = questions.first()
+
+        fobbit = Fobbit.objects.create(
+            question=next,
+            session=self,
+        )
+        self.active_fobbit = fobbit
+        self.save()
+        return fobbit
+
+    def score_for_player(self, player):
+        score = 0
+        for fobbit in self.fobbits.all():
+            score += fobbit.score_for_player(player)
+        return score
 
 
 class Fobbit(models.Model):
@@ -168,6 +189,101 @@ class Fobbit(models.Model):
         else:
             return self.answers.empty()
 
+    def generate_answers(self):
+        """
+        Creates a new list of possible answers
+        use a combination of bluffs and the correct answer
+        """
+        if len(self.session.players.all()) == 0:
+            return False
+
+        # Check if all players have bluffed
+        if len(self.bluffs.all()) != len(self.session.players.all()):
+            return False
+        # Check if not already listed
+        if self.status >= self.GUESS:
+            return False
+
+        for answer in self.answers.all():
+            answer.delete()
+
+        Answer.objects.create(
+            fobbit=self,
+            text=self.question.correct_answer,
+            is_correct=True,
+        )
+
+        for bluff in self.bluffs.all():
+            answer = self.answers.filter(text__iexact=bluff.text).first()
+            if answer is None:
+                answer = Answer.objects.create(
+                    fobbit=self,
+                    text=bluff.text)
+
+            bluff.answer = answer
+            bluff.save()
+
+        answers = [answer for answer in self.answers.all()]
+        random.shuffle(answers)
+        i = 0
+        for answer in answers:
+            answer.order = i = i + 1
+            answer.save()
+
+        self.status = Fobbit.GUESS
+        self.save()
+        return True
+
+    def score_for_player(self, player):
+        score = 0
+        # only finnished questions have scores
+        if self.status != self.FINISHED:
+            return 0
+
+        player_bluff = self.bluffs.get(player=player)
+        player_guess = Guess.objects.get(answer__fobbit=self, player=player)
+
+        # als de speler heeft gebluffed
+        if player_bluff:
+            # 0 plunten als jouw bluff = correct antwoord
+            if player_bluff.answer and player_bluff.answer.is_correct is True:
+                return 0
+
+            score += player_bluff.score
+
+        # score voor juist antwoord
+        if player_guess:
+            if player_guess.answer == player_bluff.answer:
+                return 0
+            if player_guess.answer.text == self.question.correct_answer:
+                score += player_guess.score
+
+        return score
+
+    def reset(self):
+        self.status = Fobbit.BLUFF
+        self.bluffs.all().delete()
+        self.answers.all().delete()
+        self.save()
+
+    # FOBBIT
+    def finish(self):
+        """Finish the question if all players have guessed"""
+        if len(self.players_without_guess) == 0:
+            self.status = self.FINISHED
+            self.save()
+        else:
+            raise Guess.DoesNotExist("Not all players have guessed")
+
+    def delete_answers(self):
+        if self.status < self.FINISHED:
+            # self.guesses.delete()
+            self.answers.all().delete()
+
+            self.status = self.BLUFF
+            self.save()
+            return True
+
 
 class Answer(models.Model):
     class Meta:
@@ -226,19 +342,19 @@ class Bluff(models.Model):
         player_guess = Guess.objects.filter(
             answer__fobbit=self.fobbit,
             player=self.player).first()
+        if player_guess:
+            # 0 plunten als jouw bluff = correct antwoord
+            if self.answer and self.answer.is_correct is True:
+                return 0
+            # 0 punten als je op je eigen antwoord stemt
+            if player_guess.answer == self.answer:
+                return 0
 
-        # 0 plunten als jouw bluff = correct antwoord
-        if self.answer and self.answer.is_correct is True:
-            return 0
-        # 0 punten als je op je eigen antwoord stemtgit
-        if player_guess.answer == self.answer:
-            return 0
+            # score voor anders spelers kiezen jouw bluff
+            aantal_gepakt = len(Guess.objects.filter(answer=self.answer))
 
-        # score voor anders spelers kiezen jouw bluff
-        aantal_gepakt = len(Guess.objects.filter(answer=self.answer))
-
-        score += (aantal_gepakt * self.fobbit.multiplier * 500) / len(
-            Bluff.objects.filter(answer=self.answer))
+            score += (aantal_gepakt * self.fobbit.multiplier * 500) / len(
+                Bluff.objects.filter(answer=self.answer))
 
         return score
 
@@ -259,6 +375,15 @@ class Guess(models.Model):
         related_name='guesses',
         on_delete=models.CASCADE,
     )
+
+    @property
+    def score(self):
+        fobbit = self.answer.fobbit
+        if fobbit.status == fobbit.FINISHED:
+            if self.answer.text == fobbit.question.correct_answer:
+                return fobbit.multiplier * 1000
+        else:
+            return 0
 
 
 @receiver(post_save, sender=Session)

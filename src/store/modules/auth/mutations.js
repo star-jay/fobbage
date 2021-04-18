@@ -18,4 +18,11 @@ export default {
   [types.USERS_SUCCESS]: (state, { users }) => {
     state.users = users;
   },
+
+  [types.AUTH_REQUEST_SUCCESS]: () => {
+    // state.userInfo = userinfo;
+  },
+  [types.AUTH_REQUEST_ERROR]: () => {
+    // state.userInfo = undefined;
+  },
 };

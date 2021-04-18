@@ -7,10 +7,6 @@ from fobbage.quizes.models import (
     Quiz, Question, Bluff, Answer, Guess, Fobbit, Session,
 )
 
-from fobbage.quizes.services import (
-    score_for_session
-)
-
 
 class BluffSerializer(serializers.ModelSerializer):
     player = UserSerializer(read_only=True)
@@ -44,10 +40,7 @@ class BluffSerializer(serializers.ModelSerializer):
 
 class GuessSerializer(serializers.ModelSerializer):
     player = UserSerializer(read_only=True)
-
-    class Meta:
-        model = Guess
-        fields = ('answer', 'player')
+    score = serializers.IntegerField()
 
     # overide create to save user
     def create(self, validated_data):
@@ -65,6 +58,10 @@ class GuessSerializer(serializers.ModelSerializer):
             return Guess.objects.create(**validated_data)
 
         raise serializers.ValidationError
+
+    class Meta:
+        model = Guess
+        fields = ('answer', 'player', 'score')
 
 
 class AnswerSerializer(serializers.ModelSerializer):
@@ -102,9 +99,11 @@ class AnswerScoreSheetSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     """Do not serialize the answer"""
+    image_url = serializers.CharField()
+
     class Meta:
         model = Question
-        fields = ('id', 'text', 'quiz')
+        fields = ('id', 'text', 'url', 'quiz', 'image_url')
 
 
 class FobbitSerializer(serializers.ModelSerializer):
@@ -112,7 +111,7 @@ class FobbitSerializer(serializers.ModelSerializer):
     score_sheets = AnswerScoreSheetSerializer(
         many=True, read_only=True, source='scored_answers')
 
-    bluffs = BluffSerializer(many=True, read_only=True)
+    # bluffs = BluffSerializer(many=True, read_only=True)
     question = QuestionSerializer(read_only=True)
     answers = AnswerSerializer(many=True, read_only=True)
     have_bluffed = serializers.SerializerMethodField()
@@ -142,7 +141,7 @@ class FobbitSerializer(serializers.ModelSerializer):
             'id',
             'url',
             'status', 'have_bluffed', 'have_guessed',
-            'bluffs', 'question', 'answers', 'score_sheets',
+            'question', 'answers', 'score_sheets',
             'players_without_bluff', 'players_without_guess',
             'session',
         )

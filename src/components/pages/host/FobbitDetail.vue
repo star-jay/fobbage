@@ -1,9 +1,11 @@
 <template>
   <div>
     <h2>
-    {{ fobbit.question.text }}
+      {{ fobbit.question.text }}
     </h2>
+
     <div v-if="fobbit.status == 0">
+      <v-img v-if="fobbit.question.image_url" :src="fobbit.question.image_url" />
       <h3>
         People who need to bluff:
       </h3>
@@ -12,14 +14,14 @@
     <div v-if="fobbit.status == 1">
       <div>
         <v-list flat>
-            <v-list-item
-              v-for="answer in fobbit.answers"
-              :key="answer.id"
-            >
-              <v-list-item-content>
-                {{ answer.text}}
-              </v-list-item-content>
-            </v-list-item>
+          <v-list-item
+            v-for="answer in fobbit.answers"
+            :key="answer.id"
+          >
+            <v-list-item-content>
+              {{ answer.text}}
+            </v-list-item-content>
+          </v-list-item>
         </v-list>
       </div>
       <h3>

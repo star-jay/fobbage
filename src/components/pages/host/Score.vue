@@ -16,6 +16,7 @@
       <h3>Players who guessed this answer:</h3>
         <span v-for="guess in score.guesses" :key="guess.id">
           {{ guess.player.username }}
+          <span v-if="score.is_correct"> +{{ guess.score }} </span>
         </span>
       <br/>
     </div>

@@ -1,4 +1,6 @@
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -8,26 +10,12 @@ from .serializers import (
     GuessSerializer, FobbitSerializer, ActiveFobbitSerializer,
     QuestionSerializer, ScoreSerializer,
 )
-from .services import (
-    generate_answers,
-    finish_fobbit,
-    next_question,
-    reset_fobbit,
-    score_for_session,
-    # score_for_bluff,
-    # next_question, prev_question_for_session,
-)
 from fobbage.quizes.models import (
     Quiz, Answer, Bluff, Guess, Session, Fobbit, Question)
 
-from django.contrib.auth import get_user_model
 
 # Get the UserModel
 User = get_user_model()
-
-# ===================================================
-# API
-# ===================================================
 
 
 class QuizViewSet(viewsets.ModelViewSet):
@@ -52,7 +40,7 @@ class SessionViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['POST'],)
     def next_question(self, request, pk=None):
-        next_question(self.get_object())
+        self.get_object().next_question()
         return Response(
             SessionSerializer(
                 self.get_object(),
@@ -82,7 +70,7 @@ class SessionViewSet(viewsets.ModelViewSet):
             ScoreSerializer(
                 [
                     {
-                        'score': score_for_session(player, instance),
+                        'score': instance.score_for_player(player),
                         'player': player
                     }
                     for player in instance.players.all()
@@ -99,7 +87,7 @@ class FobbitViewSet(viewsets.ModelViewSet):
         detail=True, methods=['POST'],)
     def generate_answers(self, request, pk=None):
         fobbit = self.get_object()
-        if generate_answers(fobbit.id):
+        if fobbit.generate_answers():
             return Response(
                 FobbitSerializer(
                     fobbit, context=self.get_serializer_context()
@@ -109,28 +97,24 @@ class FobbitViewSet(viewsets.ModelViewSet):
                 "Could not generate ansers",
                 status=status.HTTP_400_BAD_REQUEST, )
 
-    @action(
-        detail=True, methods=['POST'],
-    )
+    @action(detail=True, methods=['POST'])
     def finish(self, request, pk=None, serializer_class=None):
-        finish_fobbit(self.get_object())
+        self.get_object().finish()
         return Response(
             FobbitSerializer(
                 self.get_object(), context=self.get_serializer_context()
             ).data)
 
-    @action(
-        detail=True, methods=['POST'],
-    )
+    @action(detail=True, methods=['POST'])
     def reset(self, request, pk=None):
-        reset_fobbit(self.get_object())
+        self.get_object().reset()
         return Response(
             FobbitSerializer(
                 self.get_object(), context=self.get_serializer_context()
             ).data)
 
 
-class QuestionViewSet(viewsets.ReadOnlyModelViewSet):
+class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
