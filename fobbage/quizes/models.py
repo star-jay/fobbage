@@ -1,12 +1,15 @@
 """
 The different models that together make out a quiz
 """
+import random
+
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.functional import cached_property
 
-from .messages import round_reset, quiz_updated
+from .messages import session_updated
 
 User = get_user_model()
 
@@ -15,20 +18,10 @@ class Quiz(models.Model):
     title = models.CharField(
         max_length=255,
     )
-    players = models.ManyToManyField(
-        User,
-        related_name='quizes_playing',
-    )
+
     created_by = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-    )
-    active_question = models.ForeignKey(
-        to='quizes.Question',
-        null=True,
-        blank=True,
-        default=None,
-        on_delete=models.SET_NULL
     )
 
     def __str__(self):
@@ -38,52 +31,68 @@ class Quiz(models.Model):
         else:
             return "Quiz: unnamed quiz"
 
-    def next_question(self):
-        active = self.active_question
 
-        if active:
-            round = active.round
-            if active is not round.questions.last():
-                self.active_question = round.questions.filter(
-                        order__gte=active.order,
-                    ).exclude(
-                        id=active.id,
-                    ).first()
-        else:
-            round = self.rounds.first()
-            self.active_question = round.questions.first()
-        self.save()
-
-    def prev_question(self):
-        active = self.active_question
-
-        if active:
-            round = active.round
-            if active is not round.questions.last():
-                self.active_question = round.questions.filter(
-                        order__lte=active.order,
-                    ).exclude(
-                        id=active.id,
-                    ).last()
-        else:
-            round = self.rounds.first()
-            self.active_question = round.questions.last()
-        self.save()
-
-
-class Round(models.Model):
+class Question(models.Model):
     class Meta:
-        ordering = ['multiplier', 'id']
-    quiz = models.ForeignKey(
-        Quiz,
-        related_name='rounds',
-        on_delete=models.CASCADE,
-    )
-    title = models.CharField(
+        ordering = ['order', 'id']
+
+    text = models.CharField(
         max_length=255,
     )
-    multiplier = models.FloatField(
-        default=1,
+    correct_answer = models.CharField(
+        max_length=255,
+    )
+    quiz = models.ForeignKey(
+        Quiz,
+        related_name='questions',
+        on_delete=models.CASCADE,
+    )
+
+    order = models.IntegerField()
+    image_url = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+    )
+    player = models.ForeignKey(
+        User,
+        related_name='questions',
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        """ string representation """
+        return "Question: {}".format(self.text)
+
+
+class Session(models.Model):
+    # class Meta:
+
+    quiz = models.ForeignKey(
+        Quiz,
+        related_name='sessions',
+        on_delete=models.CASCADE,
+    )
+    created = models.DateField(auto_now=True)
+    name = models.CharField(
+        max_length=255,
+    )
+    owner = models.ForeignKey(
+        User,
+        related_name='hosting',
+        on_delete=models.DO_NOTHING,
+    )
+    players = models.ManyToManyField(
+        User,
+        related_name='playing',
+    )
+    active_fobbit = models.ForeignKey(
+        to='quizes.Fobbit',
+        null=True,
+        blank=True,
+        default=None,
+        on_delete=models.SET_NULL,
+        related_name='active_in'
     )
     BLUFFING, GUESSING = range(2)
     MODI = [
@@ -97,102 +106,191 @@ class Round(models.Model):
     )
 
     def __str__(self):
-        """ string representation """
-        if self.title:
-            return "Round: {}".format(self.title)
+        return self.name
 
-    def reset(self):
-        for question in self.questions.all():
-            question.reset()
+    def next_question(self):
+        questions = self.quiz.questions.exclude(
+            id__in=[self.fobbits.values_list('question', flat=True)]
+        )
+        next = questions.first()
+
+        fobbit = Fobbit.objects.create(
+            question=next,
+            session=self,
+        )
+        self.active_fobbit = fobbit
         self.save()
-        # message
-        round_reset(self.quiz.id)
+        return fobbit
 
-    def first_question(self):
-        question = self.questions.first()
-        self.quiz.active_question = question
-        self.quiz.save()
-        return False
+    def score_for_player(self, player):
+        score = 0
+        for fobbit in self.fobbits.all():
+            score += fobbit.score_for_player(player)
+        return score
 
 
-class Question(models.Model):
+class Fobbit(models.Model):
+    """Combination of session and question"""
+
     class Meta:
-        ordering = ['order', 'id']
+        ordering = ['question__order', 'id']
 
-    # INACTIVE = 0
+    session = models.ForeignKey(
+        Session,
+        related_name='fobbits',
+        on_delete=models.CASCADE,
+    )
+
+    question = models.ForeignKey(
+        Question,
+        related_name='fobbits',
+        on_delete=models.CASCADE,
+    )
     BLUFF, GUESS, FINISHED = range(3)
     STATUS_CHOICES = (
-        # (INACTIVE, 'Inactive'),
         (BLUFF, 'Bluff'),
         (GUESS, 'Guess'),
         (FINISHED, 'Finished'),
-    )
-    text = models.CharField(
-        max_length=255,
-    )
-    correct_answer = models.CharField(
-        max_length=255,
-    )
-    round = models.ForeignKey(
-        Round,
-        related_name='questions',
-        on_delete=models.CASCADE,
     )
     status = models.IntegerField(
         choices=STATUS_CHOICES,
         default=0
     )
-    order = models.IntegerField()
-    url = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-    )
 
     def __str__(self):
-        """ string representation """
-        return "Question: {}".format(self.text)
+        return self.question.text
 
-    def hide_answers(self):
-        if self.status < Question.FINISHED:
+    @cached_property
+    def multiplier(self):
+        if self.question.order > 8:
+            return 3
+        if self.question.order > 3:
+            return 2
+        return 1
+
+    @property
+    def players_without_guess(self):
+        return [
+            player for player in self.session.players.all()
+            if len(player.guesses.filter(answer__fobbit=self)) == 0]
+
+    @property
+    def players_without_bluff(self):
+        return [
+            player for player in self.session.players.all()
+            if len(player.bluffs.filter(fobbit=self)) == 0]
+
+    @property
+    def scored_answers(self):
+        if self.status == self.FINISHED:
+            return self.answers.annotate(
+                num_guesses=models.Count('guesses')
+            ).order_by('is_correct', 'num_guesses')
+        else:
+            return self.answers.empty()
+
+    def generate_answers(self):
+        """
+        Creates a new list of possible answers
+        use a combination of bluffs and the correct answer
+        """
+        if len(self.session.players.all()) == 0:
+            return False
+
+        # Check if all players have bluffed
+        if len(self.bluffs.all()) != len(self.session.players.all()):
+            return False
+        # Check if not already listed
+        if self.status >= self.GUESS:
+            return False
+
+        for answer in self.answers.all():
+            answer.delete()
+
+        Answer.objects.create(
+            fobbit=self,
+            text=self.question.correct_answer,
+            is_correct=True,
+        )
+
+        for bluff in self.bluffs.all():
+            answer = self.answers.filter(text__iexact=bluff.text).first()
+            if answer is None:
+                answer = Answer.objects.create(
+                    fobbit=self,
+                    text=bluff.text)
+
+            bluff.answer = answer
+            bluff.save()
+
+        answers = [answer for answer in self.answers.all()]
+        random.shuffle(answers)
+        i = 0
+        for answer in answers:
+            answer.order = i = i + 1
+            answer.save()
+
+        self.status = Fobbit.GUESS
+        self.save()
+        return True
+
+    def score_for_player(self, player):
+        score = 0
+        # only finnished questions have scores
+        if self.status != self.FINISHED:
+            return 0
+
+        player_bluff = self.bluffs.get(player=player)
+        player_guess = Guess.objects.get(answer__fobbit=self, player=player)
+
+        # als de speler heeft gebluffed
+        if player_bluff:
+            # 0 plunten als jouw bluff = correct antwoord
+            if player_bluff.answer and player_bluff.answer.is_correct is True:
+                return 0
+
+            score += player_bluff.score
+
+        # score voor juist antwoord
+        if player_guess:
+            if player_guess.answer == player_bluff.answer:
+                return 0
+            if player_guess.answer.text == self.question.correct_answer:
+                score += player_guess.score
+
+        return score
+
+    def reset(self):
+        self.status = Fobbit.BLUFF
+        self.bluffs.all().delete()
+        self.answers.all().delete()
+        self.save()
+
+    # FOBBIT
+    def finish(self):
+        """Finish the question if all players have guessed"""
+        if len(self.players_without_guess) == 0:
+            self.status = self.FINISHED
+            self.save()
+        else:
+            raise Guess.DoesNotExist("Not all players have guessed")
+
+    def delete_answers(self):
+        if self.status < self.FINISHED:
             # self.guesses.delete()
             self.answers.all().delete()
 
-            self.status = Question.BLUFF
+            self.status = self.BLUFF
             self.save()
             return True
-
-    def players_without_guess(self):
-        return [
-            player for player in self.round.quiz.players.all()
-            if len(player.guesses.filter(answer__question=self)) == 0]
-
-    def players_without_bluff(self):
-        return [
-            player for player in self.round.quiz.players.all()
-            if len(player.bluffs.filter(question=self)) == 0]
-
-    def finish(self):
-        """Finish the question if all playes have guessed"""
-        # TODO: Check if all players have guessed
-        if len(self.players_without_guess()) == 0:
-            self.status = Question.FINISHED
-            self.save()
-            return True
-        return False
-
-    def reset(self):
-        self.status = Question.BLUFF
-        self.bluffs.all().delete()
-        self.save()
 
 
 class Answer(models.Model):
     class Meta:
         ordering = ['order']
 
-    question = models.ForeignKey(
-        Question,
+    fobbit = models.ForeignKey(
+        Fobbit,
         related_name='answers',
         on_delete=models.CASCADE,
     )
@@ -209,15 +307,15 @@ class Answer(models.Model):
 
     def __str__(self):
         """ string representation """
-        return "{}: Answer {}".format(self.question.text, self.order)
+        return "{}: Answer {}".format(self.fobbit.question.text, self.order)
 
 
 class Bluff(models.Model):
     text = models.CharField(
         max_length=255,
     )
-    question = models.ForeignKey(
-        Question,
+    fobbit = models.ForeignKey(
+        Fobbit,
         related_name='bluffs',
         on_delete=models.CASCADE,
     )
@@ -233,6 +331,32 @@ class Bluff(models.Model):
         blank=True,
         on_delete=models.SET_NULL,
     )
+
+    class Meta:
+        unique_together = ("fobbit", "player"),
+
+    @property
+    def score(self):
+        score = 0
+
+        player_guess = Guess.objects.filter(
+            answer__fobbit=self.fobbit,
+            player=self.player).first()
+        if player_guess:
+            # 0 plunten als jouw bluff = correct antwoord
+            if self.answer and self.answer.is_correct is True:
+                return 0
+            # 0 punten als je op je eigen antwoord stemt
+            if player_guess.answer == self.answer:
+                return 0
+
+            # score voor anders spelers kiezen jouw bluff
+            aantal_gepakt = len(Guess.objects.filter(answer=self.answer))
+
+            score += (aantal_gepakt * self.fobbit.multiplier * 500) / len(
+                Bluff.objects.filter(answer=self.answer))
+
+        return score
 
     def __str__(self):
         """ string representation """
@@ -252,26 +376,27 @@ class Guess(models.Model):
         on_delete=models.CASCADE,
     )
 
+    @property
+    def score(self):
+        fobbit = self.answer.fobbit
+        if fobbit.status == fobbit.FINISHED:
+            if self.answer.text == fobbit.question.correct_answer:
+                return fobbit.multiplier * 1000
+        else:
+            return 0
 
-@receiver(post_save, sender=Quiz)
-def quiz_update_signal(sender, instance, created, **kwargs):
+
+@receiver(post_save, sender=Session)
+def session_update_signal(sender, instance, created, **kwargs):
     if created:
-        quiz_updated(instance.id)
+        session_updated(instance.id)
     else:
-        quiz_updated(instance.id)
+        session_updated(instance.id)
 
 
-@receiver(post_save, sender=Question)
-def question_updated_signal(sender, instance, created, **kwargs):
+@receiver(post_save, sender=Fobbit)
+def session_updated_signal(sender, instance, created, **kwargs):
     if created:
-        quiz_updated(instance.round.quiz.id)
+        session_updated(instance.session.id)
     else:
-        quiz_updated(instance.round.quiz.id)
-
-
-@receiver(post_save, sender=Round)
-def round_updated_signal(sender, instance, created, **kwargs):
-    if created:
-        quiz_updated(instance.quiz.id)
-    else:
-        quiz_updated(instance.quiz.id)
+        session_updated(instance.session.id)

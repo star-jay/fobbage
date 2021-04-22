@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block quiz %}
+  <h2 class="title">Guessing</h2>
+
+  <h2 class="subtitle">{{ fobbit.question.text }} </h2>
+  {% if guess %}
+    You already Guessed, update if you want
+  {% endif %}
+    <form action="/session/{{ session.id }}/play/" method="post">
+      {% csrf_token %}
+      <table>
+        {{ form.as_table }}
+      </table>
+      <input type="submit" value="Submit">
+    </form>
+{% endblock %}

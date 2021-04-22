@@ -1,19 +1,22 @@
-from django.contrib.auth import login, authenticate
-from django.shortcuts import render, redirect
+from django.contrib.auth import get_user_model
+from rest_framework.decorators import action
 
-from fobbage.accounts.forms import UserCreationForm
+from rest_framework import permissions, generics, response
+from rest_framework.generics import mixins
+from fobbage.accounts.serializers import UserSerializer
 
 
-def signup(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            user = authenticate(username=username, password=raw_password)
-            login(request, user)
-            return redirect('index')
-    else:
-        form = UserCreationForm()
-    return render(request, 'accounts/signup.html', {'form': form})
+User = get_user_model()
+
+
+class UserAPIView(generics.GenericAPIView, mixins.CreateModelMixin):
+    http_method_names = ['get', 'post', 'head', 'options']
+    permission_classes = [permissions.AllowAny]
+    serializer_class = UserSerializer
+
+    def get(self, request, *args, **kwargs):
+        return response.Response(UserSerializer(request.user).data)
+
+    @action(detail=True, methods=['post'], url_path="new_password")
+    def set_password(self, request, pk=None):
+        return self.update(request, pk=pk)

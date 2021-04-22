@@ -34,16 +34,16 @@
     <a class="button" href="{{ url }}">
         Next Answer
     </a>
-    {% if quiz %}
+    {% if session %}
         {% url 'quiz' quiz.id as url %}
-        <a class="button" href="/quiz/{{ quiz.id }}">
+        <a class="button" href="/session/{{ quiz.id }}">
             Back to Quiz
         </a>
     {% else %}
 
     {% endif %}
     {% if answer.is_correct %}
-        <a class="button" href="/quiz/{{ answer.question.round.quiz.id }}/scoreboard">
+        <a class="button" href="/session/{{ answer.fobbit.session.id }}/scoreboard">
         Scoreboard
         </a>
     {% endif %}

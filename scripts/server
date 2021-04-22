@@ -2,8 +2,29 @@
 
 set -e
 
+update=false
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --update)
+            update=true
+        ;;
+    esac
+	shift
+done
+
 cd "$(dirname "$0")/.."
 
-scripts/update
+if $update ; then
+    scripts/update
+fi
 
-pipenv run python ./manage.py runserver 0.0.0.0:8010
+if [[ $(uname -s) == Linux ]];then
+    hostnames=$(hostname -I)
+    hostnames=${hostnames//[' ']/,}
+    export HOSTNAMES=$hostnames
+elif [[ $(uname -s) == Darwin ]];then
+    hostnames=$(ipconfig getifaddr en0)
+    export HOSTNAMES=$hostnames
+fi
+
+pipenv run ./manage.py runserver $@

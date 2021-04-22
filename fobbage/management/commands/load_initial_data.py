@@ -1,7 +1,7 @@
 import environ
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from fobbage.quizes.models import Quiz, Round, Question
+from fobbage.quizes.models import Quiz, Question
 
 env = environ.Env()
 User = get_user_model()
@@ -179,19 +179,16 @@ class Command(BaseCommand):
         quiz = Quiz.objects.create(
             title=QUIZ['title'],
             created_by=User.objects.first(),
-            players=[User.objects.first(),])
+        )
         for r in QUIZ['rounds']:
-            round = Round.objects.create(
-                quiz=quiz,
-                title=r['title'],
-            )
             i = 0
             for q in r['questions']:
                 i += 1
                 Question.objects.create(
-                    round=round,
+                    quiz=quiz,
                     text=q['text'],
                     correct_answer=q['correct_answer'],
+                    player=User.objects.first(),
                     order=i,
                 )
 

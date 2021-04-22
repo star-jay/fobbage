@@ -1,0 +1,26 @@
+.c-statusbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #aaa;
+  display: inline-block;
+  margin-right: 4px;
+}
+.c-statusbox--1 {
+  background-color: #aaa;
+}
+.c-statusbox--2 {
+  background-color: $primary;
+  border-color: $primary;
+}
+.c-statusbox--3 {
+  background-color: $danger;
+  border-color: $danger;
+}
+
+.c-statusbox__diagonal {
+    width: 31px;
+    height: 2px;
+    background-color: $danger;
+    transform: translateY(9px) translateX(-5px) rotate(-45deg);
+    position: absolute;
+}

@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import environ
-import datetime
 
 env = environ.Env()
 environ.Env.read_env()
@@ -36,32 +35,33 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '192.168.0.141',
     '0.0.0.0',
-    "localhost:8080",
-    "127.0.0.1:8080",
-    "10.127.67.77",
 ]
+PORTS = ['8080', '8000', '80']
 
 MY_HOSTS = env.list('HOSTNAMES', default=[])
 for host in MY_HOSTS:
     ALLOWED_HOSTS.append(host)
 
+ALLOWED_HOSTS_AND_PORTS = [
+    f"{hostname}:{port}"
+    for port in PORTS
+    for hostname in ALLOWED_HOSTS
+]
+
 CORS_ORIGIN_WHITELIST = [
     'http://'+host
-    for host in ALLOWED_HOSTS
+    for host in ALLOWED_HOSTS_AND_PORTS
 ]
 CORS_ORIGIN_WHITELIST += [
     'https://'+host
-    for host in ALLOWED_HOSTS
+    for host in ALLOWED_HOSTS_AND_PORTS
 ]
 
 # Application definition
 
 INSTALLED_APPS = [
-    # fobbage
-    'fobbage',
-    'fobbage.quizes',
-    'fobbage.accounts',
-    'channels',
+    # Disable runserver's static file serving
+    'whitenoise.runserver_nostatic',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -72,9 +72,15 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'django_extensions',
     'rest_framework',
-    'rest_auth',
+    'rest_framework.authtoken',
     'corsheaders',
     'bulma',
+    'channels',
+
+    # fobbage
+    'fobbage',
+    'fobbage.quizes',
+    'fobbage.accounts',
 ]
 
 MIDDLEWARE = [
@@ -82,12 +88,15 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'spa.middleware.SPAMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# CSRF_USE_SESSIONS = False
 
 ROOT_URLCONF = 'fobbage.urls'
 
@@ -121,25 +130,10 @@ DATABASES = {
         default='postgres:///fobbage'),
 }
 
-# AUTHENTICATION_BACKENDS = (
-#     ...
-#     # Needed to login by username in Django admin, regardless of `allauth`
-#     'django.contrib.auth.backends.ModelBackend',
-
-#     # `allauth` specific authentication methods, such as login by e-mail
-#     'allauth.account.auth_backends.AuthenticationBackend',
-#     ...
-# )
-
-
 AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-
-]
 
 
 # Internationalization
@@ -159,8 +153,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Static files (CSS, JavaScript, Images)
@@ -170,28 +162,17 @@ STATIC_URL = '/static/'
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'fobbage/dist'),
 )
+print(STATICFILES_DIRS)
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # noqa
 
-# for contrib .sites
-SITE_ID = 1
-
-# contrib auth
-LOGIN_REDIRECT_URL = 'index'
-
-# CORS
-CORS_ORIGIN_ALLOW_ALL = True
-
-# JWT
-JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),
-    'JWT_ALLOW_REFRESH': True,
-}
+# Single page application https://github.com/metakermit/django-spa
+STATICFILES_STORAGE = 'spa.storage.SPAStaticFilesStorage'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -199,13 +180,13 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.BasicAuthentication',
         'django.contrib.auth.backends.ModelBackend',
     ),
 }
 
-ASGI_APPLICATION = 'fobbage.routing.application'
+ASGI_APPLICATION = 'fobbage.asgi.application'
 
 # if you have a redis url(heroku) connect to that, else use a local redis
 # $ sudo docker run -p 6379:6379 -d redis:2.8
@@ -220,17 +201,11 @@ CHANNEL_LAYERS = {
     },
 }
 
-# # RABBITMQ
-# AMQP_URL = os.environ.get('AMQP_URL', default=None)
-# EXCHANGE = os.environ.get('EXCHANGE', default="fobbage-groups")
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_rabbitmq.core.RabbitmqChannelLayer",
-#         "CONFIG": {
-#             "host": AMQP_URL,
-#             "groups_exchange": EXCHANGE,
-#             # "ssl_context": ... (optional)
-#         },
-#     },
-# }
+# CSRF
+# CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+
+# contrib auth
+LOGIN_REDIRECT_URL = 'index'
+# for contrib .sites
+SITE_ID = 1

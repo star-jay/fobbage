@@ -1,7 +1,7 @@
 import factory
 
 from fobbage.quizes.models import (
-    Quiz, Round, Question, Answer, Bluff
+    Quiz, Question, Answer, Bluff, Fobbit, Session
 )
 from tests.factories.account_factories import UserFactory
 
@@ -16,17 +16,6 @@ class QuizFactory(factory.django.DjangoModelFactory):
     created_by = factory.SubFactory(UserFactory)
 
 
-class RoundFactory(factory.django.DjangoModelFactory):
-    """ Factory that creates a round """
-    class Meta:
-        model = Round
-
-    # add a value for the required fields
-    quiz = factory.SubFactory(QuizFactory)
-    title = factory.Sequence(lambda n: "round {}".format(n))
-    multiplier = factory.Sequence(lambda n: n)
-
-
 class QuestionFactory(factory.django.DjangoModelFactory):
     """ Factory that creates an answer"""
     class Meta:
@@ -35,8 +24,32 @@ class QuestionFactory(factory.django.DjangoModelFactory):
     # add a value for the required fields
     text = factory.Sequence(lambda n: "question {}".format(n))
     correct_answer = factory.Sequence(lambda n: "answer {}".format(n))
-    round = factory.SubFactory(RoundFactory)
+    quiz = factory.SubFactory(QuizFactory)
     order = factory.Sequence(lambda n: n)
+    player = factory.SubFactory(UserFactory)
+
+
+class SessionFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for `Session`.
+    """
+    class Meta:
+        model = Session
+    # Example sequence field
+    owner = factory.SubFactory(UserFactory)
+    quiz = factory.SubFactory(QuizFactory)
+    name = factory.Sequence(lambda n: 'Dummy Session: {}'.format(n))
+
+
+class FobbitFactory(factory.django.DjangoModelFactory):
+    """
+    Factory for `Fobbit`.
+    """
+    class Meta:
+        model = Fobbit
+    # Example sequence field
+    session = factory.SubFactory(SessionFactory)
+    question = factory.SubFactory(QuestionFactory)
 
 
 class AnswerFactory(factory.django.DjangoModelFactory):
@@ -47,7 +60,7 @@ class AnswerFactory(factory.django.DjangoModelFactory):
     # add a value for the required fields
     text = factory.Sequence(lambda n: "answer {}".format(n))
     order = factory.Sequence(lambda n: n)
-    question = factory.SubFactory(QuestionFactory)
+    fobbit = factory.SubFactory(FobbitFactory)
 
 
 class BluffFactory(factory.django.DjangoModelFactory):
@@ -57,5 +70,5 @@ class BluffFactory(factory.django.DjangoModelFactory):
 
     # # add a value for the required fields
     # text = 'bluff'
-    question = factory.SubFactory(QuestionFactory)
+    fobbit = factory.SubFactory(FobbitFactory)
     player = factory.SubFactory(UserFactory)

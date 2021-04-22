@@ -5,7 +5,7 @@
     {% if object_list %}
         <ul>
         {% for quiz in object_list %}
-            <li><a href="/quiz/{{ quiz.id }}/">{{ quiz.title }}</a></li>
+            <li><a href="/start_session/{{ quiz.id }}/">{{ quiz.title }}</a></li>
         {% endfor %}
         </ul>
     {% else %}
