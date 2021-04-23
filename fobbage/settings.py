@@ -58,6 +58,8 @@ CORS_ORIGIN_WHITELIST += [
     for host in ALLOWED_HOSTS_AND_PORTS
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 # Application definition
 
 INSTALLED_APPS = [
