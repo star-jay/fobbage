@@ -5,6 +5,8 @@ from tests.factories.quiz_factories import (
     QuestionFactory,
     AnswerFactory,
     BluffFactory,
+    FobbitFactory,
+    SessionFactory,
 )
 
 
@@ -36,3 +38,23 @@ def test_bluff_string_representation():
     )
 
     assert bluff.__str__() == 'otto: test'
+
+
+@pytest.mark.django_db
+def test_multiplier():
+    """Make a clear string representation for the bluff"""
+    fobby = FobbitFactory(question__order=9)
+    assert fobby.multiplier == 1
+    fobby = FobbitFactory(question__order=10)
+    assert fobby.multiplier == 1
+    fobby = FobbitFactory(question__order=12)
+
+    assert fobby.multiplier == 2
+    fobby = FobbitFactory(question__order=22)
+
+    assert fobby.multiplier == 3
+
+    fobby = FobbitFactory(
+        question__order=2,
+        session=SessionFactory(settings={'questionsPerRound': 1}))
+    assert fobby.multiplier == 2

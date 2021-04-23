@@ -130,9 +130,9 @@ export default {
     },
   ),
 
-  createSession: ({ commit }, { name, quiz }) => new Promise(
+  createSession: ({ commit }, { name, settings, quiz }) => new Promise(
     (resolve, reject) => {
-      sessionsAPI.post({ name, quiz })
+      sessionsAPI.post({ name, quiz, settings })
         .then((response) => {
           const session = response.data;
           commit('SESSIONS_SUCCESS', [session]);

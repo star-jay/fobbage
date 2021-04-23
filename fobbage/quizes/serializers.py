@@ -103,7 +103,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ('id', 'text', 'url', 'quiz', 'image_url')
+        fields = ('id', 'text', 'url', 'quiz', 'image_url', 'order')
 
 
 class FobbitSerializer(serializers.ModelSerializer):
@@ -143,7 +143,7 @@ class FobbitSerializer(serializers.ModelSerializer):
             'status', 'have_bluffed', 'have_guessed',
             'question', 'answers', 'score_sheets',
             'players_without_bluff', 'players_without_guess',
-            'session',
+            'session', 'multiplier'
         )
 
 
@@ -193,6 +193,7 @@ class SessionSerializer(serializers.ModelSerializer):
             'owner',
             'active_fobbit',
             'fobbits',
+            'settings',
         )
 
 
