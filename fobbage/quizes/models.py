@@ -104,6 +104,7 @@ class Session(models.Model):
         choices=MODI,
         default=BLUFFING,
     )
+    settings = models.JSONField(default=dict)
 
     def __str__(self):
         return self.name
