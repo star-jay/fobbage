@@ -40,7 +40,7 @@ class BluffSerializer(serializers.ModelSerializer):
 
 class GuessSerializer(serializers.ModelSerializer):
     player = UserSerializer(read_only=True)
-    score = serializers.IntegerField()
+    score = serializers.IntegerField(read_only=True)
 
     # overide create to save user
     def create(self, validated_data):
