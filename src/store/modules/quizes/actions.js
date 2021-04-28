@@ -57,7 +57,8 @@ export default {
     (resolve, reject) => {
       guessAPI.post({ fobbit, answer })
         .then((response) => {
-          commit('GUESS_SUCCESS');
+          console.log(response.data);
+          commit('GUESS_SUCCESS', { guess: response.data });
           resolve(response);
         })
         .catch((error) => {

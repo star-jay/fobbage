@@ -19,7 +19,7 @@
             :key="answer.id"
           >
             <v-list-item-content>
-              {{ answer.text}}
+              {{ answer.order }}. {{ answer.text.toLowerCase()}}
             </v-list-item-content>
           </v-list-item>
         </v-list>

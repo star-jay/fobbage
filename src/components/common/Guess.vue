@@ -55,7 +55,11 @@ export default {
           id: this.fobbit.id,
           answer: this.fobbit.answers[this.answer].id,
         },
-      );
+      )
+        .then(() => {
+          console.log('jalo');
+          this.fobbit.have_guessed = true;
+        });
     },
   },
 };
