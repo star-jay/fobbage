@@ -57,7 +57,8 @@ export default {
     (resolve, reject) => {
       guessAPI.post({ fobbit, answer })
         .then((response) => {
-          commit('GUESS_SUCCESS');
+          console.log(response.data);
+          commit('GUESS_SUCCESS', { guess: response.data });
           resolve(response);
         })
         .catch((error) => {
@@ -130,9 +131,9 @@ export default {
     },
   ),
 
-  createSession: ({ commit }, { name, quiz }) => new Promise(
+  createSession: ({ commit }, { name, settings, quiz }) => new Promise(
     (resolve, reject) => {
-      sessionsAPI.post({ name, quiz })
+      sessionsAPI.post({ name, quiz, settings })
         .then((response) => {
           const session = response.data;
           commit('SESSIONS_SUCCESS', [session]);

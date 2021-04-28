@@ -163,11 +163,9 @@ class Fobbit(models.Model):
 
     @cached_property
     def multiplier(self):
-        if self.question.order > 8:
-            return 3
-        if self.question.order > 3:
-            return 2
-        return 1
+        qpr = self.session.settings.get('questionsPerRound', 10)
+        return (self.question.order-1)//qpr + 1
+
 
     @property
     def players_without_guess(self):
