@@ -28,6 +28,7 @@ export default {
   data() {
     return {
       errors: [],
+      submittedBluff: undefined,
       form: {
         bluff: '',
       },
@@ -42,7 +43,10 @@ export default {
       this.$store.dispatch(
         'bluff',
         { fobbit: this.fobbit.id, text: this.form.bluff },
-      );
+      )
+        .then(() => {
+          this.fobbit.have_bluffed = true;
+        });
     },
   },
 };
