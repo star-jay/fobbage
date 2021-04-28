@@ -42,16 +42,20 @@
             :error-messages="errors.name"
           ></v-text-field>
           <v-text-field
-            v-model="form.settings.questionsPerRound"
+            v-model.number="form.settings.questionsPerRound"
             label="Questions Per Round*"
             name="questionsPerRound"
             required
+            single-line
+            type="number"
           ></v-text-field>
           <v-text-field
-            v-model="form.settings.rounds"
+            v-model.number="form.settings.rounds"
             label="number of Rounds"
             name="numberOfRounds"
             required
+            single-line
+            type="number"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
