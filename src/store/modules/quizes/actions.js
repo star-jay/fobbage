@@ -44,7 +44,7 @@ export default {
     (resolve, reject) => {
       bluffsAPI.post({ fobbit, text })
         .then((response) => {
-          commit('BLUFF_SUCCESS', text);
+          commit('BLUFF_SUCCESS', { bluff: response.data });
           resolve(response);
         })
         .catch((error) => {
@@ -57,7 +57,6 @@ export default {
     (resolve, reject) => {
       guessAPI.post({ fobbit, answer })
         .then((response) => {
-          console.log(response.data);
           commit('GUESS_SUCCESS', { guess: response.data });
           resolve(response);
         })

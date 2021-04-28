@@ -20,7 +20,7 @@ export default {
   [types.BLUFF_REQUEST]: (state) => {
     state.loading = true;
   },
-  [types.BLUFF_SUCCESS]: (state, bluff) => {
+  [types.BLUFF_SUCCESS]: (state, { bluff }) => {
     state.bluff = bluff;
     state.loading = false;
   },

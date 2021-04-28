@@ -3,7 +3,7 @@
     <div v-if="fobbit.have_bluffed">
       <p>Your bluff was submitted</p>
     </div>
-    <div v-else>
+    <div>
     <v-form @submit.prevent="bluff" id="bluff" class="xs10">
       <v-textarea
         v-model="form.bluff"
