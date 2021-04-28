@@ -164,7 +164,10 @@ class Fobbit(models.Model):
     @cached_property
     def multiplier(self):
         qpr = self.session.settings.get('questionsPerRound', 10)
-        return (self.question.order-1)//qpr + 1
+        if int(qpr) == 0:
+            return 1
+        else:
+            return int(self.question.order-1)//int(qpr) + 1
 
 
     @property
