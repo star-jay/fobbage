@@ -1,8 +1,8 @@
 <template>
 <!-- class="xs10 offset-xs1" -->
     <v-layout class="xs10 offset-xs1">
-      <web-socket :sessionId="sessionId"/>
       <div v-if="session">
+        <web-socket :session="session"/>
         <h1>
           Session : {{ session.name }}
         </h1>

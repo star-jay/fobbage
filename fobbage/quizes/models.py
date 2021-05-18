@@ -169,7 +169,6 @@ class Fobbit(models.Model):
         else:
             return int(self.question.order-1)//int(qpr) + 1
 
-
     @property
     def players_without_guess(self):
         return [
@@ -389,16 +388,25 @@ class Guess(models.Model):
 
 
 @receiver(post_save, sender=Session)
-def session_update_signal(sender, instance, created, **kwargs):
-    if created:
-        session_updated(instance.id)
-    else:
-        session_updated(instance.id)
+def session_updated_signal(sender, instance, created, **kwargs):
+    session_updated(instance.id)
 
 
 @receiver(post_save, sender=Fobbit)
-def session_updated_signal(sender, instance, created, **kwargs):
-    if created:
-        session_updated(instance.session.id)
-    else:
-        session_updated(instance.session.id)
+def fobbit_updated_signal(sender, instance, created, **kwargs):
+    session_updated(instance.session.id)
+
+
+@receiver(post_save, sender=Bluff)
+def bluff_updated_signal(sender, instance, created, **kwargs):
+    session_updated(instance.fobbit.session.id)
+
+
+@receiver(post_save, sender=Guess)
+def guess_updated_signal(sender, instance, created, **kwargs):
+    session_updated(instance.answer.fobbit.session.id)
+
+
+@receiver(post_save, sender=Answer)
+def _updated_signal(sender, instance, created, **kwargs):
+    session_updated(instance.fobbit.session.id)
