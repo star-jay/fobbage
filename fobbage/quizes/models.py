@@ -7,7 +7,6 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.functional import cached_property
 
 from .messages import session_updated
 
@@ -114,13 +113,15 @@ class Session(models.Model):
         self.settings.get('questionsPerRound', 10)
 
     def next_question(self):
+        # While bluffing, create a new fobbit out of available questions
+        question_this_round = len(self.fobbits) % self.questionsPerRound
+
         if self.modus == self.BLUFFING:
-            question_this_round = len(self.fobbits) % self.questionsPerRound
             if question_this_round < self.questions_per_round - 1:
                 fobbit = self.generate_fobbit(self)
             else:
                 self.modus = self.GUESSING
-                fobbit =  # First fobbit of the round
+                fobbit = self.fobbits.filter(status=Fobbit.GUESS).first()
 
         self.active_fobbit = fobbit
         self.save()
@@ -132,7 +133,7 @@ class Session(models.Model):
             )
         next = questions.first()
 
-        fobbit = Fobbit.objects.create(
+        return Fobbit.objects.create(
             question=next,
             session=self,
         )
@@ -175,7 +176,7 @@ class Fobbit(models.Model):
     def __str__(self):
         return self.question.text
 
-    @cached_property
+    @property
     def multiplier(self):
         qpr = self.session.settings.get('questionsPerRound', 10)
         if int(qpr) == 0:
