@@ -1,14 +1,14 @@
 <template>
-  <v-layout class="xs10 offset-xs1">
+  <v-layout class="ma-2">
     <div v-if="session">
       <web-socket :session="session"/>
       <h1>
         Session : {{ session.name }}
       </h1>
       <div v-if="session.active_fobbit">
-        <h2>
+        <h3>
         {{ session.active_fobbit.question.text }}
-        </h2>
+        </h3>
 
         <Bluff v-if="session.active_fobbit.status===0"
           :fobbit='session.active_fobbit'
@@ -24,21 +24,21 @@
         </p>
       </div>
       <div v-else>
-        <h2>
+        <h3>
           no active question
-        </h2>
+        </h3>
       </div>
     </div>
     <div v-else>
-      <h2>no active session</h2>
+      <h3>no active session</h3>
     </div>
   </v-layout>
 </template>
 
 <script>
 import { mapState } from 'vuex';
-import Bluff from '@/components/common/Bluff.vue';
-import Guess from '@/components/common/Guess.vue';
+import Bluff from '@/components/pages/play/Bluff.vue';
+import Guess from '@/components/pages/play/Guess.vue';
 import WebSocket from '@/components/common/WebSocket.vue';
 
 export default {

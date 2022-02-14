@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app dark class="ma-2">
     <router-view/>
   </v-app>
 </template>
@@ -9,6 +9,9 @@
 export default {
   name: 'App',
   components: {
+  },
+  created() {
+    document.title = 'Fobbage';
   },
 };
 </script>

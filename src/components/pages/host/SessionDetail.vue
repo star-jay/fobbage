@@ -1,50 +1,42 @@
 <template>
-<!-- class="xs10 offset-xs1" -->
-    <v-layout class="xs10 offset-xs1">
-      <div v-if="session">
-        <web-socket :session="session"/>
-        <h1>
-          Session : {{ session.name }}
-        </h1>
+  <div v-if="session" class="ma-8">
+    <web-socket :session="session"/>
+    <h2>
+      {{ session.name }}
+    </h2>
 
-        <router-view
-          v-if="session.active_fobbit"
-          :fobbit="session.active_fobbit"
-          :session="session">
-        </router-view >
-         <div v-else>
-          <h2>
-            no active question
-          </h2>
-          <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
-            Next question
-          </v-btn>
-        </div>
+    <router-view
+      v-if="session.active_fobbit"
+      :fobbit="session.active_fobbit"
+      :session="session">
+    </router-view >
 
-        <v-row>
-          <v-pagination
-            total-visible="10"
-            v-model="fobbitIndex"
-            :length="session.fobbits.length"
-            @input="setFobbit"
-          />
-
-        </v-row>
-      </div>
-      <div v-else>
-        <h2>no session</h2>
-      </div>
-    </v-layout>
+    <div v-else>
+      <h3>
+        no active question
+      </h3>
+      <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
+        Next question
+      </v-btn>
+    </div>
+    <Pagination :session="session"/>
+  </div>
+  <!-- <div v-else>
+    <h2>no session, refresh</h2>
+  </div> -->
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import WebSocket from '@/components/common/WebSocket.vue';
+import Pagination from './Pagination.vue';
+
 
 export default {
   name: 'SessionDetail',
   components: {
     WebSocket,
+    Pagination,
   },
   props: {
     sessionId: Number,
@@ -59,14 +51,14 @@ export default {
   },
   computed: {
     ...mapState({
-      messages: (state) => state.quizes.messages,
+      messages: state => state.quizes.messages,
     }),
     session() {
       return this.$store.getters.session(this.sessionId);
     },
     calculatedIndex() {
       if (this.session && this.session.fobbits) {
-        return this.session.fobbits.findIndex((id) => id === this.session.active_fobbit.id) + 1;
+        return this.session.fobbits.findIndex(id => id === this.session.active_fobbit.id) + 1;
       }
       return 1;
     },

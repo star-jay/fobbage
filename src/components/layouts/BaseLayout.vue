@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavigationBar/>
+    <SystemBar/>
      <v-main>
       <router-view/>
      </v-main>
@@ -8,12 +8,12 @@
 </template>
 
 <script>
-import NavigationBar from '@/components/common/NavigationBar.vue';
+import SystemBar from '@/components/common/SystemBar.vue';
 
 export default {
   name: 'BaseLayout',
   components: {
-    NavigationBar,
+    SystemBar,
   },
   created() {
     this.connect();
@@ -26,6 +26,17 @@ export default {
       } else {
         this.$store.dispatch('retrieveUserInfo');
       }
+    },
+  },
+  computed: {
+    session() {
+      return this.$store.getters.session(this.sessionId);
+    },
+    calculatedIndex() {
+      if (this.session && this.session.fobbits) {
+        return this.session.fobbits.findIndex(id => id === this.session.active_fobbit.id) + 1;
+      }
+      return 1;
     },
   },
 };

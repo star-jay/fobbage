@@ -1,5 +1,6 @@
 {
   "name": "fobbage-vue2",
+  "title": "Fobbage",
   "version": "0.1.0",
   "private": true,
   "scripts": {

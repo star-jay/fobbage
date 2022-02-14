@@ -114,7 +114,8 @@ class Session(models.Model):
 
     def next_question(self):
         # While bluffing, create a new fobbit out of available questions
-        question_this_round = len(self.fobbits.all()) % self.questions_per_round
+        fobbit = None
+        question_this_round = self.fobbits.count() % self.questions_per_round
 
         if self.modus == self.BLUFFING:
             if question_this_round < self.questions_per_round - 1:
@@ -123,7 +124,10 @@ class Session(models.Model):
                 self.modus = self.GUESSING
                 fobbit = self.fobbits.filter(status=Fobbit.GUESS).first()
 
-        self.active_fobbit = fobbit
+        if fobbit:
+            self.active_fobbit = fobbit
+        else:
+            self.active_fobbit = None
         self.save()
         return fobbit
 
