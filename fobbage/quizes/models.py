@@ -7,7 +7,6 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.functional import cached_property
 
 from .messages import session_updated
 
@@ -109,19 +108,35 @@ class Session(models.Model):
     def __str__(self):
         return self.name
 
-    def next_question(self):
-        questions = self.quiz.questions.exclude(
-            id__in=[self.fobbits.values_list('question', flat=True)]
-        )
-        next = questions.first()
+    @property
+    def questions_per_round(self):
+        self.settings.get('questionsPerRound', 10)
 
-        fobbit = Fobbit.objects.create(
-            question=next,
-            session=self,
-        )
+    def next_question(self):
+        # While bluffing, create a new fobbit out of available questions
+        question_this_round = len(self.fobbits) % self.questionsPerRound
+
+        if self.modus == self.BLUFFING:
+            if question_this_round < self.questions_per_round - 1:
+                fobbit = self.generate_fobbit(self)
+            else:
+                self.modus = self.GUESSING
+                fobbit = self.fobbits.filter(status=Fobbit.GUESS).first()
+
         self.active_fobbit = fobbit
         self.save()
         return fobbit
+
+    def generate_fobbit(self):
+        questions = self.quiz.questions.exclude(
+                id__in=[self.fobbits.values_list('question', flat=True)]
+            )
+        next = questions.first()
+
+        return Fobbit.objects.create(
+            question=next,
+            session=self,
+        )
 
     def score_for_player(self, player):
         score = 0
@@ -161,7 +176,7 @@ class Fobbit(models.Model):
     def __str__(self):
         return self.question.text
 
-    @cached_property
+    @property
     def multiplier(self):
         qpr = self.session.settings.get('questionsPerRound', 10)
         if int(qpr) == 0:
@@ -233,7 +248,8 @@ class Fobbit(models.Model):
 
         self.status = Fobbit.GUESS
         self.save()
-        return True
+
+        self.session.next_question()
 
     def score_for_player(self, player):
         score = 0
@@ -400,6 +416,11 @@ def fobbit_updated_signal(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Bluff)
 def bluff_updated_signal(sender, instance, created, **kwargs):
     session_updated(instance.fobbit.session.id)
+    # everyone bluffed?
+    if created:
+        if len(instance.fobbit.bluffs.all()) == len(
+                instance.fobbit.session.players.all()):
+            instance.fobbit.generate_answers()
 
 
 @receiver(post_save, sender=Guess)

@@ -3,7 +3,7 @@
     Scoreboard
     <v-list flat>
       <v-list-item
-        v-for="score in $store.state.quizes.scoreBoard"
+        v-for="score in scores"
         :key="score.player.id"
       >
         <v-list-item-content>
@@ -39,6 +39,15 @@ export default {
       // this.$store.dispatch('nextQuestion', ({ sessionId: this.session.id })).then(() => {
       this.$router.push({ name: 'session-detail' });
       // });
+    },
+  },
+  computed: {
+    scores() {
+      if (this.$store.state.quizes.scoreBoard) {
+        // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+        return this.$store.state.quizes.scoreBoard.sort((a, b) => a.score - b.score);
+      }
+      return [];
     },
   },
   watch: {
