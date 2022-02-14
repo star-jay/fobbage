@@ -49,15 +49,11 @@ export default {
   },
   methods: {
     guess() {
-      this.$store.dispatch(
-        'guess',
-        {
-          id: this.fobbit.id,
-          answer: this.fobbit.answers[this.answer].id,
-        },
-      )
+      this.$store.dispatch('guess', {
+        id: this.fobbit.id,
+        answer: this.fobbit.answers[this.answer].id,
+      })
         .then(() => {
-          console.log('jalo');
           this.fobbit.have_guessed = true;
         });
     },

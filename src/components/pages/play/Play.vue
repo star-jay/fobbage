@@ -12,10 +12,12 @@
 
         <Bluff v-if="session.active_fobbit.status===0"
           :fobbit='session.active_fobbit'
+          :key="fobbit.id"
         />
 
         <Guess v-else-if="session.active_fobbit.status===1"
           :fobbit='session.active_fobbit'
+          :key="fobbit.id"
         />
         <p v-else>
           Look at the screen to see your score.
