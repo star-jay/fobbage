@@ -12,12 +12,12 @@
 
         <Bluff v-if="session.active_fobbit.status===0"
           :fobbit='session.active_fobbit'
-          :key="fobbit.id"
+          :key="session.active_fobbit.id"
         />
 
         <Guess v-else-if="session.active_fobbit.status===1"
           :fobbit='session.active_fobbit'
-          :key="fobbit.id"
+          :key="session.active_fobbit.id"
         />
         <p v-else>
           Look at the screen to see your score.
@@ -54,7 +54,7 @@ export default {
   },
   computed: {
     ...mapState({
-      messages: (state) => state.quizes.messages,
+      messages: state => state.quizes.messages,
     }),
     session() {
       return this.$store.getters.session(this.sessionId);

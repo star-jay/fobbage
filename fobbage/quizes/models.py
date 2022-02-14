@@ -110,15 +110,15 @@ class Session(models.Model):
 
     @property
     def questions_per_round(self):
-        self.settings.get('questionsPerRound', 10)
+        return self.settings.get('questionsPerRound', 10)
 
     def next_question(self):
         # While bluffing, create a new fobbit out of available questions
-        question_this_round = len(self.fobbits) % self.questionsPerRound
+        question_this_round = len(self.fobbits.all()) % self.questions_per_round
 
         if self.modus == self.BLUFFING:
             if question_this_round < self.questions_per_round - 1:
-                fobbit = self.generate_fobbit(self)
+                fobbit = self.generate_fobbit()
             else:
                 self.modus = self.GUESSING
                 fobbit = self.fobbits.filter(status=Fobbit.GUESS).first()
