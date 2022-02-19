@@ -8,6 +8,11 @@ from fobbage.quizes.models import (
 )
 
 
+class RoundSerializer(serializers.Serializer):
+    multiplier = serializers.IntegerField()
+    number_of_questions = serializers.IntegerField()
+
+
 class BluffSerializer(serializers.ModelSerializer):
     player = UserSerializer(read_only=True)
 

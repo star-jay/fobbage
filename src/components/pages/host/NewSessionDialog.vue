@@ -41,10 +41,10 @@
             :rules="nameRules"
             :error-messages="errors.name"
           ></v-text-field>
-          <v-text-field
-            v-model.number="form.settings.questionsPerRound"
+          <!-- <v-text-field
+            v-model.number="form.settings.numberOfQuestions"
             label="Questions Per Round*"
-            name="questionsPerRound"
+            name="numberOfQuestions"
             required
             single-line
             type="number"
@@ -56,7 +56,7 @@
             required
             single-line
             type="number"
-          ></v-text-field>
+          ></v-text-field> -->
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -78,13 +78,13 @@ export default {
       dialog: false,
       form: {
         name: this.quiz.title,
-        settings: {
-          questionsPerRound: 10,
-          rounds: 3,
-        },
+        // settings: {
+        //   numberOfQuestions: 10,
+        //   rounds: 3,
+        // },
       },
       nameRules: [
-        (v) => !!v || 'Name is required',
+        v => !!v || 'Name is required',
       ],
       valid: false,
       errors: {},

@@ -8,7 +8,6 @@ cd "$(dirname "$0")/.."
 # Flake everything
 pipenv run flake8
 # Lint frontend
-npm run lint
 
 if [ "$1" == "--mini" ]; then
     # Run minimal pytest
@@ -21,3 +20,4 @@ fi
 
 cd "$(dirname "$0")/.."
 # npm run test:unit
+# npm run lint

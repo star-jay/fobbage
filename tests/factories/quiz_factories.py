@@ -50,6 +50,7 @@ class FobbitFactory(factory.django.DjangoModelFactory):
     # Example sequence field
     session = factory.SubFactory(SessionFactory)
     question = factory.SubFactory(QuestionFactory)
+    round = 1
 
 
 class AnswerFactory(factory.django.DjangoModelFactory):

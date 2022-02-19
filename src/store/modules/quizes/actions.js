@@ -27,19 +27,6 @@ export default {
     sessionsAPI.join(id);
     commit('QUIZES_JOIN', { id });
   },
-  // newactive_fobbit: ({ state, commit }) => new Promise((resolve, reject) => {
-  //   // set active question to zero
-  //   active_fobbitsAPI.get(state.sessionId)
-  //     .then((response) => {
-  //       const active_fobbit = response.data;
-  //       commit('ACTIVE_QUESTION_SUCCES', { active_fobbit });
-  //       resolve(response);
-  //     })
-  //     .catch((error) => {
-  //       commit('QUIZES_ERROR');
-  //       reject(error);
-  //     });
-  // }),
   bluff: ({ commit }, { fobbit, text }) => new Promise(
     (resolve, reject) => {
       bluffsAPI.post({ fobbit, text })
@@ -148,6 +135,20 @@ export default {
   nextQuestion: ({ commit }, { sessionId }) => new Promise(
     (resolve, reject) => {
       sessionsAPI.nextQuestion(sessionId)
+        .then((response) => {
+          commit('SESSIONS_SUCCESS', [response.data]);
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('SESSIONS_ERROR');
+          reject(error);
+        });
+    },
+  ),
+
+  newRound: ({ commit }, { sessionId, numberOfQuestions, multiplier }) => new Promise(
+    (resolve, reject) => {
+      sessionsAPI.newRound(sessionId, { number_of_questions: numberOfQuestions, multiplier })
         .then((response) => {
           commit('SESSIONS_SUCCESS', [response.data]);
           resolve(response);

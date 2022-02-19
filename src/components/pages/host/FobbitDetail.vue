@@ -1,6 +1,5 @@
 <template>
   <div class="ma-8" >
-    <player-list :fobbit="fobbit" />
     <h3>
       {{ fobbit.question.text }}
     </h3>
@@ -43,10 +42,8 @@
 </template>
 
 <script>
-import PlayerList from './PlayerList.vue';
 
 export default {
-  components: { PlayerList },
   name: 'FobbitDetail',
   props: {
     fobbit: undefined,

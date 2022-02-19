@@ -19,6 +19,7 @@
         Next question
       </v-btn>
     </div>
+    <PlayerList :session="session"/>
     <Pagination :session="session"/>
   </div>
   <!-- <div v-else>
@@ -30,13 +31,14 @@
 import { mapState } from 'vuex';
 import WebSocket from '@/components/common/WebSocket.vue';
 import Pagination from './Pagination.vue';
-
+import PlayerList from './PlayerList.vue';
 
 export default {
   name: 'SessionDetail',
   components: {
     WebSocket,
     Pagination,
+    PlayerList,
   },
   props: {
     sessionId: Number,

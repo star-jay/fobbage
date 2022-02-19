@@ -42,19 +42,54 @@ def test_bluff_string_representation():
 
 @pytest.mark.django_db
 def test_multiplier():
-    """Make a clear string representation for the bluff"""
-    fobby = FobbitFactory(question__order=9)
-    assert fobby.multiplier == 1
-    fobby = FobbitFactory(question__order=10)
-    assert fobby.multiplier == 1
-    fobby = FobbitFactory(question__order=12)
+    # get multiplier from round
+    rounds = [
+        dict(multiplier=1),
+        dict(multiplier=5),
+    ]
 
-    assert fobby.multiplier == 2
-    fobby = FobbitFactory(question__order=22)
-
-    assert fobby.multiplier == 3
+    session = SessionFactory(settings={'rounds': rounds})
 
     fobby = FobbitFactory(
-        question__order=2,
-        session=SessionFactory(settings={'questionsPerRound': 1}))
-    assert fobby.multiplier == 2
+        session=session,
+        round=0,
+    )
+    assert fobby.multiplier == 1
+    fobby = FobbitFactory(
+        session=session,
+        round=1,
+    )
+    assert fobby.multiplier == 5
+
+    # default = round +1
+    fobby = FobbitFactory(
+        session=session,
+        round=2,
+    )
+    assert fobby.multiplier == 3
+
+
+@pytest.mark.django_db
+def test_new_round():
+    # test new round create new fibby
+    rounds = [
+        dict(multiplier=1),
+        dict(multiplier=5),
+    ]
+
+    session = SessionFactory(settings={'rounds': rounds})
+
+    q1 = QuestionFactory(quiz=session.quiz)
+    QuestionFactory(quiz=session.quiz)
+    q3 = QuestionFactory(quiz=session.quiz)
+
+    session.new_round({'multiplier': 1, 'number_of_questions': 3})
+    assert session.active_fobbit.question == q1
+
+    session.next_question()
+    session.next_question()
+    assert session.active_fobbit.question == q3
+    session.next_question()
+
+    assert session.modus == 1
+    assert session.active_fobbit.question == q1
