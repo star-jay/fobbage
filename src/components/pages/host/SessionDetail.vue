@@ -8,7 +8,8 @@
     <router-view
       v-if="session.active_fobbit"
       :fobbit="session.active_fobbit"
-      :session="session">
+      :session="session"
+    >
     </router-view >
 
     <div v-else>

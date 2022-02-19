@@ -18,6 +18,10 @@
         </v-list>
       </div>
     </div>
+    <div v-if="fobbit.status == 2">
+      <!-- scoreboard miss -->
+      <router-view :fobbit="fobbit"/>
+    </div>
   </div>
 </template>
 
