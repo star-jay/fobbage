@@ -295,6 +295,8 @@ class Fobbit(models.Model):
         self.status = Fobbit.GUESS
         self.save()
 
+        # TODO: go to next question
+        # if status is addded before guess
         self.session.next_question()
 
     def score_for_player(self, player):

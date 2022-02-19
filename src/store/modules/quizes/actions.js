@@ -33,7 +33,7 @@ export default {
       bluffsAPI.post({ fobbit, text })
         .then((response) => {
           commit('BLUFF_SUCCESS', { bluff: response.data });
-          resolve(response);
+          resolve(response.data);
         })
         .catch((error) => {
           commit('BLUFF_ERROR');
@@ -47,7 +47,7 @@ export default {
       bluffsAPI.patch(bluff.id, bluff)
         .then((response) => {
           commit('BLUFF_SUCCESS', { bluff: response.data });
-          resolve(response);
+          resolve(response.data);
         })
         .catch((error) => {
           commit('BLUFF_ERROR');
