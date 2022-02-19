@@ -18,26 +18,6 @@
         </v-list>
       </div>
     </div>
-    <div v-if="fobbit.status == 2">
-      <router-view :fobbit="fobbit"/>
-      <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId: fobbit.session }))">
-        Next question
-      </v-btn>
-    </div>
-
-    <!-- <v-btn @click="$store.dispatch('resetFobbit', { fobbit })">
-      Reset
-    </v-btn>
-     <v-btn @click="$store.dispatch('generateAnswersForFobbit', { fobbit })">
-      Generate Answers
-    </v-btn>
-    <v-btn @click="$store.dispatch('finishFobbit', { fobbit })">
-      Finish
-    </v-btn>
-    <v-btn :to="{ name: 'scores' }">
-      Scores
-    </v-btn> -->
-
   </div>
 </template>
 

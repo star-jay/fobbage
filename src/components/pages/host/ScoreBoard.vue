@@ -12,7 +12,7 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-    <v-btn @click="nextQuestion">
+    <v-btn @click="goBack">
       Back
     </v-btn>
   </div>
@@ -35,10 +35,8 @@ export default {
     this.$store.dispatch('retrieveScoreBoard', { id: this.session.id });
   },
   methods: {
-    nextQuestion() {
-      // this.$store.dispatch('nextQuestion', ({ sessionId: this.session.id })).then(() => {
+    goBack() {
       this.$router.push({ name: 'session-detail' });
-      // });
     },
   },
   computed: {

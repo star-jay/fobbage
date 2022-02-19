@@ -27,6 +27,7 @@ export default {
     sessionsAPI.join(id);
     commit('QUIZES_JOIN', { id });
   },
+
   bluff: ({ commit }, { fobbit, text }) => new Promise(
     (resolve, reject) => {
       bluffsAPI.post({ fobbit, text })
@@ -40,6 +41,21 @@ export default {
         });
     },
   ),
+
+  editBluff: ({ commit }, { bluff }) => new Promise(
+    (resolve, reject) => {
+      bluffsAPI.patch(bluff.id, bluff)
+        .then((response) => {
+          commit('BLUFF_SUCCESS', { bluff: response.data });
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('BLUFF_ERROR');
+          reject(error);
+        });
+    },
+  ),
+
   guess: ({ commit }, { fobbit, answer }) => new Promise(
     (resolve, reject) => {
       guessAPI.post({ fobbit, answer })

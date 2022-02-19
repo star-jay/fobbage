@@ -23,17 +23,20 @@ class BluffSerializer(serializers.ModelSerializer):
             'player': {'read_only': True},
         }
 
-    # Override create to save user
-    def create(self, validated_data):
-        fobbit = self.validated_data['fobbit']
+    def validate(self, attrs):
+        fobbit = attrs['fobbit']
         user = self.context['request'].user
 
         if user not in fobbit.session.players.all():
             raise serializers.ValidationError(
                 'player is not playing this session')
 
-        validated_data['player'] = user
+        attrs['player'] = user
 
+        return super().validate(attrs)
+
+    # Override create to save user
+    def create(self, validated_data):
         if Bluff.objects.filter(
             player=validated_data['player'],
             fobbit=validated_data['fobbit'],

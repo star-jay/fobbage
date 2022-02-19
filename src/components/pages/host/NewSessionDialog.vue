@@ -4,10 +4,7 @@
     width="500"
   >
     <template v-slot:activator="{ on }">
-      <v-btn
-        text
-        v-on="on"
-      >
+      <v-btn text v-on="on" >
       <!-- <v-icon class="pr-2">add</v-icon> -->
         {{ quiz.title }}
       </v-btn>
@@ -41,22 +38,6 @@
             :rules="nameRules"
             :error-messages="errors.name"
           ></v-text-field>
-          <!-- <v-text-field
-            v-model.number="form.settings.numberOfQuestions"
-            label="Questions Per Round*"
-            name="numberOfQuestions"
-            required
-            single-line
-            type="number"
-          ></v-text-field>
-          <v-text-field
-            v-model.number="form.settings.rounds"
-            label="number of Rounds"
-            name="numberOfRounds"
-            required
-            single-line
-            type="number"
-          ></v-text-field> -->
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -78,10 +59,6 @@ export default {
       dialog: false,
       form: {
         name: this.quiz.title,
-        // settings: {
-        //   numberOfQuestions: 10,
-        //   rounds: 3,
-        // },
       },
       nameRules: [
         v => !!v || 'Name is required',

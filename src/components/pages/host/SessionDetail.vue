@@ -13,11 +13,8 @@
 
     <div v-else>
       <h3>
-        no active question
+        No active question, create a new round
       </h3>
-      <v-btn @click="$store.dispatch('nextQuestion', ({ sessionId }))">
-        Next question
-      </v-btn>
     </div>
     <PlayerList :session="session"/>
     <Pagination :session="session"/>

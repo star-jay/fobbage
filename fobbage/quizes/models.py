@@ -325,7 +325,6 @@ class Fobbit(models.Model):
 
     def reset(self):
         self.status = Fobbit.BLUFF
-        self.bluffs.all().delete()
         self.answers.all().delete()
         self.save()
 
