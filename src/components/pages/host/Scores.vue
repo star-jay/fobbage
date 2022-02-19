@@ -14,7 +14,7 @@
     <div v-else>
       This question has no scores.
     </div>
-    <v-btn :to="{ name: 'session-detail' }">
+    <v-btn @click="$router.push({ name: 'fobbit-detail' })">
       Go back
     </v-btn>
   </div>

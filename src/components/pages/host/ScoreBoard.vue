@@ -36,7 +36,7 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push({ name: 'session-detail' });
+      this.$router.push({ name: 'fobbit-detail' });
     },
   },
   computed: {

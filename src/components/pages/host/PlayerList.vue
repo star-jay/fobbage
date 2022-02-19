@@ -65,6 +65,14 @@
           Scores
         </v-btn>
       </v-row>
+      <v-row>
+        <v-btn
+          @click="$router.push({ name: 'scoreboard' })"
+          class="mx-auto my-1"
+        >
+          Scoreboard
+        </v-btn>
+      </v-row>
     </v-container>
     <v-divider />
     <v-container>
