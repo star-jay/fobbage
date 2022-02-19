@@ -7,7 +7,6 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.functional import cached_property
 
 from .messages import session_updated
 
@@ -109,19 +108,75 @@ class Session(models.Model):
     def __str__(self):
         return self.name
 
-    def next_question(self):
-        questions = self.quiz.questions.exclude(
-            id__in=[self.fobbits.values_list('question', flat=True)]
-        )
-        next = questions.first()
+    @property
+    def rounds(self):
+        try:
+            return self.settings.get('rounds', [])
+            # return rounds[self.settings.get('activeRound', 10)]
+        except KeyError:
+            return []
 
-        fobbit = Fobbit.objects.create(
-            question=next,
-            session=self,
-        )
-        self.active_fobbit = fobbit
+    @property
+    def active_round(self):
+        try:
+            if self.active_fobbit:
+                return self.active_fobbit.round
+        except KeyError:
+            return -1
+
+        return -1
+
+    def questions_in_round(self, round):
+        # active round
+        try:
+            return self.rounds[round]['number_of_questions']
+        except (IndexError, KeyError, TypeError):
+            return 0
+
+    # move to manager
+    def next_question(self):
+        # While bluffing, create a new fobbit out of available questions
+        fobbit = None
+
+        max_questions = self.questions_in_round(round=self.active_round)
+        n_of_questions = self.fobbits.filter(round=self.active_round).count()
+
+        if self.modus == self.BLUFFING:
+            if n_of_questions < max_questions:
+                fobbit = self.generate_fobbit(round=self.active_round)
+            else:
+                # Go back to guessing
+                self.modus = self.GUESSING
+                fobbit = self.fobbits.filter(round=self.active_round).first()
+
+        if fobbit:
+            self.active_fobbit = fobbit
+
         self.save()
         return fobbit
+
+    # move to manager
+    def generate_fobbit(self, round):
+        questions = self.quiz.questions.exclude(
+                id__in=[self.fobbits.values_list('question', flat=True)]
+            )
+        question = questions.first()
+
+        return Fobbit.objects.create(
+            question=question,
+            session=self,
+            round=round,
+        )
+
+    def new_round(self, round):
+        rounds = self.rounds
+        rounds.append(round)
+
+        self.settings['rounds'] = rounds
+        self.active_fobbit = self.generate_fobbit(round=len(rounds)-1)
+        # return to guessing
+        self.modus = 0
+        self.save()
 
     def score_for_player(self, player):
         score = 0
@@ -134,7 +189,7 @@ class Fobbit(models.Model):
     """Combination of session and question"""
 
     class Meta:
-        ordering = ['question__order', 'id']
+        ordering = ['id']
 
     session = models.ForeignKey(
         Session,
@@ -158,17 +213,22 @@ class Fobbit(models.Model):
         default=0
     )
 
+    # integer, round details are stored in the session
+    round = models.IntegerField(default=0)
+
     def __str__(self):
         return self.question.text
 
-    @cached_property
+    @property
     def multiplier(self):
-        qpr = self.session.settings.get('questionsPerRound', 10)
-        if int(qpr) == 0:
-            return 1
+        # get the multiplier from the round
+        if self.session.rounds:
+            try:
+                return self.session.rounds[self.round]['multiplier']
+            except IndexError:
+                return self.round + 1
         else:
-            return int(self.question.order-1)//int(qpr) + 1
-
+            return 1
 
     @property
     def players_without_guess(self):
@@ -234,7 +294,10 @@ class Fobbit(models.Model):
 
         self.status = Fobbit.GUESS
         self.save()
-        return True
+
+        # TODO: go to next question
+        # if status is addded before guess
+        self.session.next_question()
 
     def score_for_player(self, player):
         score = 0
@@ -264,7 +327,6 @@ class Fobbit(models.Model):
 
     def reset(self):
         self.status = Fobbit.BLUFF
-        self.bluffs.all().delete()
         self.answers.all().delete()
         self.save()
 
@@ -389,16 +451,30 @@ class Guess(models.Model):
 
 
 @receiver(post_save, sender=Session)
-def session_update_signal(sender, instance, created, **kwargs):
-    if created:
-        session_updated(instance.id)
-    else:
-        session_updated(instance.id)
+def session_updated_signal(sender, instance, created, **kwargs):
+    session_updated(instance.id)
 
 
 @receiver(post_save, sender=Fobbit)
-def session_updated_signal(sender, instance, created, **kwargs):
+def fobbit_updated_signal(sender, instance, created, **kwargs):
+    session_updated(instance.session.id)
+
+
+@receiver(post_save, sender=Bluff)
+def bluff_updated_signal(sender, instance, created, **kwargs):
+    session_updated(instance.fobbit.session.id)
+    # everyone bluffed?
     if created:
-        session_updated(instance.session.id)
-    else:
-        session_updated(instance.session.id)
+        if len(instance.fobbit.bluffs.all()) == len(
+                instance.fobbit.session.players.all()):
+            instance.fobbit.generate_answers()
+
+
+@receiver(post_save, sender=Guess)
+def guess_updated_signal(sender, instance, created, **kwargs):
+    session_updated(instance.answer.fobbit.session.id)
+
+
+@receiver(post_save, sender=Answer)
+def _updated_signal(sender, instance, created, **kwargs):
+    session_updated(instance.fobbit.session.id)

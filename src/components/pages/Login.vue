@@ -10,14 +10,14 @@
             <v-form @submit.prevent="login" id="login">
               <v-text-field
                 v-model="form.username"
-                prepend-icon="mdi-account"
+                prepend-icon="md-account"
                 name="username"
                 label="username"
                 autocomplete="username"
                 type="username"></v-text-field>
               <v-text-field
                 v-model="form.password"
-                prepend-icon="mdi-lock"
+                prepend-icon="md-lock"
                 name="password"
                 label="Password"
                 id="password"

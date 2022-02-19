@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from .serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer, SessionSerializer,
     GuessSerializer, FobbitSerializer, ActiveFobbitSerializer,
-    QuestionSerializer, ScoreSerializer,
+    QuestionSerializer, ScoreSerializer, RoundSerializer
 )
 from fobbage.quizes.models import (
     Quiz, Answer, Bluff, Guess, Session, Fobbit, Question)
@@ -41,6 +41,17 @@ class SessionViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['POST'],)
     def next_question(self, request, pk=None):
         self.get_object().next_question()
+        return Response(
+            SessionSerializer(
+                self.get_object(),
+                context=self.get_serializer_context()).data)
+
+    @action(detail=True, methods=['POST'], serializer_class=RoundSerializer)
+    def new_round(self, request, pk=None):
+        serializer = RoundSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            self.get_object().new_round(serializer.data)
+
         return Response(
             SessionSerializer(
                 self.get_object(),

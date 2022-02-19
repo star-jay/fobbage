@@ -4,10 +4,10 @@
       <v-list-item
         v-for="session in sessionlist"
         :key="session.id"
-        :to="{
-          name: 'session-detail',
+        @click="$router.push({
+          name: 'fobbit-detail',
           params: { sessionId: session.id },
-        }"
+        })"
       >
         <v-list-item-content>
           <v-list-item-title v-text="session.name">
@@ -25,7 +25,7 @@ export default {
   name: 'SessionList',
   computed: {
     ...mapState({
-      sessionlist: (state) => state.quizes.sessions,
+      sessionlist: state => state.quizes.sessions,
     }),
   },
   methods: {

@@ -7,6 +7,7 @@ export default {
     loading: false,
     quizes: [],
     sessions: {},
+    sessionId: undefined,
     error: '',
     bluff: undefined,
     guess: undefined,

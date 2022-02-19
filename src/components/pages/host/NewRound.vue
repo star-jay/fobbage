@@ -4,9 +4,11 @@
     width="500"
   >
     <template v-slot:activator="{ on }">
-      <v-btn text v-on="on" >
-      <!-- <v-icon class="pr-2">add</v-icon> -->
-        {{ quiz.title }}
+      <v-btn
+        class="mx-auto my-2"
+        v-on="on"
+      >
+        New Round
       </v-btn>
     </template>
 
@@ -15,11 +17,12 @@
         class="headline"
         primary-title
       >
-        New Session
+        New Round
       </v-card-title>
 
-      <v-form ref="createNewSessionForm"
-        v-model="valid" @submit.prevent="createNewSession"
+      <v-form ref="createNewRoundForm"
+        v-model="valid"
+        @submit.prevent="createNewRound"
         lazy-validation
       >
         <v-card-text>
@@ -31,18 +34,24 @@
             >{{ error }}
           </v-alert>
           <v-text-field
-            v-model="form.name"
-            label="Name*"
-            name="name"
+            v-model.number="form.multiplier"
+            label="Multiplier"
+            name="multiplier"
             required
-            :rules="nameRules"
-            :error-messages="errors.name"
+            type="number"
+          ></v-text-field>
+          <v-text-field
+            v-model.number="form.numberOfQuestions"
+            label="Questions Per Round"
+            name="numberOfQuestions"
+            required
+            type="number"
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="dialog = false">Close</v-btn>
-          <v-btn color="primary" type="submit" text>Host</v-btn>
+          <v-btn color="primary" text @click="dialog = false">Cancel</v-btn>
+          <v-btn color="primary" type="submit" text>Start</v-btn>
         </v-card-actions>
       </v-form>
     </v-card>
@@ -51,32 +60,24 @@
 
 <script>
 export default {
-  props: {
-    quiz: undefined,
-  },
+  name: 'NewRound',
+  props: ['session'],
   data() {
     return {
       dialog: false,
       form: {
-        name: this.quiz.title,
+        numberOfQuestions: 3,
+        multiplier: 1,
       },
-      nameRules: [
-        v => !!v || 'Name is required',
-      ],
       valid: false,
       errors: {},
     };
   },
   methods: {
-    createNewSession() {
-      if (this.$refs.createNewSessionForm.validate()) {
-        this.$store.dispatch('createSession', { ...this.form, quiz: this.quiz.id })
-          .then((session) => {
-            this.$router.push({
-              name: 'fobbit-detail',
-              params: { sessionId: session.id },
-            });
-            this.$refs.createNewSessionForm.reset();
+    createNewRound() {
+      if (this.$refs.createNewRoundForm.validate()) {
+        this.$store.dispatch('newRound', { ...this.form, sessionId: this.session.id })
+          .then(() => {
             this.dialog = false;
           })
           .catch((error) => {

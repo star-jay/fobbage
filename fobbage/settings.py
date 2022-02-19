@@ -167,7 +167,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'fobbage/dist'),
 )
-print(STATICFILES_DIRS)
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
@@ -204,9 +203,12 @@ CHANNEL_LAYERS = {
     },
 }
 
-
 # CSRF
 # CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_HTTPONLY = True
 
 # contrib auth
 LOGIN_REDIRECT_URL = 'index'

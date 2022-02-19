@@ -1,11 +1,11 @@
 <template>
-  <v-app-bar
+  <v-system-bar
     dark
     app
     class="primary"
     dense
   >
-    <v-toolbar-title>Fobbage</v-toolbar-title>
+    <!-- <v-toolbar-title>Fobbage</v-toolbar-title> -->
     <v-spacer></v-spacer>
       {{ $store.state.auth.userInfo.username }}
      <v-menu
@@ -19,7 +19,7 @@
           icon
           v-on="on"
         >
-          <v-icon>mdi-account</v-icon>
+          <v-icon>account</v-icon>
         </v-btn>
       </template>
 
@@ -31,8 +31,7 @@
         </v-list-item>
       </v-list>
     </v-menu>
-
-  </v-app-bar>
+  </v-system-bar>
 </template>
 
 <script>
@@ -40,7 +39,7 @@
 import { } from 'vuex';
 
 export default {
-  name: 'NavigationBar',
+  name: 'SystemBar',
   data() {
     return {
       menu: {

@@ -42,7 +42,7 @@ const routes = [
           {
             path: ':id(\\d+)?',
             component: Play,
-            props: (route) => ({ sessionId: Number(route.params.id) }),
+            props: route => ({ sessionId: Number(route.params.id) }),
           },
         ],
       },
@@ -55,13 +55,13 @@ const routes = [
       {
         path: 'host/:sessionId',
         component: SessionDetail,
-        props: (route) => ({ sessionId: Number(route.params.sessionId) }),
+        props: route => ({ sessionId: Number(route.params.sessionId) }),
         children:
         [
           {
             path: '',
             component: FobbitDetail,
-            name: 'session-detail',
+            name: 'fobbit-detail',
             children:
             [
               {
@@ -121,7 +121,7 @@ const router = new VueRouter({
 const isAuthenticated = () => localStorage.getItem('accessToken');
 
 router.beforeEach(async (to, from, next) => {
-  if (to.matched.some((route) => !route.meta.skipAuth)) {
+  if (to.matched.some(route => !route.meta.skipAuth)) {
     // Route is protected
     if (!isAuthenticated()) {
       // Not authenticated. Go to login page.
