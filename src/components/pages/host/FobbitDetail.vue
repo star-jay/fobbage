@@ -3,7 +3,13 @@
     <h3>
       {{ fobbit.question.text }}
     </h3>
-    <v-img v-if="fobbit.question.image_url" :src="fobbit.question.image_url" />
+    <v-img
+      v-if="fobbit.question.image_url"
+      :src="fobbit.question.image_url"
+      max-height="720"
+      contain
+      max-width="90%"
+    />
     <div v-if="fobbit.status == 1">
       <div>
         <v-list flat>
