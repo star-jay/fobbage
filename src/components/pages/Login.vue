@@ -22,7 +22,8 @@
                 label="Password"
                 id="password"
                 autocomplete="current-password"
-                type="password"></v-text-field>
+                type="password"
+              ></v-text-field>
             </v-form>
           </v-card-text>
           <v-card-actions>
