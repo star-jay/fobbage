@@ -19,8 +19,8 @@ from fobbage.quizes import consumers  # noqa: E402
 # There is no longer a need for routing.py
 # Routing is done here
 application = ProtocolTypeRouter({
-    # "http": django_asgi_app,
-    # "https": django_asgi_app,
+    "http": django_asgi_app,
+    "https": django_asgi_app,
     "websocket": AuthMiddlewareStack(
         URLRouter([
             re_path(
