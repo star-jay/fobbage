@@ -4,9 +4,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --dest ./fobbage/dist",
-    "lint": "vue-cli-service lint"
+    "serve": "vue-cli-service serve --openssl-legacy-provider",
+    "build": "vue-cli-service build --dest ./fobbage/dist --openssl-legacy-provider",
+    "lint": "vue-cli-service lint --openssl-legacy-provider"
   },
   "dependencies": {
     "axios": "^0.26.0",
@@ -15,7 +15,8 @@
     "vue-moment": "^4.1.0",
     "vue-router": "^3.0.3",
     "vuetify": "^2.4.0",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "webpack": "^5.75.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.12.0",
