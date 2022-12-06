@@ -19,15 +19,16 @@ channels = "*"
 channels-redis = "*"
 django-spa = "*"
 idna = "*"
+daphne = "*"
 
 [dev-packages]
 pytest = "*"
 pytest-django = "*"
 pytest-coverage = "*"
-v = {version = "*", editable = true}
+# v = {version = "*", editable = true}
 factory-boy = "*"
 ipython = "*"
 "flake8" = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.10"

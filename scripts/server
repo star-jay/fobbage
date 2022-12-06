@@ -27,4 +27,4 @@ elif [[ $(uname -s) == Darwin ]];then
     export HOSTNAMES=$hostnames
 fi
 
-pipenv run ./manage.py runserver $@
+pipenv run daphne fobbage.asgi:application

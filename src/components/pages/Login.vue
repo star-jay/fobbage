@@ -34,6 +34,9 @@
         <p class="ma-2 pa-2 text-md-center">
           Don't have an account yet? <router-link :to="{name: 'register'}">Create one</router-link>.
         </p>
+        <p class="ma-2 pa-2 text-md-center">
+          Delete csrf cookie <a :to="{name: 'register'}">Create one</router-link>.
+        </p>
       </v-flex>
     </v-layout>
   </v-container>
@@ -74,6 +77,10 @@ export default {
             this.errors = { error };
           }
         });
+    },
+    deleteCrsf() {
+      console.log(this.$cookie.get('csrftoken'));
+      this.$cookie.delete('csrftoken');
     },
   },
 };
