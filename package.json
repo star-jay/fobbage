@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint --openssl-legacy-provider"
   },
   "dependencies": {
+    "@paypal/paypal-js": "^5.1.4",
     "axios": "^0.26.0",
     "core-js": "^2.6.5",
     "vue": "^2.6.10",

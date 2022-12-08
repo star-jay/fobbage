@@ -24,7 +24,7 @@ class QuizViewSet(viewsets.ModelViewSet):
 
 
 class SessionViewSet(viewsets.ModelViewSet):
-    queryset = Session.objects.all()
+    queryset = Session.objects.filter(is_archived=False)
     serializer_class = SessionSerializer
 
     @action(

@@ -75,14 +75,20 @@
       </v-card>
 
     </v-row>
+    <v-footer dark app height=50 >
+      <Donate />
+    </v-footer>
   </v-container>
+
 </template>
 
 <script>
+import Donate from '@/components/common/Donate.vue';
 
 export default {
   name: 'Home',
   components: {
+    Donate,
   },
 };
 </script>

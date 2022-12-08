@@ -1,18 +1,14 @@
 <template>
-  <v-footer
-    dark
-    app
-    height=50
-  >
-  <v-row>
-    <v-pagination
-      class="ma-auto"
-      total-visible="10"
-      v-model="fobbitIndex"
-      :length="session.fobbits.length"
-      @input="setFobbit"
-    />
-  </v-row>
+  <v-footer dark app height=50 >
+    <v-row>
+      <v-pagination
+        class="ma-auto"
+        total-visible="10"
+        v-model="fobbitIndex"
+        :length="session.fobbits.length"
+        @input="setFobbit"
+      />
+    </v-row>
   </v-footer>
 </template>
 

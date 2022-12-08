@@ -104,6 +104,7 @@ class Session(models.Model):
         default=BLUFFING,
     )
     settings = models.JSONField(default=dict)
+    is_archived = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -111,7 +112,11 @@ class Session(models.Model):
     @property
     def rounds(self):
         try:
-            return self.settings.get('rounds', [])
+            rounds = self.settings.get('rounds', [])
+            if type(rounds) == list:
+                return rounds
+            else:
+                return []
             # return rounds[self.settings.get('activeRound', 10)]
         except KeyError:
             return []

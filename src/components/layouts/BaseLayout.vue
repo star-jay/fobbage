@@ -1,9 +1,9 @@
 <template>
   <div>
     <SystemBar/>
-     <v-main>
-      <router-view/>
-     </v-main>
+      <v-main>
+        <router-view/>
+      </v-main>
   </div>
 </template>
 
