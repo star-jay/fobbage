@@ -214,3 +214,6 @@ SESSION_COOKIE_HTTPONLY = True
 LOGIN_REDIRECT_URL = 'index'
 # for contrib .sites
 SITE_ID = 1
+
+# Hide autofield warnings
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

@@ -5,8 +5,7 @@ defined in the ASGI_APPLICATION setting.
 import os
 from django.core.asgi import get_asgi_application
 from django.urls import re_path
-from channels.routing import (
-    ProtocolTypeRouter, URLRouter)
+from channels.routing import (ProtocolTypeRouter, URLRouter)
 
 # Load the ASGI APP before importing other APPS
 # some weird channels order bug
