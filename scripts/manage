@@ -4,4 +4,4 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-poetry install --with dev
+poetry run python ./manage.py "$@"

@@ -35,10 +35,10 @@ else
 fi
 
 echo "==> Migrating DB"
-pipenv run python ./manage.py migrate
+poetry run python ./manage.py migrate
 
 echo "==> Loading initial data"
-pipenv run python ./manage.py load_initial_data
+poetry run python ./manage.py load_initial_data
 
 echo "==> Setting up git hooks"
 git config core.hooksPath .git-hooks

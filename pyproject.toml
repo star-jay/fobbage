@@ -1,0 +1,38 @@
+[tool.poetry]
+name = "fobbage"
+version = "1.1.0"
+description = "The quiz where you score points when you trick the other players!"
+authors = ["Reinjan <reinjan.e@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+django = "*"
+"heroku3" = "*"
+whitenoise = "*"
+gunicorn = "*"
+django-extensions = "*"
+django-environ = "*"
+"psycopg2" = "*"
+django-cors-headers = "*"
+djangorestframework = "*"
+django-rest-auth = "*"
+django-bulma = "*"
+channels = "*"
+channels-redis = "*"
+django-spa = "*"
+idna = "*"
+daphne = "^4.0.0"
+django-utils-six = "^2.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "*"
+pytest-django = "*"
+pytest-coverage = "*"
+factory-boy = "*"
+ipython = "*"
+"flake8" = "*"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

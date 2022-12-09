@@ -6,16 +6,16 @@ set -e
 cd "$(dirname "$0")/.."
 
 # Flake everything
-pipenv run flake8
+poetry run flake8
 # Lint frontend
 
 if [ "$1" == "--mini" ]; then
     # Run minimal pytest
     shift
-    pipenv run pytest "$@"
+    poetry run pytest "$@"
 else
     # Run pytest with coverage and any arguments given
-    pipenv run pytest --cov=. --cov-report=html --cov-report=term "$@"
+    poetry run pytest --cov=. --cov-report=html --cov-report=term "$@"
 fi
 
 cd "$(dirname "$0")/.."

@@ -64,8 +64,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 INSTALLED_APPS = [
     # Disable runserver's static file serving
+    'daphne',
     'whitenoise.runserver_nostatic',
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
