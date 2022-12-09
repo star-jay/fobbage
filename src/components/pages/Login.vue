@@ -35,7 +35,7 @@
           Don't have an account yet? <router-link :to="{name: 'register'}">Create one</router-link>.
         </p>
         <p class="ma-2 pa-2 text-md-center">
-          Delete csrf cookie <a :to="{name: 'register'}">Create one</router-link>.
+          Delete csrf cookie? <a @click="deleteCrsf">delete</a>.
         </p>
       </v-flex>
     </v-layout>
@@ -44,6 +44,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import VueCookies from 'vue-cookies';
 
 export default {
   name: 'login',
@@ -79,8 +80,9 @@ export default {
         });
     },
     deleteCrsf() {
-      console.log(this.$cookie.get('csrftoken'));
-      this.$cookie.delete('csrftoken');
+      VueCookies.remove('csrftoken');
+      // console.log(this.$cookies.get('csrftoken'));
+      // this.$cookies.delete('csrftoken');
     },
   },
 };
