@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "==> Removing fobbage DB if existing"
+dropdb fobbage --if-exists
+
+echo "==> Pulling from $1"
+heroku pg:pull DATABASE_URL fobbage --app fobbage
+
+scripts/update
+
+echo "==> Migration successful!"
+echo "==> TODO: Check if data is valid"

@@ -6,7 +6,7 @@ authors = ["Reinjan <reinjan.e@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 django = "*"
 "heroku3" = "*"
 whitenoise = "*"
