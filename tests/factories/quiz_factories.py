@@ -1,7 +1,7 @@
 import factory
 
 from fobbage.quizes.models import (
-    Quiz, Question, Answer, Bluff, Fobbit, Session
+    Quiz, Question, Answer, Bluff, Fobbit, Session, Guess,
 )
 from tests.factories.account_factories import UserFactory
 
@@ -72,4 +72,13 @@ class BluffFactory(factory.django.DjangoModelFactory):
     # # add a value for the required fields
     # text = 'bluff'
     fobbit = factory.SubFactory(FobbitFactory)
+    player = factory.SubFactory(UserFactory)
+
+
+class GuessFactory(factory.django.DjangoModelFactory):
+    """ Factory that creates an Guess"""
+    class Meta:
+        model = Guess
+
+    answer = factory.SubFactory(AnswerFactory)
     player = factory.SubFactory(UserFactory)

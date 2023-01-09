@@ -7,6 +7,9 @@ from tests.factories.quiz_factories import (
     BluffFactory,
     FobbitFactory,
     SessionFactory,
+    UserFactory,
+    GuessFactory,
+    Fobbit,
 )
 
 
@@ -93,3 +96,32 @@ def test_new_round():
 
     assert session.modus == 1
     assert session.active_fobbit.question == q1
+
+
+@pytest.mark.django_db
+def test_scores_new_player():
+    # test new round create new fibby
+    rounds = [
+        dict(multiplier=1),
+        dict(multiplier=5),
+    ]
+
+    session = SessionFactory(settings={'rounds': rounds})
+
+    BluffFactory(fobbit__session=session)
+    BluffFactory(fobbit__session=session)
+    GuessFactory(answer__fobbit__session=session)
+
+    new_player = UserFactory()
+    session.players.add(new_player)
+
+    assert session.score_for_player(new_player) == 0, "A new player has no score"  # noqa
+
+
+@pytest.mark.django_db
+def test_scores_fobbit_random_player():
+    # test new round create new fibby
+    fobbit = FobbitFactory(status=Fobbit.FINISHED)
+
+    new_player = UserFactory()
+    assert fobbit.score_for_player(new_player) == 0, "A new player has no score"  # noqa

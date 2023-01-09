@@ -324,7 +324,8 @@ class Fobbit(models.Model):
             score += player_bluff.score
 
         try:
-            player_guess = Guess.objects.get(answer__fobbit=self, player=player)
+            player_guess = Guess.objects.get(
+                answer__fobbit=self, player=player)
         except Guess.DoesNotExist:
             player_guess = None
 
