@@ -47,3 +47,7 @@ yarn-error.log*
 *.sln
 *.sw*
 src/services/api/dndSession.txt
+
+
+# db dump
+fobbage.json

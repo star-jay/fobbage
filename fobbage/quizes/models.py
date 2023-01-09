@@ -310,8 +310,10 @@ class Fobbit(models.Model):
         if self.status != self.FINISHED:
             return 0
 
-        player_bluff = self.bluffs.get(player=player)
-        player_guess = Guess.objects.get(answer__fobbit=self, player=player)
+        try:
+            player_bluff = self.bluffs.get(player=player)
+        except Bluff.DoesNotExist:
+            player_bluff = None
 
         # als de speler heeft gebluffed
         if player_bluff:
@@ -320,6 +322,11 @@ class Fobbit(models.Model):
                 return 0
 
             score += player_bluff.score
+
+        try:
+            player_guess = Guess.objects.get(answer__fobbit=self, player=player)
+        except Guess.DoesNotExist:
+            player_guess = None
 
         # score voor juist antwoord
         if player_guess:
