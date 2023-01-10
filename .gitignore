@@ -51,3 +51,6 @@ src/services/api/dndSession.txt
 
 # db dump
 fobbage.json
+fobbage2.json
+fobbage3.json
+dump.sql
