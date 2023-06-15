@@ -125,3 +125,28 @@ def test_scores_fobbit_random_player():
 
     new_player = UserFactory()
     assert fobbit.score_for_player(new_player) == 0, "A new player has no score"  # noqa
+
+
+@pytest.mark.django_db
+def test_scores():
+    # test new round create new fibby
+    rounds = [
+        dict(multiplier=1),
+        dict(multiplier=5),
+    ]
+
+    session = SessionFactory(settings={'rounds': rounds})
+
+    BluffFactory(fobbit__session=session)
+    BluffFactory(fobbit__session=session)
+    GuessFactory(answer__fobbit__session=session)
+
+    player1 = UserFactory()
+    player2 = UserFactory()
+
+    fobbit = FobbitFactory(session=session)
+    bluff = BluffFactory(fobbit=fobbit, player=player1)
+    GuessFactory(answer__bluffs=[bluff], player=player2)
+    fobbit.status = Fobbit.FINISHED
+
+    assert session.score_for_player(player1) == 500

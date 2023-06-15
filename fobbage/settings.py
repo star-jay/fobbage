@@ -79,6 +79,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'bulma',
     'channels',
+    'debug_toolbar',
+
 
     # fobbage
     'fobbage',
@@ -87,6 +89,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -196,10 +199,11 @@ REDIS_URL = os.environ.get("REDIS_URL", ('localhost', 6379))
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
-        "CONFIG": {
-            "hosts": [REDIS_URL, ],
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        # "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
+        # "CONFIG": {
+        # "hosts": [REDIS_URL, ],
+        # },
     },
 }
 
@@ -215,3 +219,7 @@ SITE_ID = 1
 
 # Hide autofield warnings
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: True,
+}
