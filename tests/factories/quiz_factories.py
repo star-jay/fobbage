@@ -70,9 +70,9 @@ class BluffFactory(factory.django.DjangoModelFactory):
         model = Bluff
 
     # # add a value for the required fields
-    # text = 'bluff'
     fobbit = factory.SubFactory(FobbitFactory)
     player = factory.SubFactory(UserFactory)
+    text = factory.Sequence(lambda n: "bluff {}".format(n))
 
 
 class GuessFactory(factory.django.DjangoModelFactory):

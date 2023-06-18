@@ -184,10 +184,10 @@ class Session(models.Model):
         self.save()
 
     def score_for_player(self, player):
-        score = 0
-        for fobbit in self.fobbits.all():
-            score += fobbit.score_for_player(player)
-        return score
+        score = Score.objects.filter(
+            fobbit__session=self,
+            user=player,).aggregate(score=models.Sum('score')).get('score', 0)
+        return score or 0
 
 
 class Fobbit(models.Model):
@@ -196,10 +196,11 @@ class Fobbit(models.Model):
     class Meta:
         ordering = ['id']
 
-    session = models.ForeignKey(
-        Session,
-        related_name='fobbits',
-        on_delete=models.CASCADE,
+    BLUFF, GUESS, FINISHED = range(3)
+    STATUS_CHOICES = (
+        (BLUFF, 'Bluff'),
+        (GUESS, 'Guess'),
+        (FINISHED, 'Finished'),
     )
 
     question = models.ForeignKey(
@@ -207,15 +208,22 @@ class Fobbit(models.Model):
         related_name='fobbits',
         on_delete=models.CASCADE,
     )
-    BLUFF, GUESS, FINISHED = range(3)
-    STATUS_CHOICES = (
-        (BLUFF, 'Bluff'),
-        (GUESS, 'Guess'),
-        (FINISHED, 'Finished'),
+
+    session = models.ForeignKey(
+        Session,
+        related_name='fobbits',
+        on_delete=models.CASCADE,
     )
+
     status = models.IntegerField(
         choices=STATUS_CHOICES,
         default=0
+    )
+
+    players = models.ManyToManyField(
+        User,
+        related_name='fobbits',
+        through='Score',
     )
 
     # integer, round details are stored in the session
@@ -265,7 +273,7 @@ class Fobbit(models.Model):
             return False
 
         # Check if all players have bluffed
-        if len(self.bluffs.all()) != len(self.session.players.all()):
+        if len(self.bluffs.all()) < len(self.session.players.all()):
             return False
         # Check if not already listed
         if self.status >= self.GUESS:
@@ -346,11 +354,26 @@ class Fobbit(models.Model):
     # FOBBIT
     def finish(self):
         """Finish the question if all players have guessed"""
+
         if len(self.players_without_guess) == 0:
             self.status = self.FINISHED
             self.save()
+
+            self.update_scores()
+
         else:
             raise Guess.DoesNotExist("Not all players have guessed")
+
+    def update_scores(self):
+        # update scores
+        self.scores.all().delete()
+
+        for player in self.session.players.all():
+            Score.objects.create(
+                user=player,
+                fobbit=self,
+                score=self.score_for_player(player)
+            )
 
     def delete_answers(self):
         if self.status < self.FINISHED:
@@ -360,6 +383,21 @@ class Fobbit(models.Model):
             self.status = self.BLUFF
             self.save()
             return True
+
+
+class Score(models.Model):
+    """
+    Keeps track of the score for a player in a fobbit
+    """
+    user = models.ForeignKey(
+        User,
+        related_name='scores',
+        on_delete=models.CASCADE,)
+    fobbit = models.ForeignKey(
+        Fobbit,
+        related_name='scores',
+        on_delete=models.CASCADE,)
+    score = models.IntegerField(default=0)
 
 
 class Answer(models.Model):
@@ -414,24 +452,20 @@ class Bluff(models.Model):
 
     @property
     def score(self):
-        score = 0
+        # zero points if your this was the correct answer
         if self.answer and self.answer.is_correct:
             return 0
 
-        player_guess = Guess.objects.filter(
-            answer__fobbit=self.fobbit,
-            player=self.player).first()
-        if player_guess:
-            # 0 plunten als jouw bluff = correct antwoord
+        # zero points if you vote for your own bluff
+        if self.answer.guesses.filter(player=self.player).exists():
+            return 0
 
-            # 0 punten als je op je eigen antwoord stemt
-            if player_guess.answer == self.answer:
-                return 0
+        # Get points when people vote on this bluff
+        tricked_count = self.answer.guesses.count()
 
-            # score voor anders spelers kiezen jouw bluff
-            aantal_gepakt = self.answer.guesses.count()
-
-            score += (aantal_gepakt * self.fobbit.multiplier * 500) / self.answer.bluffs.count()  # noqa
+        score = tricked_count * self.fobbit.multiplier * 500
+        # devide by people with the same bluff
+        score = score / self.answer.bluffs.count()
 
         return score
 

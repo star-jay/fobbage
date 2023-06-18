@@ -77,6 +77,7 @@ class SessionViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['GET'])
     def score_board(self, request, pk=None):
         instance = self.get_object()
+
         return Response(
             ScoreSerializer(
                 [

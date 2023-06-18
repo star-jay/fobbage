@@ -100,7 +100,6 @@ def test_new_round():
 
 @pytest.mark.django_db
 def test_scores_new_player():
-    # test new round create new fibby
     rounds = [
         dict(multiplier=1),
         dict(multiplier=5),
@@ -120,7 +119,6 @@ def test_scores_new_player():
 
 @pytest.mark.django_db
 def test_scores_fobbit_random_player():
-    # test new round create new fibby
     fobbit = FobbitFactory(status=Fobbit.FINISHED)
 
     new_player = UserFactory()
@@ -128,25 +126,105 @@ def test_scores_fobbit_random_player():
 
 
 @pytest.mark.django_db
-def test_scores():
-    # test new round create new fibby
-    rounds = [
-        dict(multiplier=1),
-        dict(multiplier=5),
-    ]
-
-    session = SessionFactory(settings={'rounds': rounds})
-
-    BluffFactory(fobbit__session=session)
-    BluffFactory(fobbit__session=session)
-    GuessFactory(answer__fobbit__session=session)
+def test_generate_answers():
+    session = SessionFactory()
+    fobbit = FobbitFactory(session=session, question__text='foo')
 
     player1 = UserFactory()
     player2 = UserFactory()
 
-    fobbit = FobbitFactory(session=session)
-    bluff = BluffFactory(fobbit=fobbit, player=player1)
-    GuessFactory(answer__bluffs=[bluff], player=player2)
-    fobbit.status = Fobbit.FINISHED
+    session.players.add(player1, player2)
 
-    assert session.score_for_player(player1) == 500
+    BluffFactory(fobbit=fobbit, player=player1, text='bar')
+    BluffFactory(fobbit=fobbit, player=player2, text='bib')
+
+    fobbit.generate_answers()
+
+    assert fobbit.answers.count() == 3
+
+
+@pytest.mark.django_db
+def test_test_scores():
+    session = SessionFactory()
+    fobbit = FobbitFactory(session=session, question__text='foo')
+
+    player1 = UserFactory()
+    player2 = UserFactory()
+
+    session.players.add(player1, player2)
+
+    BluffFactory(fobbit=fobbit, player=player1, text='bar')
+    bluff2 = BluffFactory(fobbit=fobbit, player=player2, text='bib')
+
+    fobbit.generate_answers()
+
+    assert fobbit.answers.count() == 3
+    bluff2.refresh_from_db()
+
+    fobbit.status = Fobbit.FINISHED
+    fobbit.save()
+
+    GuessFactory(
+        answer=bluff2.answer,
+        player=player1)
+
+    assert bluff2.score == 500
+
+
+@pytest.mark.django_db
+def test_test_scores_correct():
+    session = SessionFactory()
+    fobbit = FobbitFactory(session=session, question__text='foo')
+
+    player1 = UserFactory()
+    player2 = UserFactory()
+
+    session.players.add(player1, player2)
+
+    BluffFactory(fobbit=fobbit, player=player1, text='bar')
+    BluffFactory(fobbit=fobbit, player=player2, text='bib')
+
+    fobbit.generate_answers()
+
+    assert fobbit.answers.count() == 3
+
+    fobbit.status = Fobbit.FINISHED
+    fobbit.save()
+
+    GuessFactory(
+        answer=fobbit.answers.filter(bluffs__player=player2).first(),
+        player=player1)
+
+    GuessFactory(
+        answer=fobbit.answers.filter(bluffs__player__isnull=True).first(),
+        player=player2)
+
+    assert fobbit.score_for_player(player2) == 1500
+
+
+@pytest.mark.django_db
+def test_session_scores_correct():
+    session = SessionFactory()
+    fobbit = FobbitFactory(session=session, question__text='foo')
+
+    player1 = UserFactory()
+    player2 = UserFactory()
+
+    session.players.add(player1, player2)
+
+    BluffFactory(fobbit=fobbit, player=player1, text='bar')
+    BluffFactory(fobbit=fobbit, player=player2, text='bib')
+
+    fobbit.generate_answers()
+
+    assert fobbit.answers.count() == 3
+    GuessFactory(
+            answer=fobbit.answers.filter(bluffs__player=player2).first(),
+            player=player1)
+    GuessFactory(
+        answer=fobbit.answers.filter(bluffs__player__isnull=True).first(),
+        player=player2)
+
+    fobbit.finish()
+
+    assert session.score_for_player(player2) == 1500

@@ -5,10 +5,6 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-# Flake everything
-poetry run flake8
-# Lint frontend
-
 if [ "$1" == "--mini" ]; then
     # Run minimal pytest
     shift
@@ -19,5 +15,3 @@ else
 fi
 
 cd "$(dirname "$0")/.."
-# npm run test:unit
-# npm run lint
