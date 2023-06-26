@@ -50,5 +50,5 @@ jobs:
     - name: Test with pytest
       env:
         DJANGO_SETTINGS_MODULE: fobbage.settings
-        DATABASE_URL: 'postgres://fobbage-test@postgres/fobbage-test'
+        DATABASE_URL: 'postgres://fobbage-test@localhost/fobbage-test'
       run: poetry run pytest --cov . -n 2
