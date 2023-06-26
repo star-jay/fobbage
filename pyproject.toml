@@ -24,6 +24,7 @@ django-spa = "*"
 idna = "*"
 daphne = "^4.0.0"
 django-utils-six = "^2.0"
+django-debug-toolbar = "^4.1.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "*"
@@ -32,6 +33,7 @@ pytest-coverage = "*"
 factory-boy = "*"
 ipython = "*"
 "flake8" = "*"
+pytest-xdist = "^3.3.1"
 
 [build-system]
 requires = ["poetry-core"]
