@@ -8,13 +8,17 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: ["3.8", "3.10"]
-        poetry-version: ["1.5",]
+    # strategy:
+    #   max-parallel: 4
+    #   matrix:
+    #     python-version: ["3.8", "3.10"]
+    #     poetry-version: ["1.5",]
+
+    container: python:3.8
+
+    python-version: "3.8"
+    poetry-version: "1.5"
 
     # Service containers to run with `container-job`
     services:
@@ -31,6 +35,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
 
     steps:
     - uses: actions/checkout@v3
@@ -50,5 +56,5 @@ jobs:
     - name: Test with pytest
       env:
         DJANGO_SETTINGS_MODULE: fobbage.settings
-        DATABASE_URL: 'postgres://fobbage-test@localhost/fobbage-test'
+        DATABASE_URL: 'postgres://fobbage-test@postgres/fobbage-test'
       run: poetry run pytest --cov . -n 2
