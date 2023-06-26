@@ -13,8 +13,8 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8, 3.9]
-        poetry-version: ["1.5",]
+        python-version: ["3.8", "3.10", "3.11"]
+        poetry-version: ["latest", "1.5",]
     steps:
     - uses: actions/checkout@v3
 
@@ -27,11 +27,10 @@ jobs:
       uses: abatilo/actions-poetry@v2
       with:
         poetry-version: ${{ matrix.poetry-version }}
-    - name: View poetry --help
-      run: poetry --help
+    - name: Install dev dependencies
+      run: poetry install --with dev
 
     - name: Test with pytest
       env:
-        DJANGO_SETTINGS_MODULE: project.settings
-        SECRETS_FILE: .confidential/ci.json
+        DJANGO_SETTINGS_MODULE: fobbage.settings
       run: poetry run pytest --cov . -n 2
