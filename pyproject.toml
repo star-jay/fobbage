@@ -33,6 +33,7 @@ pytest-coverage = "*"
 factory-boy = "*"
 ipython = "*"
 "flake8" = "*"
+pytest-xdist = "^3.3.1"
 
 [build-system]
 requires = ["poetry-core"]
