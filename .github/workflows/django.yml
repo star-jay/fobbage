@@ -23,7 +23,7 @@ jobs:
 
           # default db/user is postgres
           POSTGRES_USER: postgres
-          POSTGRES_DB: fobbage-test
+          POSTGRES_DB: fobbage
 
         # Set health checks to wait until postgres has started
         options: >-
@@ -46,5 +46,5 @@ jobs:
     - name: Test with pytest
       env:
         DJANGO_SETTINGS_MODULE: fobbage.settings
-        DATABASE_URL: 'postgres://postgres:postgres:fobbage-test@postgres/fobbage-test'
+        DATABASE_URL: 'postgres://postgres:postgres@postgres/fobbage'
       run: poetry run pytest --cov . -n 2
