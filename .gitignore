@@ -50,8 +50,8 @@ src/services/api/dndSession.txt
 
 
 # db dump
-fobbage.json
-fobbage2.json
-fobbage3.json
+*.json
 dump.sql
 jun122023.sql
+
+DEPLOYMENT.md
