@@ -91,7 +91,10 @@ class AnswerScoreSheetSerializer(serializers.ModelSerializer):
     def get_scores(self, instance):
         return ScoreSerializer(
             [
-                {'score': bluff.score, 'player': bluff.player}
+                {
+                    'score': bluff.score,
+                    'player': bluff.player
+                }
                 for bluff in instance.bluffs.all()
             ],
             many=True
@@ -100,7 +103,7 @@ class AnswerScoreSheetSerializer(serializers.ModelSerializer):
     class Meta:
         model = Answer
         fields = (
-            'id', 'text', 'fobbit', 'order',
+            'id', 'text', 'order',
             'scores', 'guesses', 'is_correct',
         )
 
@@ -121,7 +124,6 @@ class FobbitSerializer(serializers.ModelSerializer):
 
     # bluffs = BluffSerializer(many=True, read_only=True)
     question = QuestionSerializer(read_only=True)
-    answers = AnswerSerializer(many=True, read_only=True)
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
     players_without_bluff = UserSerializer(
@@ -148,9 +150,14 @@ class FobbitSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'url',
-            'status', 'have_bluffed', 'have_guessed',
-            'question', 'answers', 'score_sheets',
-            'players_without_bluff', 'players_without_guess',
+            'status',
+            'have_bluffed',
+            'have_guessed',
+            'question',
+            'answers',
+            'score_sheets',
+            'players_without_bluff',
+            'players_without_guess',
             'session', 'multiplier'
         )
 

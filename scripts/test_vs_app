@@ -1,3 +1,4 @@
+
 #!/usr/bin/env bash
 
 set -e
@@ -7,8 +8,13 @@ cd "$(dirname "$0")/.."
 echo "==> Removing fobbage DB if existing"
 dropdb fobbage --if-exists
 
+# ignore the following error
+set +e
+
 echo "==> Pulling from $1"
 heroku pg:pull DATABASE_URL fobbage --app fobbage
+
+set -e
 
 scripts/update
 

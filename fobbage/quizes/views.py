@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 
-from rest_framework import viewsets, status
+from django.db.models import Prefetch, Count
+from rest_framework import viewsets, status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import action
 
@@ -24,7 +25,12 @@ class QuizViewSet(viewsets.ModelViewSet):
 
 
 class SessionViewSet(viewsets.ModelViewSet):
-    queryset = Session.objects.filter(is_archived=False)
+    queryset = Session.objects.filter(is_archived=False).prefetch_related(
+        'players',
+    ).select_related(
+        'active_fobbit', 'active_fobbit__question', 'owner',
+    )
+
     serializer_class = SessionSerializer
 
     @action(
@@ -92,8 +98,38 @@ class SessionViewSet(viewsets.ModelViewSet):
 
 
 class FobbitViewSet(viewsets.ModelViewSet):
-    queryset = Fobbit.objects.all()
     serializer_class = FobbitSerializer
+
+
+    def get_queryset(self):
+
+        queryset = Fobbit.objects.all().select_related(
+            'question', 'session',
+        ).prefetch_related(
+            Prefetch(
+                'answers',
+                queryset=Answer.objects.prefetch_related(
+                        'guesses',
+                        'bluffs',
+                        'bluffs__player',
+                    ),
+            ),
+            Prefetch(
+                'answers',
+                queryset=Answer.objects.prefetch_related(
+                        'guesses',
+                        'bluffs',
+                        'bluffs__player',
+                    ).annotate(
+                        num_guesses=Count('guesses')
+                    ).order_by('is_correct', 'num_guesses'),
+                to_attr='scored_answers'
+            ),)
+
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        return Response(status=status.HTTP_403_FORBIDDEN)
 
     @action(
         detail=True, methods=['POST'],)

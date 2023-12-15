@@ -6,6 +6,7 @@ import random
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
+from django.db.models import OuterRef
 from django.dispatch import receiver
 
 from .messages import session_updated
@@ -245,24 +246,21 @@ class Fobbit(models.Model):
 
     @property
     def players_without_guess(self):
-        return [
-            player for player in self.session.players.all()
-            if len(player.guesses.filter(answer__fobbit=self)) == 0]
+        return self.session.players.exclude(
+            id__in=Guess.objects.filter(
+                player=OuterRef('pk'),  # Assuming player is a ForeignKey in the Guess model
+                answer__fobbit=self
+            ).values('player')
+        )
 
     @property
     def players_without_bluff(self):
-        return [
-            player for player in self.session.players.all()
-            if len(player.bluffs.filter(fobbit=self)) == 0]
-
-    @property
-    def scored_answers(self):
-        if self.status == self.FINISHED:
-            return self.answers.annotate(
-                num_guesses=models.Count('guesses')
-            ).order_by('is_correct', 'num_guesses')
-        else:
-            return self.answers.empty()
+        return self.session.players.exclude(
+            id__in=Bluff.objects.filter(
+                player=OuterRef('pk'),  # Assuming player is a ForeignKey in the Guess model
+                fobbit=self
+            ).values('player')
+        )
 
     def generate_answers(self):
         """
@@ -338,8 +336,8 @@ class Fobbit(models.Model):
             player_guess = None
 
         # score voor juist antwoord
-        if player_guess:
-            if player_guess.answer == player_bluff.answer:
+        if player_guess is not None:
+            if player_bluff and player_guess.answer == player_bluff.answer:
                 return 0
             if player_guess.answer.text == self.question.correct_answer:
                 score += player_guess.score
@@ -367,6 +365,9 @@ class Fobbit(models.Model):
     def update_scores(self):
         # update scores
         self.scores.all().delete()
+
+        guesses = Guess.objects.filter(answer__fobbit=self)
+
 
         for player in self.session.players.all():
             Score.objects.create(

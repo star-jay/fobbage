@@ -33,6 +33,8 @@ urlpatterns = [
     path('api/',  include('fobbage.accounts.urls')),
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
+    # browsable api login/logout
+    path('api-auth/', include('rest_framework.urls')),
 ]
 
 
