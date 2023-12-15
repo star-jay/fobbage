@@ -148,13 +148,14 @@ class FobbitViewSet(viewsets.ModelViewSet):
     def generate_answers(self, request, pk=None):
         fobbit = self.get_object()
         if fobbit.generate_answers():
+            fobbit.session.next_question()
             return Response(
                 FobbitSerializer(
                     fobbit, context=self.get_serializer_context()
                 ).data)
         else:
             return Response(
-                "Could not generate ansers",
+                "Could not generate answers",
                 status=status.HTTP_400_BAD_REQUEST, )
 
     @action(detail=True, methods=['POST'])

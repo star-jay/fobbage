@@ -271,7 +271,7 @@ class Fobbit(models.Model):
             return False
 
         # Check if all players have bluffed
-        if len(self.bluffs.all()) < len(self.session.players.all()):
+        if self.session.players.exclude(bluffs__fobbit=self).count() >0:
             return False
         # Check if not already listed
         if self.status >= self.GUESS:
@@ -306,9 +306,7 @@ class Fobbit(models.Model):
         self.status = Fobbit.GUESS
         self.save()
 
-        # TODO: go to next question
-        # if status is addded before guess
-        self.session.next_question()
+        return True
 
     def score_for_player(self, player):
         score = 0
@@ -365,9 +363,6 @@ class Fobbit(models.Model):
     def update_scores(self):
         # update scores
         self.scores.all().delete()
-
-        guesses = Guess.objects.filter(answer__fobbit=self)
-
 
         for player in self.session.players.all():
             Score.objects.create(
@@ -519,9 +514,11 @@ def bluff_updated_signal(sender, instance, created, **kwargs):
     session_updated(instance.fobbit.session.id)
     # everyone bluffed?
     if created:
-        if len(instance.fobbit.bluffs.all()) == len(
-                instance.fobbit.session.players.all()):
-            instance.fobbit.generate_answers()
+        # niet bij eerste vraag
+        if len(instance.fobbit.session.fobbits.all()) > 1:
+            if len(instance.fobbit.bluffs.all()) == len(
+                    instance.fobbit.session.players.all()):
+                instance.fobbit.generate_answers()
 
 
 @receiver(post_save, sender=Guess)
