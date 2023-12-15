@@ -6,6 +6,7 @@
   "scripts": {
     "serve": "vue-cli-service serve --openssl-legacy-provider",
     "build": "vue-cli-service build --dest ./fobbage/dist --openssl-legacy-provider",
+    "build_dev": "vue-cli-service build --dest ./fobbage/dist --mode development --openssl-legacy-provider",
     "lint": "vue-cli-service lint --openssl-legacy-provider"
   },
   "dependencies": {
