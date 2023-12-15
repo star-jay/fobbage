@@ -202,7 +202,7 @@ CHANNEL_LAYERS = {
         # "BACKEND": "channels.layers.InMemoryChannelLayer"
         "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
         "CONFIG": {
-        "hosts": [REDIS_URL, ],
+            "hosts": [REDIS_URL, ],
         },
     },
 }

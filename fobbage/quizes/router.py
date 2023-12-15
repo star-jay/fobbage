@@ -7,6 +7,8 @@ from fobbage.quizes.views import (
     GuessViewSet, QuestionViewSet,
 )
 
+__all__ = ['router']
+
 
 router = DefaultRouter()
 router.register(r'quizes', QuizViewSet, basename='quiz')
@@ -19,6 +21,3 @@ router.register(r'answers', AnswerViewSet, basename='answer')
 router.register(
     r'active_fobbits', ActiveFobbitViewSet, basename='active_fobbit')
 
-urlpatterns = [
-    path('', include(router.urls)),
-]
