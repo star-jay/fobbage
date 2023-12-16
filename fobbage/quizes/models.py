@@ -518,7 +518,8 @@ def bluff_updated_signal(sender, instance, created, **kwargs):
         if len(instance.fobbit.session.fobbits.all()) > 1:
             if len(instance.fobbit.bluffs.all()) == len(
                     instance.fobbit.session.players.all()):
-                instance.fobbit.generate_answers()
+                if instance.fobbit.generate_answers():
+                    instance.fobbit.session.next_question()
 
 
 @receiver(post_save, sender=Guess)
