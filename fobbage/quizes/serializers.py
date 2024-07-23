@@ -71,6 +71,31 @@ class GuessSerializer(serializers.ModelSerializer):
         model = Guess
         fields = ('answer', 'player', 'score')
 
+class LikeAnswerSerializer(serializers.ModelSerializer):
+    player = UserSerializer(read_only=True)
+    score = serializers.IntegerField(read_only=True)
+
+    # overide create to save user
+    def create(self, validated_data):
+        validated_data['player'] = self.context['request'].user
+        answer = Answer.objects.filter(
+            id=validated_data['answer'].id
+        ).first()
+        if answer:
+            if LikeAnswer.objects.filter(
+                player=validated_data['player'],
+                answer__fobbit=answer.fobbit,
+            ).count() > 0:
+                raise serializers.ValidationError(
+                    'you already liked an answer for this question')
+            return LikeAnswer.objects.create(**validated_data)
+
+        raise serializers.ValidationError
+
+    class Meta:
+        model = LikeAnswer
+        fields = ('answer', 'player', 'score')
+
 
 class AnswerSerializer(serializers.ModelSerializer):
     class Meta:
