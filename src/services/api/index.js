@@ -6,6 +6,7 @@ import guessAPI from './guesses';
 import activeQuestionsAPI from './activeQuestions';
 import simpleTokenAPI from './simpleToken';
 import userInfoAPI from './userInfo';
+import likeAnswersAPI from './likeAnswers';
 
 export {
   quizesAPI,
@@ -16,4 +17,5 @@ export {
   activeQuestionsAPI,
   simpleTokenAPI,
   userInfoAPI,
+  likeAnswersAPI,
 };

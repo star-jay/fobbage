@@ -54,4 +54,10 @@ export default {
   [types.SCOREBOARD_ERROR]: (state) => {
     state.sessions = [];
   },
+  [types.LIKE_SUCCESS]: (state, { like }) => {
+    state.like = like;
+  },
+  [types.LIKE_ERROR]: (state) => {
+    state.error = 'There was a problem! Liking.';
+  },
 };

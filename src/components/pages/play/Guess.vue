@@ -1,28 +1,40 @@
 <template>
   <div>
     <div v-if="fobbit.answers">
-      <p v-if="fobbit.have_guessed">Your guess was submitted</p>
-      <v-form v-else @submit.prevent="guess" id="guess">
-        <v-list flat>
-          <v-list-item-group v-model="answer" color="primary">
-            <v-list-item
-              v-for="answer in fobbit.answers"
-              :key="answer.id"
-            >
-              <template v-slot:default="{ active }">
-                <v-list-item-action>
-                  <v-checkbox :value="active" disabled></v-checkbox>
-                </v-list-item-action>
-                <v-list-item-content>
-                <v-list-item-title v-text="answer.order">
-                  </v-list-item-title>
-                </v-list-item-content>
-              </template>
-            </v-list-item>
-          </v-list-item-group>
+      <p v-if="fobbit.have_guessed">
+        You have guessed. Time to reward your favorite answer!
+      </p>
+      <v-list flat>
+        <v-list-item
+          v-for="(answer, index) in fobbit.answers"
+          :key="answer.id"
+        >
+          <v-list-item-content>
+            <v-list-item-title>
+                <h3>{{ index }}
+                  <v-btn
+                    class="mx-1"
+                    color="primary"
+                    @click="guess(index)"
+                    :disabled="fobbit.have_guessed"
+                  >
+                  Vote!
+                </v-btn>
+                <v-btn
+                  class="mx-1"
+                  color="accent"
+                  @click="like(index)"
+                  :disabled="fobbit.have_liked"
+                >
+                  Like &#128077;
+                </v-btn>
+                </h3>
+
+            </v-list-item-title>
+          </v-list-item-content>
+          <!-- U+1F44D unicode is  -->
+          </v-list-item>
         </v-list>
-        <v-btn type="submit" color="primary" form="guess">Guess</v-btn>
-      </v-form>
     </div>
   </div>
 </template>
@@ -48,10 +60,19 @@ export default {
     }),
   },
   methods: {
-    guess() {
+    guess(index) {
       this.$store.dispatch('guess', {
         id: this.fobbit.id,
-        answer: this.fobbit.answers[this.answer].id,
+        answer: this.fobbit.answers[index].id,
+      })
+        .then(() => {
+          this.fobbit.have_guessed = true;
+        });
+    },
+    like(index) {
+      this.$store.dispatch('like', {
+        id: this.fobbit.id,
+        answer: this.fobbit.answers[index].id,
       })
         .then(() => {
           this.fobbit.have_guessed = true;

@@ -11,6 +11,7 @@ export default {
     error: '',
     bluff: undefined,
     guess: undefined,
+    like: undefined,
     scoreBoard: undefined,
   },
   mutations,

@@ -26,6 +26,9 @@ export const GUESS_REQUEST = 'GUESS_REQUEST';
 export const GUESS_SUCCESS = 'GUESS_SUCCESS';
 export const GUESS_ERROR = 'GUESS_ERROR';
 
+export const LIKE_SUCCESS = 'LIKE_SUCCESS';
+export const LIKE_ERROR = 'LIKE_ERROR';
+
 export const SESSIONS_SUCCESS = 'SESSIONS_SUCCESS';
 export const SESSIONS_ERROR = 'SESSIONS_ERROR';
 

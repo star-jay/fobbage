@@ -2,6 +2,7 @@ import {
   quizesAPI,
   bluffsAPI,
   guessAPI,
+  likeAnswersAPI,
   // active_fobbitsAPI,
   sessionsAPI,
   fobbitsAPI,
@@ -65,6 +66,19 @@ export default {
         })
         .catch((error) => {
           commit('GUESS_ERROR');
+          reject(error);
+        });
+    },
+  ),
+  like: ({ commit }, { fobbit, answer }) => new Promise(
+    (resolve, reject) => {
+      likeAnswersAPI.post({ fobbit, answer })
+        .then((response) => {
+          commit('LIKE_SUCCESS', { like: response.data });
+          resolve(response);
+        })
+        .catch((error) => {
+          commit('LIKE_ERROR');
           reject(error);
         });
     },
