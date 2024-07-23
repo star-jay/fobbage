@@ -11,7 +11,7 @@
         >
           <v-list-item-content>
             <v-list-item-title>
-                <h3>{{ index }}
+                <h3>{{ index+1 }}
                   <v-btn
                     class="mx-1"
                     color="primary"
@@ -75,7 +75,7 @@ export default {
         answer: this.fobbit.answers[index].id,
       })
         .then(() => {
-          this.fobbit.have_guessed = true;
+          this.fobbit.have_liked = true;
         });
     },
   },

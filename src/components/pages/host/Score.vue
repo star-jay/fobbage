@@ -1,24 +1,37 @@
 <template>
-  <div v-if="score">
-    <h3>{{ score.text }}</h3>
-      <div v-if="score.is_correct">
-        <h4>Was the correct answer!</h4>
-      </div>
-      <div v-else>
-        <h4>Was a bluff from:</h4>
-        <span v-for="score in score.scores" :key="score.player.id">
-          {{ score.player.username }}: + {{ score.score }}
+  <div class="ma-4" v-if="score">
+    <!-- CORRECT -->
+    <div v-if="score.is_correct">
+      <p>The correct answer was:</p>
+      <b>{{ score.text }}</b>
+      <p class="my-2">Players who guessed correctly: </p>
+      <span v-for="guess in score.guesses" :key="guess.player.id">
+        {{ guess.player.username }}: + {{ guess.score }}
         </span>
-      </div>
-      <br/>
+    </div>
+    <!-- BLUFF -->
+    <div v-else>
+      <p class="title">{{ score.text }}</p>
       <div>
-
-      <h3>Players who guessed this answer:</h3>
-        <span v-for="guess in score.guesses" :key="guess.id">
-          {{ guess.player.username }}
-          <span v-if="score.is_correct"> +{{ guess.score }} </span>
+        <p>
+          Was a bluff from:
+          <span v-for="score in score.scores" :key="score.player.id">
+            <b>{{ score.player.username }}</b>
+          </span>
+        </p>
+          And it was worth: <b>{{ score.scores[0].score }}</b> points!
+      </div>
+      <!-- guesses -->
+      <p class="my-2 caption" v-if="score.guesses.length">
+        Players who guessed this was the correct answer:
+      </p>
+      <!-- Likes -->
+      <p class="my-2" v-if="score.like_answers.length">
+        Players who liked this answer:
+      </p>
+        <span v-for="like in score.like_answers" :key="like.id">
+          <b>{{ like.player.username }}</b>
         </span>
-      <br/>
     </div>
   </div>
 </template>

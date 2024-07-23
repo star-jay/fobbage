@@ -112,6 +112,7 @@ class ScoreSerializer(serializers.Serializer):
 class AnswerScoreSheetSerializer(serializers.ModelSerializer):
     scores = serializers.SerializerMethodField()
     guesses = GuessSerializer(many=True,)
+    like_answers = LikeAnswerSerializer(many=True, source='likeAnswers')
 
     def get_scores(self, instance):
         return ScoreSerializer(
@@ -129,7 +130,7 @@ class AnswerScoreSheetSerializer(serializers.ModelSerializer):
         model = Answer
         fields = (
             'id', 'text', 'order',
-            'scores', 'guesses', 'is_correct',
+            'scores', 'guesses', 'is_correct', 'like_answers',
         )
 
 
@@ -151,6 +152,7 @@ class FobbitSerializer(serializers.ModelSerializer):
     question = QuestionSerializer(read_only=True)
     have_bluffed = serializers.SerializerMethodField()
     have_guessed = serializers.SerializerMethodField()
+    have_liked = serializers.SerializerMethodField()
     players_without_bluff = UserSerializer(
         many=True, read_only=True,
     )
@@ -170,6 +172,12 @@ class FobbitSerializer(serializers.ModelSerializer):
             return Guess.objects.filter(
                 player=player, answer__fobbit=instance.id).count() > 0
 
+    def get_have_liked(self, instance):
+        if 'request' in self.context:
+            player = self.context['request'].user
+            return LikeAnswer.objects.filter(
+                player=player, answer__fobbit=instance.id).count() > 0
+
     class Meta:
         model = Fobbit
         fields = (
@@ -178,6 +186,7 @@ class FobbitSerializer(serializers.ModelSerializer):
             'status',
             'have_bluffed',
             'have_guessed',
+            'have_liked',
             'question',
             'answers',
             'score_sheets',
