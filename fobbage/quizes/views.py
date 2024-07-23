@@ -10,6 +10,7 @@ from .serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer, SessionSerializer,
     GuessSerializer, LikeAnswerSerializer, FobbitSerializer, ActiveFobbitSerializer,
     QuestionSerializer, ScoreSerializer, RoundSerializer
+
 )
 from fobbage.quizes.models import (
     Quiz, Answer, Bluff, Guess, Session, Fobbit, Question)
@@ -230,7 +231,7 @@ class GuessViewSet(viewsets.ModelViewSet):
             request, player=request.user, *args, **kwargs)
 
 class LikeAnswerViewSet(viewsets.ModelViewSet):
-    serializer_class = LikeAnswerViewSet
+    serializer_class = LikeAnswerSerializer
 
     def get_queryset(self):
         if self.request.user:

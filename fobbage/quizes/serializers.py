@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from fobbage.accounts.serializers import UserSerializer
 from fobbage.quizes.models import (
-    Quiz, Question, Bluff, Answer, Guess, Fobbit, Session,
+    Quiz, Question, Bluff, Answer, Guess, Fobbit, Session, LikeAnswer,
 )
 
 
