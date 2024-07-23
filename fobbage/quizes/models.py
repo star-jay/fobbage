@@ -534,3 +534,24 @@ def _updated_signal(sender, instance, created, **kwargs):
     if kwargs['raw']:
         return
     session_updated(instance.fobbit.session.id)
+
+class LikeAnswer(models.Model):
+    answer = models.ForeignKey(
+        Answer,
+        related_name='likeAnswers',
+        on_delete=models.CASCADE,
+    )
+
+    player = models.ForeignKey(
+        User,
+        related_name='likeAnswers',
+        on_delete=models.CASCADE,
+    )
+
+    @property
+    def score(self):
+        fobbit = self.answer.fobbit
+        if fobbit.status == fobbit.FINISHED:
+            return 1;
+        else:
+            return 0

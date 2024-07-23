@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 
 from .serializers import (
     QuizSerializer, BluffSerializer, AnswerSerializer, SessionSerializer,
-    GuessSerializer, FobbitSerializer, ActiveFobbitSerializer,
+    GuessSerializer, LikeAnswerSerializer, FobbitSerializer, ActiveFobbitSerializer,
     QuestionSerializer, ScoreSerializer, RoundSerializer
 )
 from fobbage.quizes.models import (
@@ -224,6 +224,19 @@ class GuessViewSet(viewsets.ModelViewSet):
             return Guess.objects.filter(player=self.request.user)
         else:
             return Guess.objects.none()
+
+    def post(self, request, *args, **kwargs):
+        return self.create(
+            request, player=request.user, *args, **kwargs)
+
+class LikeAnswerViewSet(viewsets.ModelViewSet):
+    serializer_class = LikeAnswerViewSet
+
+    def get_queryset(self):
+        if self.request.user:
+            return LikeAnswer.objects.filter(player=self.request.user)
+        else:
+            return LikeAnswer.objects.none()
 
     def post(self, request, *args, **kwargs):
         return self.create(
