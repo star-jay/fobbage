@@ -190,6 +190,12 @@ class Session(models.Model):
             user=player,).aggregate(score=models.Sum('score')).get('score', 0)
         return score or 0
 
+    def likes_for_player(self, player):
+        return LikeAnswer.objects.filter(
+            answer__fobbit__session=self,
+            answer__bluffs__player=player,
+        ).count()
+
 
 class Fobbit(models.Model):
     """Combination of session and question"""

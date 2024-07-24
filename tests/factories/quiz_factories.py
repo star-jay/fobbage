@@ -82,3 +82,12 @@ class GuessFactory(factory.django.DjangoModelFactory):
 
     answer = factory.SubFactory(AnswerFactory)
     player = factory.SubFactory(UserFactory)
+
+
+class LikeAnswerFactory(factory.django.DjangoModelFactory):
+    """ Factory that creates an LikeAnswer"""
+    class Meta:
+        model = LikeAnswer
+
+    answer = factory.SubFactory(AnswerFactory)
+    player = factory.SubFactory(UserFactory)

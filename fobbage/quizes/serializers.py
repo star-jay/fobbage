@@ -106,6 +106,7 @@ class AnswerSerializer(serializers.ModelSerializer):
 class ScoreSerializer(serializers.Serializer):
     # Serialize a single score for each bluff in an answer
     score = serializers.IntegerField()
+    likes = serializers.IntegerField(required=False)
     player = UserSerializer()
 
 

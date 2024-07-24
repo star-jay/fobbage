@@ -2,6 +2,11 @@
   <div>
     Scoreboard
     <v-list flat>
+      <v-list-item class="caption">
+        <v-col>Player</v-col>
+          <v-col>Score</v-col>
+          <v-col>Likes</v-col>
+      </v-list-item>
       <v-list-item
         v-for="score in scores"
         :key="score.player.id"
@@ -9,6 +14,8 @@
         <v-list-item-content>
           <v-col>{{ score.player.username }}</v-col>
           <v-col> {{ score.score }} </v-col>
+          <v-col> {{ score.likes }} </v-col>
+
         </v-list-item-content>
       </v-list-item>
     </v-list>

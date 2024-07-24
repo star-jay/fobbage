@@ -102,6 +102,7 @@ class SessionViewSet(viewsets.ModelViewSet):
                 [
                     {
                         'score': instance.score_for_player(player),
+                        'likes': instance.likes_for_player(player),
                         'player': player
                     }
                     for player in instance.players.all()
