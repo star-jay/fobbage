@@ -77,13 +77,15 @@ class LikeAnswerSerializer(serializers.ModelSerializer):
 
     # overide create to save user
     def create(self, validated_data):
-        validated_data['player'] = self.context['request'].user
+        user = self.context['request'].user
+        validated_data['player'] = user
+
         answer = Answer.objects.filter(
             id=validated_data['answer'].id
         ).first()
         if answer:
             if LikeAnswer.objects.filter(
-                player=validated_data['player'],
+                player=user,
                 answer__fobbit=answer.fobbit,
             ).count() > 0:
                 raise serializers.ValidationError(

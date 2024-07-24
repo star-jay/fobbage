@@ -194,7 +194,7 @@ class Session(models.Model):
         return LikeAnswer.objects.filter(
             answer__fobbit__session=self,
             answer__bluffs__player=player,
-        ).count()
+        ).exclude(player=player).count()
 
 
 class Fobbit(models.Model):
