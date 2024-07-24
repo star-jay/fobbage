@@ -14,11 +14,11 @@
       <div>
         <v-list flat>
           <v-list-item
-            v-for="answer in fobbit.answers"
+            v-for="(answer, index) in fobbit.answers"
             :key="answer.id"
           >
             <v-list-item-content>
-              {{ answer.order }}. {{ answer.text.toLowerCase()}}
+              {{ index+1 }}. {{ answer.text.toLowerCase()}}
             </v-list-item-content>
           </v-list-item>
         </v-list>
