@@ -7,7 +7,7 @@
       <p class="my-2">Players who guessed correctly: </p>
       <span v-for="guess in score.guesses" :key="guess.player.id">
         {{ guess.player.username }}: + {{ guess.score }}
-        </span>
+      </span>
     </div>
     <!-- BLUFF -->
     <div v-else>
@@ -23,8 +23,11 @@
       </div>
       <!-- guesses -->
       <p class="my-2 caption" v-if="score.guesses.length">
-        Players who guessed this was the correct answer:
+        Players who guessed this answer:
       </p>
+      <span v-for="guess in score.guesses" :key="guess.player.id">
+        {{ guess.player.username }}
+      </span>
       <!-- Likes -->
       <p class="my-2" v-if="score.like_answers.length">
         Players who liked this answer:
