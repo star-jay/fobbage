@@ -496,49 +496,6 @@ class Guess(models.Model):
         else:
             return 0
 
-
-@receiver(post_save, sender=Session)
-def session_updated_signal(sender, instance, created, **kwargs):
-    if kwargs['raw']:
-        return
-    session_updated(instance.id)
-
-
-@receiver(post_save, sender=Fobbit)
-def fobbit_updated_signal(sender, instance, created, **kwargs):
-    if kwargs['raw']:
-        return
-    session_updated(instance.session.id)
-
-
-@receiver(post_save, sender=Bluff)
-def bluff_updated_signal(sender, instance, created, **kwargs):
-    if kwargs['raw']:
-        return
-    session_updated(instance.fobbit.session.id)
-    # everyone bluffed?
-    if created:
-        # niet bij eerste vraag
-        if len(instance.fobbit.session.fobbits.all()) > 1:
-            if len(instance.fobbit.bluffs.all()) == len(
-                    instance.fobbit.session.players.all()):
-                if instance.fobbit.generate_answers():
-                    instance.fobbit.session.next_question()
-
-
-@receiver(post_save, sender=Guess)
-def guess_updated_signal(sender, instance, created, **kwargs):
-    if kwargs['raw']:
-        return
-    session_updated(instance.answer.fobbit.session.id)
-
-
-@receiver(post_save, sender=Answer)
-def _updated_signal(sender, instance, created, **kwargs):
-    if kwargs['raw']:
-        return
-    session_updated(instance.fobbit.session.id)
-
 class LikeAnswer(models.Model):
     answer = models.ForeignKey(
         Answer,

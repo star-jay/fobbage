@@ -91,7 +91,6 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'spa.middleware.SPAMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -128,9 +127,10 @@ WSGI_APPLICATION = 'fobbage.wsgi.application'
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db(
-        'DATABASE_URL',
-        default='postgres:///fobbage'),
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
 }
 
 AUTH_USER_MODEL = 'accounts.User'
@@ -174,7 +174,7 @@ STATICFILES_DIRS = (
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'  # noqa
 
 # Single page application https://github.com/metakermit/django-spa
-STATICFILES_STORAGE = 'spa.storage.SPAStaticFilesStorage'
+# STATICFILES_STORAGE = 'spa.storage.SPAStaticFilesStorage'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
