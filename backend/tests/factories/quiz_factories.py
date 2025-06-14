@@ -1,7 +1,7 @@
 import factory
 
 from fobbage.quizes.models import (
-    Quiz, Question, Answer, Bluff, Fobbit, Session, Guess,
+    Quiz, Question, Answer, Bluff, Fobbit, Session, Guess, LikeAnswer
 )
 from tests.factories.account_factories import UserFactory
 

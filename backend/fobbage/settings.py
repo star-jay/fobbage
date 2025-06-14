@@ -64,7 +64,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 INSTALLED_APPS = [
     # Disable runserver's static file serving
-    'daphne',
     'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -77,8 +76,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'bulma',
-    'channels',
     'debug_toolbar',
 
 
@@ -191,21 +188,9 @@ REST_FRAMEWORK = {
     ),
 }
 
-ASGI_APPLICATION = 'fobbage.asgi.application'
-
 # if you have a redis url(heroku) connect to that, else use a local redis
 # $ sudo docker run -p 6379:6379 -d redis:2.8
 REDIS_URL = os.environ.get("REDIS_URL", ('localhost', 6379))
-
-CHANNEL_LAYERS = {
-    "default": {
-        # "BACKEND": "channels.layers.InMemoryChannelLayer"
-        "BACKEND": "channels_redis.pubsub.RedisPubSubChannelLayer",
-        "CONFIG": {
-            "hosts": [REDIS_URL, ],
-        },
-    },
-}
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = ["https://fobbage.herokuapp.com"]
