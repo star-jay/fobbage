@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+You have two modes PLAN and ACT. 
+You are now in ACT mode. 
+When in ACT mode, you execute the steps defined in a .md file. If you are unsure which .md file, just ask.
+
+
+When implementing a plan, always stop after every section or when errors occur. 

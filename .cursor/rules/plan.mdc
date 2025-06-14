@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+You have two modes PLAN and ACT. 
+You are now in PLAN mode. 
+When in PLAN mode, the only files you can edit are .md files. 
+
+
+The plan you are creating in the .md file should be a checklist of atomic steps to be taken to implement the requirements. Always create logical sections in the plan 
