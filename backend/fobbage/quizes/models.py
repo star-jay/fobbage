@@ -9,8 +9,6 @@ from django.db.models.signals import post_save
 from django.db.models import OuterRef
 from django.dispatch import receiver
 
-from .messages import session_updated
-
 User = get_user_model()
 
 

@@ -186,7 +186,6 @@ class FobbitSerializer(serializers.ModelSerializer):
         fields = (
             'id',
             'url',
-            'status',
             'have_bluffed',
             'have_guessed',
             'have_liked',
@@ -209,7 +208,6 @@ class QuizSerializer(serializers.ModelSerializer):
 
 
 class SessionSerializer(serializers.ModelSerializer):
-    websocket = serializers.SerializerMethodField()
     active_fobbit = FobbitSerializer(read_only=True)
     fobbits = serializers.PrimaryKeyRelatedField(
         many=True, read_only=True)
@@ -223,14 +221,6 @@ class SessionSerializer(serializers.ModelSerializer):
         validated_data['owner'] = self.context['request'].user
         return super().create(validated_data)
 
-    def get_websocket(self, instance):
-        request = self.context.get('request', None)
-
-        return '{}/ws/session/{}/'.format(
-            request.get_host(),
-            instance.id,
-        )
-
     class Meta:
         read_only_fields = ['owner', ]
         model = Session
@@ -238,7 +228,6 @@ class SessionSerializer(serializers.ModelSerializer):
             'id',
             'url',
             'name',
-            'websocket',
             'quiz',
             'owner',
             'active_fobbit',
