@@ -60,3 +60,15 @@ DEPLOYMENT2.MD
 
 # Other agentic files besides the big plan
 .agent
+
+# keys and secrets
+/secrets/
+*-key
+*.key
+*.pem
+*.pub
+*.crt
+*.csr
+
+# bruno env files
+dev.bru
