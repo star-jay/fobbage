@@ -24,6 +24,9 @@ class QuizViewSet(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
     serializer_class = QuizSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
 
 class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.filter(is_archived=False).prefetch_related(
